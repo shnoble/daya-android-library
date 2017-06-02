@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/daya-android-library.iml" filepath="$PROJECT_DIR$/daya-android-library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/daya-auth/daya-auth.iml" filepath="$PROJECT_DIR$/daya-auth/daya-auth.iml" />
+      <module fileurl="file://$PROJECT_DIR$/daya-http/daya-http.iml" filepath="$PROJECT_DIR$/daya-http/daya-http.iml" />
       <module fileurl="file://$PROJECT_DIR$/daya-sample/daya-sample.iml" filepath="$PROJECT_DIR$/daya-sample/daya-sample.iml" />
       <module fileurl="file://$PROJECT_DIR$/daya-utils/daya-utils.iml" filepath="$PROJECT_DIR$/daya-utils/daya-utils.iml" />
     </modules>

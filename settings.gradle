@@ -1,1 +1,1 @@
-include ':daya-utils', ':daya-sample'
+include ':daya-sample', ':daya-utils', ':daya-http', ':daya-auth'
