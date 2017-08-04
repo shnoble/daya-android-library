@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/daya-auth" />
+            <option value="$PROJECT_DIR$/daya-develop" />
             <option value="$PROJECT_DIR$/daya-http" />
             <option value="$PROJECT_DIR$/daya-sample" />
             <option value="$PROJECT_DIR$/daya-utils" />

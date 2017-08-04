@@ -5,7 +5,7 @@ apply plugin: 'com.jfrog.bintray'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
 
     defaultConfig {
         minSdkVersion 15
@@ -29,7 +29,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    //compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
 }
 
@@ -114,9 +114,11 @@ bintray {
     publish = true // [Default: false] Whether version should be auto published after an upload
 
     pkg {
-        repo = 'daya-android-library'                  // Repository name (Created in the repository Bintray site)
+        repo = 'daya-android-library'
+        // Repository name (Created in the repository Bintray site)
         name = 'daya-utils'             // module name
-        userOrg = 'shnoble79'             // An optional organization name when the repo belongs to one of the user's orgs
+        userOrg = 'shnoble79'
+        // An optional organization name when the repo belongs to one of the user's orgs
         desc = 'Daya utils library'     // Optional
         licenses = ['Apache-2.0']
 
@@ -136,7 +138,8 @@ bintray {
         version {
             name = '0.0.1-alpha' // The name of your library project
             desc = 'Daya utils library' // Optional - Version-specific description'
-            released  = new Date() // Optional - Date of the version release. 2 possible values: date in the format of 'yyyy-MM-dd'T'HH:mm:ss.SSSZZ' OR a java.util.Date instance
+            released = new Date()
+            // Optional - Date of the version release. 2 possible values: date in the format of 'yyyy-MM-dd'T'HH:mm:ss.SSSZZ' OR a java.util.Date instance
             vcsTag = '0.0.1-alpha'
             attributes = ['gradle-plugin': 'com.use.less:com.use.less.gradle:gradle-useless-plugin']
         }
