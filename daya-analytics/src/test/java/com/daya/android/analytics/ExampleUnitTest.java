@@ -1,4 +1,4 @@
-package com.shnoble.android.daya.analytics;
+package com.daya.android.analytics;
 
 import org.junit.Test;
 

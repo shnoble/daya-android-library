@@ -8,7 +8,6 @@ import com.daya.android.utils.DeviceUtil;
 import com.daya.android.utils.LocaleUtil;
 import com.daya.android.utils.TelephonyUtil;
 import com.daya.android.utils.TimeUtil;
-import com.toast.android.develop.R;
 
 public class MainActivity extends AppCompatActivity {
 

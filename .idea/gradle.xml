@@ -8,6 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/daya-analytics" />
             <option value="$PROJECT_DIR$/daya-auth" />
             <option value="$PROJECT_DIR$/daya-develop" />
             <option value="$PROJECT_DIR$/daya-http" />

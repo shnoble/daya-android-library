@@ -1,4 +1,4 @@
-package com.shnoble.android.daya.analytics;
+package com.daya.android.analytics;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.shnoble.android.daya.analytics.test", appContext.getPackageName());
+        assertEquals("com.daya.android.analytics.test", appContext.getPackageName());
     }
 }
