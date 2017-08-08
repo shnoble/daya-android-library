@@ -1,4 +1,4 @@
-package com.toast.android.develop;
+package com.shnoble.android.daya.analytics;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.toast.android.develop;
+package com.daya.android.develop;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +8,7 @@ import com.daya.android.utils.DeviceUtil;
 import com.daya.android.utils.LocaleUtil;
 import com.daya.android.utils.TelephonyUtil;
 import com.daya.android.utils.TimeUtil;
+import com.toast.android.develop.R;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,35 +35,5 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "<<< Telephony Info >>>");
         Log.d(TAG, "Telephony Network Operation Name: " + TelephonyUtil.getNetworkOperatorName(getApplicationContext()));
         Log.d(TAG, "Telephony Network Country ISO: " + TelephonyUtil.getNetworkCountryIso(getApplicationContext()));
-
-        /*String[] permissions = new String[]{Manifest.permission.READ_PHONE_STATE};
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (String permission : permissions) {
-                int result = PermissionChecker.checkSelfPermission(this, permission);
-
-                if (result == PermissionChecker.PERMISSION_GRANTED) {
-
-                } else {
-                    doRequestPermission();
-                }
-            }
-        }
-
-        String deviceId = TelephonyUtil.getDeviceId(getApplicationContext());
-        Log.d(TAG, "Device ID: " + deviceId);*/
-    }
-
-    private void doRequestPermission() {
-        /*String[] permissions = new String[]{Manifest.permission.READ_PHONE_STATE};
-
-        ArrayList<String> notGrantedPermissions = new ArrayList<>();
-        for (String permission : permissions) {
-            if (!PermissionUtils.hasPermissions(this, permission)) {
-                notGrantedPermissions.add(permission);
-            }
-        }
-
-        ActivityCompat.requestPermissions(this, notGrantedPermissions.toArray(new String[]{}), PermissionUtils.MUST_HAVE_REQUEST_CODE);*/
     }
 }

@@ -1,4 +1,4 @@
-package com.toast.android.develop;
+package com.daya.android.develop;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.toast.android.develop", appContext.getPackageName());
+        assertEquals("com.daya.android.develop", appContext.getPackageName());
     }
 }
