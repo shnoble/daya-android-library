@@ -7,4 +7,11 @@
     android:orientation="vertical"
     tools:context="com.daya.android.develop.MainActivity">
 
+    <Button
+        android:id="@+id/send_event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send Event"
+        android:onClick="onSendEvent"/>
+
 </LinearLayout>

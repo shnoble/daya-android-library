@@ -3,7 +3,10 @@ package com.daya.android.develop;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 
+import com.daya.android.analytics.DayaAnalytics;
+import com.daya.android.analytics.DayaAnalyticsEvent;
 import com.daya.android.utils.DeviceUtil;
 import com.daya.android.utils.LocaleUtil;
 import com.daya.android.utils.TelephonyUtil;
@@ -34,5 +37,15 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "<<< Telephony Info >>>");
         Log.d(TAG, "Telephony Network Operation Name: " + TelephonyUtil.getNetworkOperatorName(getApplicationContext()));
         Log.d(TAG, "Telephony Network Country ISO: " + TelephonyUtil.getNetworkCountryIso(getApplicationContext()));
+    }
+
+    public void onSendEvent(View view) {
+        DayaAnalyticsEvent event = new DayaAnalyticsEvent();
+        event.setItemId("itemId");
+        event.setItemName("itemName");
+        event.setContentType("contentType");
+
+        DayaAnalytics analytics = DayaAnalytics.getInstance(this);
+        analytics.logEvent(event);
     }
 }
