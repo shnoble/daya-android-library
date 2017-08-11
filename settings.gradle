@@ -1,1 +1,1 @@
-include ':daya-sample', ':daya-utils', ':daya-http', ':daya-auth', ':daya-develop', ':daya-analytics'
+include ':daya-sample', ':daya-utils', ':daya-http', ':daya-auth', ':daya-develop', ':daya-analytics', ':daya-crash'

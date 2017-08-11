@@ -8,10 +8,24 @@
     tools:context="com.daya.android.develop.MainActivity">
 
     <Button
-        android:id="@+id/send_event"
+        android:id="@+id/send_event_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Send Event"
         android:onClick="onSendEvent"/>
+
+    <Button
+        android:id="@+id/crash_main_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Crash (Main)"
+        android:onClick="onCrashMain"/>
+
+    <Button
+        android:id="@+id/crash_thread_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Crash (Main)"
+        android:onClick="onCrashThread"/>
 
 </LinearLayout>

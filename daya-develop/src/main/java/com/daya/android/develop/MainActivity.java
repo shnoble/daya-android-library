@@ -15,6 +15,7 @@ import com.daya.android.utils.TimeUtil;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private Thread.UncaughtExceptionHandler mDefaultUncaughtExceptionHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,5 +48,24 @@ public class MainActivity extends AppCompatActivity {
 
         DayaAnalytics analytics = DayaAnalytics.getInstance(this);
         analytics.logEvent(event);
+    }
+
+    public void onCrashMain(View view) {
+        // Make a Arithmetic Exception!!
+        // Divide by zero
+        @SuppressWarnings("unused")
+        int a = 10 / 0;
+    }
+
+    public void onCrashThread(View view) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // Make a Arithmetic Exception!!
+                // Divide by zero
+                @SuppressWarnings("unused")
+                int a = 10 / 0;
+            }
+        }).start();
     }
 }
