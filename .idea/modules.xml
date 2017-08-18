@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/samples/AccountSample/AccountSample.iml" filepath="$PROJECT_DIR$/samples/AccountSample/AccountSample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/FileSample/FileSample.iml" filepath="$PROJECT_DIR$/samples/FileSample/FileSample.iml" />
       <module fileurl="file://$PROJECT_DIR$/samples/PermissionSample/PermissionSample.iml" filepath="$PROJECT_DIR$/samples/PermissionSample/PermissionSample.iml" />
       <module fileurl="file://$PROJECT_DIR$/daya-analytics/daya-analytics.iml" filepath="$PROJECT_DIR$/daya-analytics/daya-analytics.iml" />
       <module fileurl="file://$PROJECT_DIR$/daya-android-library.iml" filepath="$PROJECT_DIR$/daya-android-library.iml" />

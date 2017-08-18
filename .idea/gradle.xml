@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/daya-utils" />
             <option value="$PROJECT_DIR$/samples" />
             <option value="$PROJECT_DIR$/samples/AccountSample" />
+            <option value="$PROJECT_DIR$/samples/FileSample" />
             <option value="$PROJECT_DIR$/samples/PermissionSample" />
           </set>
         </option>

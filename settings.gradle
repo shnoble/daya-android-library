@@ -1,1 +1,16 @@
-include ':daya-sample', ':daya-utils', ':daya-http', ':daya-auth', ':daya-develop', ':daya-analytics', ':daya-crash', 'samples:AccountSample', 'samples:PermissionSample'
+// Daya SDK
+include ':daya-utils'
+include ':daya-http'
+include ':daya-auth'
+include ':daya-analytics'
+include ':daya-crash'
+
+// Daya Apps
+include ':daya-develop'
+include ':daya-sample'
+
+// Samples
+include 'samples:AccountSample'
+include 'samples:PermissionSample'
+include 'samples:FileSample'
+
