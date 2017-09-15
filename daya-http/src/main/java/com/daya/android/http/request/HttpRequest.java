@@ -37,7 +37,7 @@ public interface HttpRequest {
             Validate.notNull(mUrl, "URL cannot be null.");
             Validate.notNull(mMethod, "Request method cannot be null.");
 
-            HttpDefaultRequest request = new HttpDefaultRequest();
+            DefaultHttpRequest request = new DefaultHttpRequest();
             request.setUrl(mUrl);
             request.setMethod(mMethod);
             return request;

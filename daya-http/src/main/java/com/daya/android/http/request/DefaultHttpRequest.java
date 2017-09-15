@@ -10,11 +10,11 @@ import java.net.URL;
  * Created by shhong on 2017. 9. 15..
  */
 
-class HttpDefaultRequest implements HttpRequest {
+class DefaultHttpRequest implements HttpRequest {
     private URL mUrl;
     private String mMethod;
 
-    HttpDefaultRequest() {
+    DefaultHttpRequest() {
     }
 
     @NonNull
@@ -28,6 +28,7 @@ class HttpDefaultRequest implements HttpRequest {
     }
 
     @NonNull
+    @HttpMethod.MethodName
     @Override
     public String getMethod() {
         return mMethod;
