@@ -14,8 +14,8 @@ public class HttpClientTest {
 
     @Test
     public void checkMethodDefinition() throws Exception {
-        Assert.assertEquals("GET", HttpMethod.GET);
-        Assert.assertEquals("POST", HttpMethod.POST);
+        Assert.assertEquals("GET", HttpRequest.METHOD_GET);
+        Assert.assertEquals("POST", HttpRequest.METHOD_POST);
     }
 
     @Test(expected = NullPointerException.class)
@@ -28,7 +28,7 @@ public class HttpClientTest {
     @Test(expected = NullPointerException.class)
     public void occurExceptionIfUrlNotSet() throws Exception {
         new HttpRequest.Builder()
-                .setMethod(HttpMethod.GET)
+                .setMethod(HttpRequest.METHOD_GET)
                 .build();
     }
 
@@ -36,7 +36,7 @@ public class HttpClientTest {
     public void createRequestObject() throws Exception {
         HttpRequest request = new HttpRequest.Builder()
                 .setUrl("https://httpbin.org/get")
-                .setMethod(HttpMethod.GET)
+                .setMethod(HttpRequest.METHOD_GET)
                 .build();
 
         Assert.assertNotNull(request);
@@ -48,10 +48,10 @@ public class HttpClientTest {
 
         HttpRequest request = new HttpRequest.Builder()
                 .setUrl(SERVER_GET_URL)
-                .setMethod(HttpMethod.GET)
+                .setMethod(HttpRequest.METHOD_GET)
                 .build();
 
-        Assert.assertEquals(HttpMethod.GET, request.getMethod());
+        Assert.assertEquals(HttpRequest.METHOD_GET, request.getMethod());
         Assert.assertEquals(SERVER_GET_URL, request.getUrl().toString());
 
         HttpResponse response = httpClient.execute(request);

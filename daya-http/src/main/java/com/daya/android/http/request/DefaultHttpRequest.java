@@ -2,8 +2,6 @@ package com.daya.android.http.request;
 
 import android.support.annotation.NonNull;
 
-import com.daya.android.http.HttpMethod;
-
 import java.net.URL;
 
 /**
@@ -28,13 +26,13 @@ class DefaultHttpRequest implements HttpRequest {
     }
 
     @NonNull
-    @HttpMethod.MethodName
+    @Method
     @Override
     public String getMethod() {
         return mMethod;
     }
 
-    void setMethod(@NonNull @HttpMethod.MethodName String method) {
+    void setMethod(@NonNull @Method String method) {
         this.mMethod = method;
     }
 }

@@ -1,10 +1,12 @@
 package com.daya.android.http.request;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 
-import com.daya.android.http.HttpMethod;
 import com.daya.android.utils.Validate;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -13,6 +15,12 @@ import java.net.URL;
  */
 
 public interface HttpRequest {
+    @Retention(RetentionPolicy.SOURCE)
+    @StringDef({METHOD_GET, METHOD_POST})
+    public @interface Method {}
+
+    static final String METHOD_GET = "GET";
+    static final String METHOD_POST = "POST";
 
     public URL getUrl();
 
@@ -28,7 +36,7 @@ public interface HttpRequest {
         }
 
 
-        public Builder setMethod(@NonNull @HttpMethod.MethodName String method) {
+        public Builder setMethod(@NonNull @Method String method) {
             this.mMethod = method;
             return this;
         }
