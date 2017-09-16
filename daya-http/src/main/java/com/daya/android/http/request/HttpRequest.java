@@ -19,7 +19,14 @@ public interface HttpRequest {
     @StringDef({METHOD_GET, METHOD_POST})
     public @interface Method {}
 
+    /**
+     * 'GET' request method
+     */
     static final String METHOD_GET = "GET";
+
+    /**
+     * 'POST' request method
+     */
     static final String METHOD_POST = "POST";
 
     public URL getUrl();
