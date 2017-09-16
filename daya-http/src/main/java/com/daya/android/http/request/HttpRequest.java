@@ -31,6 +31,7 @@ public interface HttpRequest {
 
     public URL getUrl();
 
+    @Method
     public String getMethod();
 
     class Builder {
