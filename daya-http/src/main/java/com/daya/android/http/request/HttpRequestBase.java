@@ -1,20 +1,11 @@
 package com.daya.android.http.request;
 
-import android.support.annotation.NonNull;
-
-import com.daya.android.http.HttpMethod;
-import com.daya.android.http.HttpResponse;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
 /**
  * Created by shhong on 2017. 9. 15..
  */
 
-abstract class HttpRequestBase implements HttpRequest {
-    private HttpURLConnection mConnection;
+abstract class HttpRequestBase {
+    /*private HttpURLConnection mConnection;
 
     HttpRequestBase(@NonNull @HttpMethod String method,
                     @NonNull URL url) throws HttpRequestException {
@@ -42,5 +33,5 @@ abstract class HttpRequestBase implements HttpRequest {
         return mConnection.getRequestMethod();
     }
 
-    public abstract HttpResponse execute();
+    public abstract HttpResponse execute();*/
 }

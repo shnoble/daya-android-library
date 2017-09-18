@@ -1,19 +1,21 @@
 package com.daya.android.http.request;
 
-import android.support.annotation.NonNull;
-
-import com.daya.android.http.HttpMethod;
 import com.daya.android.http.HttpResponse;
-
-import java.io.IOException;
-import java.net.URL;
 
 /**
  * Created by shhong on 2017. 9. 18..
  */
 
-class HttpRequestPost extends HttpRequestBase {
-    HttpRequestPost(@NonNull URL url) throws IOException {
+class HttpRequestPost extends HttpRequest {
+    HttpRequestPost(Builder builder) {
+        super(builder);
+    }
+
+    @Override
+    public HttpResponse execute() {
+        return null;
+    }
+    /*HttpRequestPost(@NonNull URL url) throws IOException {
         super(HttpMethod.POST, url);
     }
 
@@ -24,5 +26,5 @@ class HttpRequestPost extends HttpRequestBase {
     @Override
     public HttpResponse execute() {
         return null;
-    }
+    }*/
 }
