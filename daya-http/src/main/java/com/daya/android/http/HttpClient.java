@@ -1,6 +1,7 @@
 package com.daya.android.http;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.WorkerThread;
 
 import com.daya.android.utils.Validate;
 
@@ -18,7 +19,16 @@ import java.util.Map;
  * Created by shhong on 2017. 9. 18..
  */
 
-public class HttpClient {
+public final class HttpClient {
+    /**
+     * Sets up a connection and gets the HTTP response body from the server.
+     * If the network request is successful, it returns the response. Otherwise,
+     * it will throw an IOException.
+     *
+     * @return returns the response.
+     */
+    @WorkerThread
+    @NonNull
     public static HttpResponse execute(@NonNull HttpRequest request) throws IOException {
         Validate.notNull(request, "request is cannot null");
 

@@ -8,7 +8,7 @@ import java.io.IOException;
  * Created by shhong on 2017. 9. 18..
  */
 
-class HttpRequestPost extends HttpRequest {
+public class HttpRequestPost extends HttpRequest {
     private HttpRequestPost(@NonNull Builder builder) {
         super(builder);
     }

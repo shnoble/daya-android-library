@@ -9,7 +9,7 @@ import java.io.IOException;
  * Created by shhong on 2017. 9. 18..
  */
 
-class HttpRequestGet extends HttpRequest {
+public class HttpRequestGet extends HttpRequest {
     private HttpRequestGet(@NonNull Builder builder) {
         super(builder);
     }
