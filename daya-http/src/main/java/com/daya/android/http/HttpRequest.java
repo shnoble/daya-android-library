@@ -82,9 +82,6 @@ public abstract class HttpRequest {
         return mBody;
     }
 
-    @NonNull
-    abstract HttpResponse execute() throws IOException;
-
     public static abstract class Builder<T extends HttpRequest> {
         URL mUrl;
         int mReadTimeout = 3000;

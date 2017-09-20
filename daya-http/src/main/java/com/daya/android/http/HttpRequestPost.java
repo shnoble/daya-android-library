@@ -19,12 +19,6 @@ public class HttpRequestPost extends HttpRequest {
         return HttpMethod.POST;
     }
 
-    @NonNull
-    @Override
-    public HttpResponse execute() throws IOException {
-        return null;
-    }
-
     public static class Builder extends HttpRequest.Builder<HttpRequestPost> {
 
         @NonNull

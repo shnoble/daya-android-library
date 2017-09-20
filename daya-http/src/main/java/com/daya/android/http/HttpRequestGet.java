@@ -20,20 +20,6 @@ public class HttpRequestGet extends HttpRequest {
         return HttpMethod.GET;
     }
 
-    /**
-     * Sets up a connection and gets the HTTP response body from the server.
-     * If the network request is successful, it returns the response. Otherwise,
-     * it will throw an IOException.
-     *
-     * @return returns the response.
-     */
-    @WorkerThread
-    @NonNull
-    @Override
-    public HttpResponse execute() throws IOException {
-        return null;
-    }
-
     public static class Builder extends HttpRequest.Builder<HttpRequestGet> {
 
         @NonNull
