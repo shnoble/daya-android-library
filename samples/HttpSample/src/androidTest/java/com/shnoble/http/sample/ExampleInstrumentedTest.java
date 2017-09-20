@@ -1,4 +1,4 @@
-package com.daya.android.http;
+package com.shnoble.http.sample;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.daya.android.http.test", appContext.getPackageName());
+        assertEquals("com.shnoble.http.sample", appContext.getPackageName());
     }
 }

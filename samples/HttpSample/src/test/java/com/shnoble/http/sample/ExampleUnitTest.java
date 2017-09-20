@@ -1,4 +1,4 @@
-package com.daya.android.http;
+package com.shnoble.http.sample;
 
 import org.junit.Test;
 
