@@ -3,7 +3,7 @@ package com.daya.android.http;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.daya.android.utils.Validate;
+import com.daya.android.util.Validate;
 
 import java.net.MalformedURLException;
 import java.net.URL;

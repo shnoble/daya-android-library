@@ -1,4 +1,4 @@
-package com.daya.android.utils;
+package com.daya.android.util;
 
 import org.junit.Test;
 

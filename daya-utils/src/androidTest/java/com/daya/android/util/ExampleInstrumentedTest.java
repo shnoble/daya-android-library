@@ -1,4 +1,4 @@
-package com.daya.android.utils;
+package com.daya.android.util;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
