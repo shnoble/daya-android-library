@@ -35,7 +35,7 @@ dependencies {
     //    compile(group: 'com.daya.android', name: 'daya-utils', version: '0.0.1-alpha') {
     //        transitive = true
     //    }
-    compile project(':daya-utils')
+    compile project(':daya-util')
 }
 
 group = 'com.daya.android'

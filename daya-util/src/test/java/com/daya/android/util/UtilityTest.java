@@ -8,10 +8,10 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Created by shhong on 2017. 9. 21..
  */
-public class UUIDTest {
+public class UtilityTest {
     @Test
     public void testRandomUUID() throws Exception {
-        String uuid = UUID.randomUUID();
+        String uuid = Utility.randomUUID();
         assertNotNull(uuid);
         assertFalse(uuid.isEmpty());
     }

@@ -17,7 +17,7 @@ import com.daya.android.info.OperatingSystemInfo;
 import com.daya.android.info.TelephonyInfo;
 import com.daya.android.info.TimeZoneInfo;
 import com.daya.android.network.NetworkManager;
-import com.daya.android.util.UUID;
+import com.daya.android.util.Utility;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,8 +74,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Network Type: " + NetworkManager.getType(context));
         Log.d(TAG, "Network Type Name: " + NetworkManager.getTypeName(context));
 
-        Log.d(TAG, "<<< Util >>>");
-        Log.d(TAG, "Random UUID: " + UUID.randomUUID());
+        Log.d(TAG, "<<< Utility >>>");
+        Log.d(TAG, "Random UUID: " + Utility.randomUUID());
     }
 
     public void onSendEvent(View view) {

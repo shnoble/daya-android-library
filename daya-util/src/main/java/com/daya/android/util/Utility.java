@@ -1,10 +1,12 @@
 package com.daya.android.util;
 
+import java.util.UUID;
+
 /**
  * Created by shhong on 2017. 9. 21..
  */
 
-public class UUID {
+public class Utility {
 
     /**
      * Returns a type 4 (pseudo randomly generated) UUID.
@@ -12,6 +14,6 @@ public class UUID {
      * @return  A randomly generated UUID
      */
     public static String randomUUID() {
-        return java.util.UUID.randomUUID().toString();
+        return UUID.randomUUID().toString();
     }
 }
