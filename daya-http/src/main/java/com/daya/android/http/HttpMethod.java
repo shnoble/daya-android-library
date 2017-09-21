@@ -4,6 +4,8 @@ package com.daya.android.http;
  * Created by shhong on 2017. 9. 18..
  */
 final class HttpMethod {
+    private HttpMethod() {}
+
     /**
      * 'GET' request method
      */

@@ -7,7 +7,8 @@ import android.support.annotation.NonNull;
  * Created by shhong on 2017. 9. 21..
  */
 
-public class ApplicationInfo {
+public final class ApplicationInfo {
+    private ApplicationInfo() {}
 
     /**
      * Return the name of this application's package.

@@ -6,7 +6,8 @@ import java.util.Locale;
  * Created by shhong on 2017. 5. 30..
  */
 
-public class LocaleInfo {
+public final class LocaleInfo {
+    private LocaleInfo() {}
 
     private static Locale getLocale() {
         return Locale.getDefault();

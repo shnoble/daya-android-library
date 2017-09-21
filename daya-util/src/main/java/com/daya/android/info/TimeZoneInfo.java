@@ -7,7 +7,8 @@ import java.util.TimeZone;
  * Created by shhong on 2017. 8. 4..
  */
 
-public class TimeZoneInfo {
+public final class TimeZoneInfo {
+    private TimeZoneInfo() {}
 
     private static TimeZone getTimeZone() {
         return Calendar.getInstance().getTimeZone();

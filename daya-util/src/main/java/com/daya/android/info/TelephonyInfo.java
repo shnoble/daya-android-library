@@ -10,7 +10,8 @@ import android.telephony.TelephonyManager;
  * Created by shhong on 2017. 8. 3..
  */
 
-public class TelephonyInfo {
+public final class TelephonyInfo {
+    private TelephonyInfo() {}
 
     private static TelephonyManager getTelephonyManager(@NonNull Context context) {
         return (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);

@@ -10,7 +10,8 @@ import android.util.DisplayMetrics;
  * Created by shhong on 2017. 8. 4..
  */
 
-public class DeviceInfo {
+public final class DeviceInfo {
+    private DeviceInfo() {}
 
     /**
      * Returns the manufacturer of the product/hardware.

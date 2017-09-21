@@ -16,7 +16,9 @@ import android.net.NetworkInfo;
  * Created by shhong on 2017. 6. 14..
  */
 
-public class NetworkManager {
+public final class NetworkManager {
+    private NetworkManager() {}
+
     /**
      * Indicates whether network connectivity is possible.
      *

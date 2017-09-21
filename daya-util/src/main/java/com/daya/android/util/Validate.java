@@ -8,7 +8,7 @@ import com.daya.android.DayaException;
  * Created by shhong on 2017. 9. 15..
  */
 
-public class Validate {
+public final class Validate {
     private Validate() {}
 
     /**
