@@ -3,7 +3,7 @@ package com.daya.android.http;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 
-import com.daya.android.utils.Validate;
+import com.daya.android.util.Validate;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -30,6 +30,9 @@ public final class HttpClient {
     @WorkerThread
     @NonNull
     public static HttpResponse execute(@NonNull HttpRequest request) throws IOException {
+        Validate.runningOnWorkerThread(
+                HttpClient.class.getCanonicalName()
+                        + "#execute(HttpRequest) method should be called from the worker thread");
         Validate.notNull(request, "request is cannot null");
 
         OutputStream outputStream = null;
