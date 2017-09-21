@@ -5,7 +5,6 @@ import org.junit.Test;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -28,14 +27,6 @@ public class HttpRequestTest {
                 .setBody("Hello world");
 
         assertNotNull(builder);
-        assertNotNull(builder.mUrl);
-        assertNotNull(builder.mHeaders);
-
-        assertEquals(HTTP_URL, builder.mUrl.toString());
-        assertEquals(5000, builder.mReadTimeout);
-        assertEquals(5000, builder.mConnectTimeout);
-        assertEquals("application/json", builder.mHeaders.get("content-type"));
-        assertEquals("Hello world", builder.mBody);
     }
 
     @Test(expected = NullPointerException.class)

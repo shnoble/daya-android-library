@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 
 import com.daya.android.utils.Validate;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -83,11 +82,11 @@ public abstract class HttpRequest {
     }
 
     public static abstract class Builder<T extends HttpRequest> {
-        URL mUrl;
-        int mReadTimeout = 3000;
-        int mConnectTimeout = 3000;
-        Map<String, String> mHeaders;
-        String mBody;
+        private URL mUrl;
+        private int mReadTimeout = 3000;
+        private int mConnectTimeout = 3000;
+        private Map<String, String> mHeaders;
+        private String mBody;
 
         public Builder() {
         }
@@ -135,7 +134,6 @@ public abstract class HttpRequest {
             return this;
         }
 
-        @NonNull
         public abstract T build();
     }
 }

@@ -52,6 +52,13 @@ public class MainActivity extends AppCompatActivity {
                             .setHeader("content-type", "application/json")
                             .build();
 
+                    Log.d(TAG, "Request: \n"
+                            + "- url: " + request.getUrl() + "\n"
+                            + "- readTimeout: " + request.getReadTimeout() + "\n"
+                            + "- connectTimeout: " + request.getConnectTimeout() + "\n"
+                            + "- headers: " + request.getHeaders());
+
+
                     HttpResponse response = HttpClient.execute(request);
                     Log.d(TAG, "Response: \n"
                             + "- code: " + response.getCode() + "\n"
@@ -77,6 +84,13 @@ public class MainActivity extends AppCompatActivity {
                             .setBody("Hello world")
                             .build();
                     assertNotNull(request);
+
+                    Log.d(TAG, "Request: \n"
+                            + "- url: " + request.getUrl() + "\n"
+                            + "- readTimeout: " + request.getReadTimeout() + "\n"
+                            + "- connectTimeout: " + request.getConnectTimeout() + "\n"
+                            + "- headers: " + request.getHeaders() + "\n"
+                            + "- body: " + request.getBody());
 
                     HttpResponse response = HttpClient.execute(request);
                     Log.d(TAG, "Response: \n"

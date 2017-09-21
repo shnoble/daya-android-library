@@ -7,11 +7,10 @@ import android.support.annotation.NonNull;
  */
 
 public class HttpResponse {
-
     private final int mCode;
     private final String mBody;
 
-    public HttpResponse(@NonNull Builder builder) {
+    private HttpResponse(@NonNull Builder builder) {
         this.mCode = builder.mCode;
         this.mBody = builder.mBody;
     }

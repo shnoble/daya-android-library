@@ -2,8 +2,6 @@ package com.daya.android.http;
 
 import android.support.annotation.NonNull;
 
-import java.io.IOException;
-
 /**
  * Created by shhong on 2017. 9. 18..
  */
