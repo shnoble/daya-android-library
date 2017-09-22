@@ -2,8 +2,6 @@ package com.daya.android.util;
 
 import android.os.Looper;
 
-import com.daya.android.exception.DayaException;
-
 /**
  * Created by shhong on 2017. 9. 15..
  */
@@ -24,15 +22,27 @@ public final class Validate {
         }
     }
 
+    /**
+     * Ensures that the method works in the UI thread.
+     *
+     * @param errorMessage the exception message to use if the check fails; will be converted to a
+     *        string using {@link String#valueOf(Object)}
+     */
     public static void runningOnUiThread(Object errorMessage) {
         if (!Looper.getMainLooper().equals(Looper.myLooper())) {
-            throw new DayaException(String.valueOf(errorMessage));
+            throw new IllegalStateException(String.valueOf(errorMessage));
         }
     }
 
+    /**
+     * Ensures that the method works in the worker thread.
+     *
+     * @param errorMessage the exception message to use if the check fails; will be converted to a
+     *        string using {@link String#valueOf(Object)}
+     */
     public static void runningOnWorkerThread(Object errorMessage) {
         if (Looper.getMainLooper().equals(Looper.myLooper())) {
-            throw new DayaException(String.valueOf(errorMessage));
+            throw new IllegalStateException(String.valueOf(errorMessage));
         }
     }
 }

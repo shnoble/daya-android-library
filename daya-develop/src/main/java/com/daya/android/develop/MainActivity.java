@@ -44,6 +44,9 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Display Metrics: " + DeviceInfo.getDisplayMetrics(context));
         Log.d(TAG, "Android ID (ANDROID_ID): " + DeviceInfo.getAndroidId(context));
 
+        //Log.d(TAG, "<<< Advertising Info >>>");
+        //Log.d(TAG, "Advertising ID: " + AdvertisingIdInfo.getAdvertisingId(context));
+
         Log.d(TAG, "<<< Locale Info >>>");
         Log.d(TAG, "Locale Language: " + LocaleInfo.getLanguage());
         Log.d(TAG, "Locale Country: " + LocaleInfo.getCountry());
