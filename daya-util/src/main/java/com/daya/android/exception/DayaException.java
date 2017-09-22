@@ -1,4 +1,4 @@
-package com.daya.android;
+package com.daya.android.exception;
 
 /**
  * Created by shhong on 2017. 9. 21..

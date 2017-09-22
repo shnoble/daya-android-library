@@ -2,7 +2,7 @@ package com.daya.android.util;
 
 import android.os.Looper;
 
-import com.daya.android.DayaException;
+import com.daya.android.exception.DayaException;
 
 /**
  * Created by shhong on 2017. 9. 15..
