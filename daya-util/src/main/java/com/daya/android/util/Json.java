@@ -19,6 +19,10 @@ import java.util.Map;
 public class Json {
     private final Object mJsonObject;
 
+    public Json() {
+        this.mJsonObject = new JSONObject();
+    }
+
     public Json(@NonNull JSONObject jsonObject) throws JSONException {
         this.mJsonObject = jsonObject;
     }
@@ -28,11 +32,11 @@ public class Json {
     }
 
     public Json(@NonNull Map<String, Object> map) throws JSONException {
-        this.mJsonObject = toJsonObject(map);
+        this(toJsonObject(map));
     }
 
-    public Json(@NonNull Iterable<Object> iterable) throws JSONException {
-        this.mJsonObject = toJsonArray(iterable);
+    public Json(@NonNull List<Object> list) throws JSONException {
+        this(toJsonArray(list));
     }
 
     public Json(@NonNull String jsonString) throws JSONException {
@@ -47,9 +51,9 @@ public class Json {
         return jsonObject;
     }
 
-    private static JSONArray toJsonArray(@NonNull Iterable iterable) throws JSONException {
+    private static JSONArray toJsonArray(@NonNull List<Object> list) throws JSONException {
         JSONArray jsonArray = new JSONArray();
-        for (Object value : iterable) {
+        for (Object value : list) {
             jsonArray.put(toJson(value));
         }
         return jsonArray;
@@ -58,8 +62,8 @@ public class Json {
     private static Object toJson(Object object) throws JSONException {
         if (object instanceof Map) {
             return toJsonObject((Map) object);
-        } else if (object instanceof Iterable) {
-            return toJsonArray((Iterable) object);
+        } else if (object instanceof List) {
+            return toJsonArray((List) object);
         } else {
             return object;
         }
