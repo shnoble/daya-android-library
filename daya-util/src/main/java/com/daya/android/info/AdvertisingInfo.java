@@ -23,7 +23,6 @@ import java.io.IOException;
  */
 
 public final class AdvertisingInfo {
-    private static final String TAG = AdvertisingInfo.class.getSimpleName();
     private final String mAdvertisingId;
     private final boolean mIsLimitAdTrackingEnabled;
 
