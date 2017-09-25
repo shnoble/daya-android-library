@@ -29,7 +29,7 @@ public class JsonTest {
                 "    \"sub_a\": \"sub_1\",\n" +
                 "    \"sub_b\": \"sub_2\"\n" +
                 "  },\n" +
-                "  \"3\": {\n" +
+                "  \"e\": {\n" +
                 "    \"sub_a\": 1,\n" +
                 "    \"sub_b\": 2\n" +
                 "  }\n" +
@@ -139,10 +139,21 @@ public class JsonTest {
 
         System.out.println(json);
 
-        Map<String, Object> result = json.toMap();
-        assertNotNull(result);
-        assertEquals("1", result.get("a"));
-        assertEquals("2", result.get("b"));
-        assertEquals("3", result.get("c"));
+        Map<String, Object> root = json.toMap();
+        assertNotNull(root);
+        assertEquals("1", root.get("a"));
+        assertEquals("2", root.get("b"));
+        assertEquals("3", root.get("c"));
+
+        Map sub1 = (Map) root.get("d");
+        assertNotNull(sub1);
+        assertEquals("sub_1", sub1.get("sub_a"));
+        assertEquals("sub_2", sub1.get("sub_b"));
+
+        Map sub2 = (Map) root.get("e");
+        assertNotNull(sub2);
+        assertEquals(1, sub2.get("sub_a"));
+        assertEquals(2, sub2.get("sub_b"));
     }
 }
+
