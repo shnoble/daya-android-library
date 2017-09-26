@@ -35,6 +35,7 @@ public class HttpClientTest {
         HttpResponse response = HttpClient.execute(request);
         assertNotNull(response);
         assertEquals(HttpURLConnection.HTTP_OK, response.getCode());
+        assertNotNull(response.getMessage());
         assertNotNull(response.getBody());
     }
 
@@ -52,6 +53,7 @@ public class HttpClientTest {
         HttpResponse response = HttpClient.execute(request);
         assertNotNull(response);
         assertEquals(HttpURLConnection.HTTP_OK, response.getCode());
+        assertNotNull(response.getMessage());
         assertNotNull(response.getBody());
     }
 
@@ -96,6 +98,7 @@ public class HttpClientTest {
         HttpResponse response = HttpClient.execute(request);
         assertNotNull(response);
         assertNotEquals(HttpURLConnection.HTTP_OK, response.getCode());
+        assertNotNull(response.getMessage());
         assertNull(response.getBody());
     }
 
@@ -113,6 +116,7 @@ public class HttpClientTest {
         HttpResponse response = HttpClient.execute(request);
         assertNotNull(response);
         assertNotEquals(HttpURLConnection.HTTP_OK, response.getCode());
+        assertNotNull(response.getMessage());
         assertNull(response.getBody());
     }
 }

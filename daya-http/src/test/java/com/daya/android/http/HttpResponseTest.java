@@ -14,13 +14,15 @@ public class HttpResponseTest {
     @Test
     public void testBuilder() throws Exception {
         HttpResponse response = new HttpResponse.Builder()
-                .setBody("Hello world")
                 .setCode(HttpURLConnection.HTTP_OK)
+                .setMessage("Response Message")
+                .setBody("Hello world")
                 .build();
 
         assertNotNull(response);
 
         assertEquals(HttpURLConnection.HTTP_OK, response.getCode());
+        assertEquals("Response Message", response.getMessage());
         assertEquals("Hello world", response.getBody());
     }
 }

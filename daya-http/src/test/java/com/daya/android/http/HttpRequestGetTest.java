@@ -2,7 +2,8 @@ package com.daya.android.http;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by shhong on 2017. 9. 18..

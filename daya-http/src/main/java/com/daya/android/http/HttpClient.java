@@ -19,7 +19,7 @@ import java.util.Map;
  * Created by shhong on 2017. 9. 18..
  */
 
-public final class HttpClient {
+public class HttpClient {
     /**
      * Sets up a connection and gets the HTTP response body from the server.
      * If the network request is successful, it returns the response. Otherwise,
@@ -33,7 +33,7 @@ public final class HttpClient {
         Validate.runningOnWorkerThread(
                 HttpClient.class.getCanonicalName()
                         + "#execute(HttpRequest) method should be called from the worker thread");
-        Validate.notNull(request, "request is cannot null");
+        Validate.notNull(request, "request cannot be null");
 
         OutputStream outputStream = null;
         InputStream inputStream = null;
@@ -84,7 +84,7 @@ public final class HttpClient {
             }
 
             int responseCode = connection.getResponseCode();
-
+            String responseMessage = connection.getResponseMessage();
             String responseBody = null;
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 // Retrieve the response body as an InputStream.
@@ -103,6 +103,7 @@ public final class HttpClient {
 
             response = new HttpResponse.Builder()
                     .setCode(responseCode)
+                    .setMessage(responseMessage)
                     .setBody(responseBody)
                     .build();
 
