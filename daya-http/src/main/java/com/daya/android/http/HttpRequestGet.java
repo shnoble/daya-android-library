@@ -1,12 +1,13 @@
 package com.daya.android.http;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 /**
- * Created by shhong on 2017. 9. 18..
+ * Created by shhong on 2017. 9. 27..
  */
 
-public class HttpRequestGet extends HttpRequest {
+public class HttpRequestGet extends AbstractHttpRequest {
     private HttpRequestGet(@NonNull Builder builder) {
         super(builder);
     }
@@ -17,7 +18,13 @@ public class HttpRequestGet extends HttpRequest {
         return HttpMethod.GET;
     }
 
-    public static class Builder extends HttpRequest.Builder<HttpRequestGet> {
+    @Nullable
+    @Override
+    public String getBody() {
+        return null;
+    }
+
+    public static class Builder extends AbstractHttpRequest.Builder<HttpRequestGet> {
 
         @NonNull
         @Override

@@ -10,14 +10,13 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Created by shhong on 2017. 9. 19..
  */
-public class HttpResponseTest {
+public class DefaultHttpResponseTest {
     @Test
     public void testBuilder() throws Exception {
-        HttpResponse response = new HttpResponse.Builder()
-                .setCode(HttpURLConnection.HTTP_OK)
-                .setMessage("Response Message")
-                .setBody("Hello world")
-                .build();
+        DefaultHttpResponse response = new DefaultHttpResponse();
+        response.setCode(HttpURLConnection.HTTP_OK);
+        response.setMessage("Response Message");
+        response.setBody("Hello world");
 
         assertNotNull(response);
 

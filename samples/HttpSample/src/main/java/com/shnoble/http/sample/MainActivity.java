@@ -5,10 +5,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.daya.android.http.DefaultHttpResponse;
 import com.daya.android.http.HttpClient;
+import com.daya.android.http.HttpRequest;
 import com.daya.android.http.HttpRequestGet;
 import com.daya.android.http.HttpRequestPost;
-import com.daya.android.http.HttpResponse;
 
 import java.io.IOException;
 
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    HttpRequestGet request = new HttpRequestGet.Builder()
+                    HttpRequest request = new HttpRequestGet.Builder()
                             .setUrl(HTTP_GET_URL)
                             .setReadTimeout(5000)
                             .setConnectTimeout(5000)
@@ -59,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                             + "- headers: " + request.getHeaders());
 
 
-                    HttpResponse response = HttpClient.execute(request);
+                    DefaultHttpResponse response = HttpClient.execute(request, DefaultHttpResponse.class);
                     Log.d(TAG, "Response: \n"
                             + "- code: " + response.getCode() + "\n"
                             + "- body: " + response.getBody());
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    HttpRequestPost request = new HttpRequestPost.Builder()
+                    HttpRequest request = new HttpRequestPost.Builder()
                             .setUrl(HTTP_POST_URL)
                             .setReadTimeout(5000)
                             .setConnectTimeout(5000)
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                             + "- headers: " + request.getHeaders() + "\n"
                             + "- body: " + request.getBody());
 
-                    HttpResponse response = HttpClient.execute(request);
+                    DefaultHttpResponse response = HttpClient.execute(request, DefaultHttpResponse.class);
                     Log.d(TAG, "Response: \n"
                             + "- code: " + response.getCode() + "\n"
                             + "- body: " + response.getBody());

@@ -23,7 +23,7 @@ public class HttpClientTest {
 
     @Test
     public void testHttpGet() throws Exception {
-        HttpRequestGet request = new HttpRequestGet.Builder()
+        HttpRequest request = new HttpRequestGet.Builder()
                 .setUrl(HTTP_GET_URL)
                 .setReadTimeout(5000)
                 .setConnectTimeout(5000)
@@ -32,7 +32,7 @@ public class HttpClientTest {
 
         assertNotNull(request);
 
-        HttpResponse response = HttpClient.execute(request);
+        DefaultHttpResponse response = HttpClient.execute(request, DefaultHttpResponse.class);
         assertNotNull(response);
         assertEquals(HttpURLConnection.HTTP_OK, response.getCode());
         assertNotNull(response.getMessage());
@@ -41,7 +41,7 @@ public class HttpClientTest {
 
     @Test
     public void testHttpPost() throws Exception {
-        HttpRequestPost request = new HttpRequestPost.Builder()
+        HttpRequest request = new HttpRequestPost.Builder()
                 .setUrl(HTTP_POST_URL)
                 .setReadTimeout(5000)
                 .setConnectTimeout(5000)
@@ -50,7 +50,7 @@ public class HttpClientTest {
                 .build();
         assertNotNull(request);
 
-        HttpResponse response = HttpClient.execute(request);
+        DefaultHttpResponse response = HttpClient.execute(request, DefaultHttpResponse.class);
         assertNotNull(response);
         assertEquals(HttpURLConnection.HTTP_OK, response.getCode());
         assertNotNull(response.getMessage());
@@ -59,7 +59,7 @@ public class HttpClientTest {
 
     @Test(expected = UnknownHostException.class)
     public void testHttpGetWithInvalidHost() throws Exception {
-        HttpRequestGet request = new HttpRequestGet.Builder()
+        HttpRequest request = new HttpRequestGet.Builder()
                 .setUrl(HTTP_GET_INVALID_HOST_URL)
                 .setReadTimeout(5000)
                 .setConnectTimeout(5000)
@@ -72,7 +72,7 @@ public class HttpClientTest {
 
     @Test(expected = UnknownHostException.class)
     public void testHttpPostWithInvalidHost() throws Exception {
-        HttpRequestPost request = new HttpRequestPost.Builder()
+        HttpRequest request = new HttpRequestPost.Builder()
                 .setUrl(HTTP_POST_INVALID_HOST_URL)
                 .setReadTimeout(5000)
                 .setConnectTimeout(5000)
@@ -86,7 +86,7 @@ public class HttpClientTest {
 
     @Test
     public void testHttpGetWithInvalidUrl() throws Exception {
-        HttpRequestGet request = new HttpRequestGet.Builder()
+        HttpRequest request = new HttpRequestGet.Builder()
                 .setUrl(HTTP_GET_INVALID_URL)
                 .setReadTimeout(5000)
                 .setConnectTimeout(5000)
@@ -95,7 +95,7 @@ public class HttpClientTest {
 
         assertNotNull(request);
 
-        HttpResponse response = HttpClient.execute(request);
+        DefaultHttpResponse response = HttpClient.execute(request, DefaultHttpResponse.class);
         assertNotNull(response);
         assertNotEquals(HttpURLConnection.HTTP_OK, response.getCode());
         assertNotNull(response.getMessage());
@@ -104,7 +104,7 @@ public class HttpClientTest {
 
     @Test
     public void testHttpPostWithInvalidUrl() throws Exception {
-        HttpRequestPost request = new HttpRequestPost.Builder()
+        HttpRequest request = new HttpRequestPost.Builder()
                 .setUrl(HTTP_POST_INVALID_URL)
                 .setReadTimeout(5000)
                 .setConnectTimeout(5000)
@@ -113,7 +113,7 @@ public class HttpClientTest {
                 .build();
         assertNotNull(request);
 
-        HttpResponse response = HttpClient.execute(request);
+        DefaultHttpResponse response = HttpClient.execute(request, DefaultHttpResponse.class);
         assertNotNull(response);
         assertNotEquals(HttpURLConnection.HTTP_OK, response.getCode());
         assertNotNull(response.getMessage());

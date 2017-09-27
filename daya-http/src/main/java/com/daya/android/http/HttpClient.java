@@ -20,6 +20,12 @@ import java.util.Map;
  */
 
 public class HttpClient {
+
+    @WorkerThread
+    public static HttpResponse execute(@NonNull HttpRequest request) throws IOException {
+        return execute(request, DefaultHttpResponse.class);
+    }
+
     /**
      * Sets up a connection and gets the HTTP response body from the server.
      * If the network request is successful, it returns the response. Otherwise,
@@ -28,17 +34,18 @@ public class HttpClient {
      * @return returns the response.
      */
     @WorkerThread
-    @NonNull
-    public static HttpResponse execute(@NonNull HttpRequest request) throws IOException {
+    public static <T extends HttpResponse> T execute(@NonNull HttpRequest request,
+                                                     @NonNull Class<T> classOfT)
+            throws IOException {
         Validate.runningOnWorkerThread(
                 HttpClient.class.getCanonicalName()
-                        + "#execute(HttpRequest) method should be called from the worker thread");
+                        + "#execute(HttpRequestOld) method should be called from the worker thread");
         Validate.notNull(request, "request cannot be null");
 
         OutputStream outputStream = null;
         InputStream inputStream = null;
         HttpURLConnection connection = null;
-        HttpResponse response = null;
+        T response = null;
 
         try {
             connection = (HttpURLConnection) request.getUrl().openConnection();
@@ -101,11 +108,17 @@ public class HttpClient {
                 }
             }
 
-            response = new HttpResponse.Builder()
-                    .setCode(responseCode)
-                    .setMessage(responseMessage)
-                    .setBody(responseBody)
-                    .build();
+            try {
+                response = classOfT.newInstance();
+                response.setCode(responseCode)
+                        .setMessage(responseMessage)
+                        .setBody(responseBody);
+
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
 
         } finally {
             try {
