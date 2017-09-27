@@ -43,10 +43,10 @@ public class Json {
         this.mJsonObject = new JSONObject(jsonString);
     }
 
-    private static JSONObject toJsonObject(@NonNull Map map) throws JSONException {
+    private static JSONObject toJsonObject(@NonNull Map<String, Object> map) throws JSONException {
         JSONObject jsonObject = new JSONObject();
-        for (Object key : map.keySet()) {
-            jsonObject.put(key.toString(), toJson(map.get(key)));
+        for (String key : map.keySet()) {
+            jsonObject.put(key, toJson(map.get(key)));
         }
         return jsonObject;
     }
@@ -59,11 +59,12 @@ public class Json {
         return jsonArray;
     }
 
+    @SuppressWarnings("unchecked")
     private static Object toJson(Object object) throws JSONException {
         if (object instanceof Map) {
-            return toJsonObject((Map) object);
+            return toJsonObject((Map<String, Object>) object);
         } else if (object instanceof List) {
-            return toJsonArray((List) object);
+            return toJsonArray((List<Object>) object);
         } else {
             return object;
         }
