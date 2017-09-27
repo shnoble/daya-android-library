@@ -3,16 +3,16 @@ package com.daya.android.http;
 /**
  * Created by shhong on 2017. 9. 18..
  */
-final class HttpMethod {
+public final class HttpMethod {
     private HttpMethod() {}
 
     /**
      * 'GET' request method
      */
-    static final String GET = "GET";
+    public static final String GET = "GET";
 
     /**
      * 'POST' request method
      */
-    static final String POST = "POST";
+    public static final String POST = "POST";
 }
