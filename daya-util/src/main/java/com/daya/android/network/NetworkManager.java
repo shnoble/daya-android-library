@@ -11,12 +11,21 @@ import android.content.Context;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.Log;
+
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 /**
  * Created by shhong on 2017. 6. 14..
  */
 
 public final class NetworkManager {
+    private static final String TAG = NetworkManager.class.getSimpleName();
+
     private NetworkManager() {}
 
     /**
@@ -89,6 +98,71 @@ public final class NetworkManager {
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         return (connectivityManager != null) ? connectivityManager.getActiveNetworkInfo() : null;
+    }
+
+    /**
+     * Gets the host name for IP address of the local host.
+     *
+     * @return the host name for IP address of the local host.
+     */
+    public static String getLocalHostName() {
+        try {
+            // ex) "localhost"
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Returns the IP address string.
+     *
+     * @return the IP address string.
+     */
+    public static String getHostAddress() {
+        try {
+            Enumeration<NetworkInterface> networkInterfaceEnumeration = NetworkInterface.getNetworkInterfaces();
+
+            Log.d(TAG, "==============================================================");
+
+            while (networkInterfaceEnumeration.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaceEnumeration.nextElement();
+
+                Log.d(TAG, "--------------------------------------------------------------");
+                Log.d(TAG, "# Interface Name: " + networkInterface.getDisplayName());
+                Log.d(TAG, "\t- Is Loopback: " + networkInterface.isLoopback());
+                Log.d(TAG, "\t- Is Virtual: " + networkInterface.isVirtual());
+                Log.d(TAG, "\t- Is Up: " + networkInterface.isUp());
+
+                if (networkInterface.isUp() && !networkInterface.isLoopback()) {
+                    // 작동중(isUp)이고 루프백(isLoopback)이 아닌 경우..
+                    Enumeration<InetAddress> inetAddressEnumeration = networkInterface.getInetAddresses();
+
+                    while (inetAddressEnumeration.hasMoreElements()) {
+                        InetAddress inetAddress = inetAddressEnumeration.nextElement();
+                        String hostAddress = inetAddress.getHostAddress();
+
+                        Log.d(TAG, "## Host Name: " + inetAddress.getHostName());
+                        Log.d(TAG, "\t- Host Address: " + hostAddress);
+                        Log.d(TAG, "\t- Is Loopback: " + inetAddress.isLoopbackAddress());
+                        Log.d(TAG, "\t- Is Link Local Address: " + inetAddress.isLinkLocalAddress());
+                        Log.d(TAG, "\t- Is Site Local Address: " + inetAddress.isSiteLocalAddress());
+
+                        if (!inetAddress.isLoopbackAddress()
+                                && !inetAddress.isLinkLocalAddress()
+                                && inetAddress.isSiteLocalAddress()) {
+                            return hostAddress;
+                        }
+                    }
+                }
+            }
+            Log.d(TAG, "==============================================================");
+
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

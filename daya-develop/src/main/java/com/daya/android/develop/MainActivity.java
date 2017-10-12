@@ -29,8 +29,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Context context = getApplicationContext();
+        final Context context = getApplicationContext();
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                printSystemInformation(context);
+            }
+        }).start();
+    }
+
+    private void printSystemInformation(Context context) {
         Log.d(TAG, "<<< Application Info >>>");
         Log.d(TAG, "Package Name: " + ApplicationInfo.getPackageName(context));
 
@@ -76,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "Network is Connected or Connecting: " + NetworkManager.isConnectedOrConnecting(context));
         Log.d(TAG, "Network Type: " + NetworkManager.getType(context));
         Log.d(TAG, "Network Type Name: " + NetworkManager.getTypeName(context));
+        Log.d(TAG, "Host Address: " + NetworkManager.getLocalHostName());
+        Log.d(TAG, "Ip Address: " + NetworkManager.getHostAddress());
 
         Log.d(TAG, "<<< Utility >>>");
         Log.d(TAG, "Random UUID: " + Utility.randomUUID());
