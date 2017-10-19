@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +36,7 @@ public class Json {
         this(toJsonObject(map));
     }
 
-    public Json(@NonNull List<?> list) throws JSONException {
+    public Json(@NonNull Collection<?> list) throws JSONException {
         this(toJsonArray(list));
     }
 
@@ -51,7 +52,7 @@ public class Json {
         return jsonObject;
     }
 
-    private static JSONArray toJsonArray(@NonNull List<?> list) throws JSONException {
+    private static JSONArray toJsonArray(@NonNull Collection<?> list) throws JSONException {
         JSONArray jsonArray = new JSONArray();
         for (Object value : list) {
             jsonArray.put(toJson(value));
