@@ -31,11 +31,11 @@ public class Json {
         this.mJsonObject = jsonArray;
     }
 
-    public Json(@NonNull Map<String, Object> map) throws JSONException {
+    public Json(@NonNull Map<? extends String, ?> map) throws JSONException {
         this(toJsonObject(map));
     }
 
-    public Json(@NonNull List<Object> list) throws JSONException {
+    public Json(@NonNull List<?> list) throws JSONException {
         this(toJsonArray(list));
     }
 
@@ -43,7 +43,7 @@ public class Json {
         this.mJsonObject = new JSONObject(jsonString);
     }
 
-    private static JSONObject toJsonObject(@NonNull Map<String, Object> map) throws JSONException {
+    private static JSONObject toJsonObject(@NonNull Map<? extends String, ?> map) throws JSONException {
         JSONObject jsonObject = new JSONObject();
         for (String key : map.keySet()) {
             jsonObject.put(key, toJson(map.get(key)));
@@ -51,7 +51,7 @@ public class Json {
         return jsonObject;
     }
 
-    private static JSONArray toJsonArray(@NonNull List<Object> list) throws JSONException {
+    private static JSONArray toJsonArray(@NonNull List<?> list) throws JSONException {
         JSONArray jsonArray = new JSONArray();
         for (Object value : list) {
             jsonArray.put(toJson(value));
