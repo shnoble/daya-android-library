@@ -4,19 +4,18 @@ import android.support.annotation.NonNull;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 
 /**
  * Created by shhong on 2017. 10. 27..
  */
 
 public class ObjectInputFile {
-    private final FileInputStream mFileInputStream;
-    private final AppendableObjectInputStream mObjectInputStream;
+    private final ObjectInputStream mObjectInputStream;
 
     public ObjectInputFile(@NonNull String fileName)
             throws IOException {
-        this.mFileInputStream = new FileInputStream(fileName);
-        this.mObjectInputStream = new AppendableObjectInputStream(mFileInputStream);
+        this.mObjectInputStream = new ObjectInputStream(new FileInputStream(fileName));
     }
 
     public Object readObject()
@@ -27,12 +26,6 @@ public class ObjectInputFile {
     public void close() {
         try {
             mObjectInputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            mFileInputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
