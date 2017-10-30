@@ -54,27 +54,27 @@ public class ObjectFileTest {
     public void testWriteAndCloseMultiple() throws Exception {
         int MULTIPLE_COUNT = 5;
         // Write file
-        UserData[] writeUserDatas = new UserData[USER_DATA_COUNT];
+        UserData[] writeUserDatas = new UserData[USER_DATA_COUNT * MULTIPLE_COUNT];
         for (int j = 0; j < MULTIPLE_COUNT; j++) {
             ObjectOutputFile outputFile = new ObjectOutputFile(FILE_NAME, true);
+
             for (int i = 0; i < USER_DATA_COUNT; i++) {
-                writeUserDatas[i] = new UserData("UserData" + i, i);
-                outputFile.writeObject(writeUserDatas[i]);
+                int index = USER_DATA_COUNT * j + i;
+                writeUserDatas[index] = new UserData("UserData" + index, index);
+                outputFile.writeObject(writeUserDatas[index]);
             }
             outputFile.close();
         }
 
         // Read file
         ObjectInputFile inputFile = new ObjectInputFile(FILE_NAME);
-        UserData[] readUserDatas = new UserData[USER_DATA_COUNT];
+        UserData[] readUserDatas = new UserData[USER_DATA_COUNT * MULTIPLE_COUNT];
         for (int j = 0; j < MULTIPLE_COUNT; j++) {
             for (int i = 0; i < USER_DATA_COUNT; i++) {
-                readUserDatas[i] = (UserData) inputFile.readObject();
-            }
-            // Verify data
-            for (int i = 0; i < USER_DATA_COUNT; i++) {
-                assertEquals(writeUserDatas[i].getName(), readUserDatas[i].getName());
-                assertEquals(writeUserDatas[i].getAge(), readUserDatas[i].getAge());
+                int index = USER_DATA_COUNT * j + i;
+                readUserDatas[index] = (UserData) inputFile.readObject();
+                assertEquals(writeUserDatas[index].getName(), readUserDatas[index].getName());
+                assertEquals(writeUserDatas[index].getAge(), readUserDatas[index].getAge());
             }
         }
         inputFile.close();
