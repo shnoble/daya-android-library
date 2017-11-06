@@ -21,6 +21,7 @@ import android.util.Log;
 
 public abstract class NetworkReceiver extends BroadcastReceiver {
     private static final String TAG = NetworkReceiver.class.getSimpleName();
+    private Integer mLastNetworkType;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -32,8 +33,25 @@ public abstract class NetworkReceiver extends BroadcastReceiver {
                     context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
             NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-            onReceive(networkInfo);
+
+            if (!isTwiceCalled(context)) {
+                onReceive(networkInfo);
+            }
         }
+    }
+
+    private boolean isTwiceCalled(Context context) {
+        int newType = NetworkManager.getType(context);
+        if (mLastNetworkType != null) {
+            // It is called twice on Android 4.x, so it will be ignored if it is the same type.
+            if (mLastNetworkType == newType) {
+                Log.d(TAG, "It is the same network type" +
+                        "as the last received network type (" + mLastNetworkType + ").");
+                return true;
+            }
+        }
+        mLastNetworkType = newType;
+        return false;
     }
 
     private void debugIntent(Intent intent) {
