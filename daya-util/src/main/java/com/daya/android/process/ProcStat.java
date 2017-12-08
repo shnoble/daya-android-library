@@ -11,7 +11,7 @@ import java.io.IOException;
  * See https://github.com/jaredrummler/AndroidProcesses/blob/master/library/src/main/java/com/jaredrummler/android/processes/models/Stat.java
  */
 
-class ProcStat {
+class ProcStat extends ProcFile {
     private final String[] mFields;
 
     public static ProcStat get(int pid) throws IOException {
@@ -19,9 +19,9 @@ class ProcStat {
     }
 
     private ProcStat(@NonNull String path) throws IOException {
-        ProcFile file = new ProcFile(path);
+        super(path);
 
-        String content = file.getContent();
+        String content = getContent();
         mFields = content.split("\\s+");
     }
 
