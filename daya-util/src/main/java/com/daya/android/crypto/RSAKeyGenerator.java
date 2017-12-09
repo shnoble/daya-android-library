@@ -15,15 +15,7 @@ public class RSAKeyGenerator {
     private static final int DEFAULT_KEY_SIZE = 1024;
 
     public static KeyPair generateKeyPair() {
-        try {
-            KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance(ALGORITHM);
-            keyGenerator.initialize(DEFAULT_KEY_SIZE, new SecureRandom());
-            return keyGenerator.generateKeyPair();
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return generateKeyPair(DEFAULT_KEY_SIZE);
     }
 
     public static KeyPair generateKeyPair(int keySize) {
