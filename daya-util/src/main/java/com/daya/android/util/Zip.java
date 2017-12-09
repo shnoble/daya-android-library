@@ -22,17 +22,15 @@ public class Zip {
         }
 
         ByteArrayOutputStream bout = null;
-        byte[] output = null;
         try {
             bout = new ByteArrayOutputStream(data.length);
             compress(data, bout);
-            output = bout.toByteArray();
+            return bout.toByteArray();
         } finally {
             if (bout != null) {
                 bout.close();
             }
         }
-        return output;
     }
 
     public static byte[] decompress(byte[] data) throws IOException {
@@ -41,16 +39,20 @@ public class Zip {
         }
 
         ByteArrayInputStream bin = null;
-        byte[] output = null;
+        ByteArrayOutputStream bout = null;
         try {
             bin = new ByteArrayInputStream(data);
-            output = decompress(bin);
+            bout = new ByteArrayOutputStream(512);
+            decompress(bin, bout);
+            return bout.toByteArray();
         } finally {
             if (bin != null) {
                 bin.close();
             }
+            if (bout != null) {
+                bout.close();
+            }
         }
-        return output;
     }
 
     private static void compress(@NonNull byte[] data,
@@ -63,17 +65,15 @@ public class Zip {
         dout.close();
     }
 
-    private static byte[] decompress(@NonNull InputStream input)
+    private static void decompress(@NonNull InputStream input,
+                                   @NonNull OutputStream output)
             throws IOException {
         InflaterInputStream iin = new InflaterInputStream(input);
-        ByteArrayOutputStream bout = new ByteArrayOutputStream(512);
-
-        int b;
-        while ((b = iin.read()) != -1) {
-            bout.write(b);
+        byte[] buffer = new byte[512];
+        int len;
+        while ((len = iin.read(buffer)) != -1) {
+            output.write(buffer, 0, len);
         }
         iin.close();
-        bout.close();
-        return bout.toByteArray();
     }
 }
