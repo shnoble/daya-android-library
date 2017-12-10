@@ -23,11 +23,11 @@ public class RSACipher {
     private static final String ALGORITHM = "RSA";
     private static final String TRANSFORMATION = "RSA/ECB/PKCS1Padding";;
 
-    public static byte[] encrypt(byte[] input, PublicKey publicKey) {
+    public static byte[] encrypt(byte[] plainText, PublicKey publicKey) {
         try {
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            return cipher.doFinal(input);
+            return cipher.doFinal(plainText);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
@@ -42,11 +42,11 @@ public class RSACipher {
         return null;
     }
 
-    public static byte[] decrypt(byte[] input, PrivateKey privateKey) {
+    public static byte[] decrypt(byte[] cipherText, PrivateKey privateKey) {
         try {
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            return cipher.doFinal(input);
+            return cipher.doFinal(cipherText);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (NoSuchPaddingException e) {
