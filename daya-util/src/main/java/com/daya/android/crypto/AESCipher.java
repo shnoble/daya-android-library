@@ -14,16 +14,27 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class AESCipher {
     private static final String ALGORITHM = "AES";
-    private static final String TRANSFORMATION = "AES/CBC/PKCS5Padding";;
+    private static final String ECB = "ECB";
+    private static final String CBC = "CBC";
+
+    public static byte[] encrypt(byte[] plainText, byte[] key) {
+        String transformation = ALGORITHM + "/" + ECB + "/PKCS5Padding";
+        return encrypt(transformation, plainText, key, null);
+    }
 
     public static byte[] encrypt(byte[] plainText, byte[] key, byte[] iv) {
+        String transformation = ALGORITHM + "/" + CBC + "/PKCS5Padding";
+        return encrypt(transformation, plainText, key, iv);
+    }
+
+    private static byte[] encrypt(String transformation, byte[] plainText, byte[] key, byte[] iv) {
         try {
             SecretKeySpec keySpec = new SecretKeySpec(key, ALGORITHM);
-            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            IvParameterSpec ivSpec = (iv != null) ? new IvParameterSpec(iv) : null;
 
-            Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+            Cipher cipher = Cipher.getInstance(transformation);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivSpec);
-            return cipher.doFinal();
+            return cipher.doFinal(plainText);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -31,14 +42,24 @@ public class AESCipher {
         return null;
     }
 
+    public static byte[] decrypt(byte[] cipherText, byte[] key) {
+        String transformation = ALGORITHM + "/" + ECB + "/PKCS5Padding";
+        return decrypt(transformation, cipherText, key, null);
+    }
+
     public static byte[] decrypt(byte[] cipherText, byte[] key, byte[] iv) {
+        String transformation = ALGORITHM + "/" + CBC + "/PKCS5Padding";
+        return decrypt(transformation, cipherText, key, iv);
+    }
+
+    private static byte[] decrypt(String transformation, byte[] cipherText, byte[] key, byte[] iv) {
         try {
             SecretKeySpec keySpec = new SecretKeySpec(key, ALGORITHM);
-            IvParameterSpec ivSpec = new IvParameterSpec(iv);
+            IvParameterSpec ivSpec = (iv != null) ? new IvParameterSpec(iv) : null;
 
-            Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+            Cipher cipher = Cipher.getInstance(transformation);
             cipher.init(Cipher.DECRYPT_MODE, keySpec, ivSpec);
-            return cipher.doFinal();
+            return cipher.doFinal(cipherText);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -57,8 +78,8 @@ public class AESCipher {
         return null;
     }
 
-    public static byte[] generateIv(int size) {
-        byte[] iv = new byte[size];
+    public static byte[] generateIv() {
+        byte[] iv = new byte[16];
 
         SecureRandom secureRandom = new SecureRandom();
         secureRandom.nextBytes(iv);
