@@ -1,7 +1,5 @@
 package com.daya.android.util;
 
-import java.math.BigInteger;
-
 /**
  * Created by Shnoble on 2017. 12. 11..
  */
