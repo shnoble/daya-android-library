@@ -47,7 +47,7 @@ public class ActivityLifecycleTracker {
 
             @Override
             public void onActivityStopped(Activity activity) {
-                if (sActivityCount.decrementAndGet() < 1) {
+                if (sActivityCount.decrementAndGet() <= 0) {
                     sActivityCount.set(0);
 
                     onEnterBackground();
