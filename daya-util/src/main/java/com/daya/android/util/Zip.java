@@ -21,15 +21,12 @@ public class Zip {
             return data;
         }
 
-        ByteArrayOutputStream bout = null;
+        ByteArrayOutputStream bout = new ByteArrayOutputStream(data.length);
         try {
-            bout = new ByteArrayOutputStream(data.length);
             compress(data, bout);
             return bout.toByteArray();
         } finally {
-            if (bout != null) {
-                bout.close();
-            }
+            bout.close();
         }
     }
 
@@ -38,20 +35,14 @@ public class Zip {
             return data;
         }
 
-        ByteArrayInputStream bin = null;
-        ByteArrayOutputStream bout = null;
+        ByteArrayInputStream bin = new ByteArrayInputStream(data);
+        ByteArrayOutputStream bout = new ByteArrayOutputStream(512);
         try {
-            bin = new ByteArrayInputStream(data);
-            bout = new ByteArrayOutputStream(512);
             decompress(bin, bout);
             return bout.toByteArray();
         } finally {
-            if (bin != null) {
-                bin.close();
-            }
-            if (bout != null) {
-                bout.close();
-            }
+            bin.close();
+            bout.close();
         }
     }
 
