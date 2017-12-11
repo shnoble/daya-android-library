@@ -21,7 +21,7 @@ public class RSACipherTest {
 
     @Before
     public void setUp() throws Exception {
-        KeyPair keyPair = RSAKeyGenerator.generateKeyPair();
+        KeyPair keyPair = RSACipher.generateKeyPair();
         assertNotNull(keyPair);
 
         mEncodedPublicKey = RSACipher.encodePublicKey(keyPair.getPublic());

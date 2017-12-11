@@ -1,18 +1,16 @@
 package com.daya.android.crypto;
 
-import java.security.InvalidKeyException;
 import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
+import java.security.SecureRandom;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 /**
  * Created by Shnoble on 2017. 12. 10..
@@ -21,22 +19,15 @@ import javax.crypto.NoSuchPaddingException;
 public class RSACipher {
 
     private static final String ALGORITHM = "RSA";
-    private static final String TRANSFORMATION = "RSA/ECB/PKCS1Padding";;
+    private static final String TRANSFORMATION = "RSA/ECB/PKCS1Padding";
+    private static final int DEFAULT_KEY_SIZE = 1024;
 
     public static byte[] encrypt(byte[] plainText, PublicKey publicKey) {
         try {
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return cipher.doFinal(plainText);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -47,15 +38,7 @@ public class RSACipher {
             Cipher cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
             return cipher.doFinal(cipherText);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -76,9 +59,7 @@ public class RSACipher {
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
             X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encodedKey);
             return keyFactory.generatePublic(keySpec);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -89,9 +70,23 @@ public class RSACipher {
             KeyFactory keyFactory = KeyFactory.getInstance(ALGORITHM);
             PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encodedKey);
             return keyFactory.generatePrivate(keySpec);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
+        }
+        return null;
+    }
+
+    public static KeyPair generateKeyPair() {
+        return generateKeyPair(DEFAULT_KEY_SIZE);
+    }
+
+    public static KeyPair generateKeyPair(int keySize) {
+        try {
+            KeyPairGenerator keyGenerator = KeyPairGenerator.getInstance(ALGORITHM);
+            keyGenerator.initialize(keySize, new SecureRandom());
+            return keyGenerator.generateKeyPair();
+
+        } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return null;
