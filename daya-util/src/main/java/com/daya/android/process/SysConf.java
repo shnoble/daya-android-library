@@ -52,7 +52,7 @@ class SysConf {
         return Initializer.CLOCK_TICKS_PER_SECOND;
     }
 
-    static class Initializer {
+    private static class Initializer {
         static final long CLOCK_TICKS_PER_SECOND =
                 SysConf.getScClkTck(DEFAULT_CLOCK_TICKS_PER_SECOND);
     }
