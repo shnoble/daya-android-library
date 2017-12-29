@@ -19,5 +19,7 @@ public class MainApplication extends Application {
 
         DayaSdk.initializeSdk(this);
         DayaSdk.initializeLogger();
+
+        TaskManager.printTasks(this);
     }
 }

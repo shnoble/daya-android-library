@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.open_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                TaskManager.printTasks(MainActivity.this);
+
                 Intent intent = new Intent(MainActivity.this, SubActivity.class);
                 startActivity(intent);
             }
@@ -33,7 +35,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (ArithmeticException e) {
             sendHandledLog();
         }
+
+        TaskManager.printTasks(this);
     }
+
 
     private void sendHandledLog() {
         DayaLog.d(TAG, "Send Handled Log....");
@@ -45,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         DayaLog.d(TAG, "onStart");
+
+        TaskManager.printTasks(this);
     }
 
     @Override
@@ -52,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         DayaLog.d(TAG, "onResume");
+
+        TaskManager.printTasks(this);
     }
 
     @Override
@@ -59,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         DayaLog.d(TAG, "onPause");
+
+        TaskManager.printTasks(this);
     }
 
     @Override
@@ -66,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
 
         DayaLog.d(TAG, "onStop");
+
+        TaskManager.printTasks(this);
     }
 
     @Override
@@ -73,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 
         DayaLog.d(TAG, "onDestroy");
+
+        TaskManager.printTasks(this);
 
         //ActivityLifecycleTracker.unregisterApplicationLifecycleCallbacks(this);
     }
