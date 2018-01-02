@@ -16,9 +16,7 @@ public class MainApplication extends Application {
         super.onCreate();
 
         DayaLog.setLogLevel(DayaLog.DEBUG);
-
         DayaSdk.initializeSdk(this);
-        DayaSdk.initializeLogger();
 
         TaskManager.printTasks(this);
     }

@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 
 import com.daya.android.util.DayaLog;
 
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,7 +24,7 @@ public class ActivityLifecycleTracker {
     private static final String TAG = ActivityLifecycleTracker.class.getSimpleName();
 
     private static AtomicInteger sCreatedActivityCount = new AtomicInteger(0);
-    private static AtomicInteger sStartedActivityCount = new AtomicInteger(0);
+    private static AtomicInteger sForegroundActivityCount = new AtomicInteger(0);
     private static AtomicBoolean sTracking = new AtomicBoolean(false);
 
     private static Set<ActivityLifecycleCallbacks> sActivityLifecycleCallbacks =
@@ -39,53 +40,27 @@ public class ActivityLifecycleTracker {
         application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-                sCreatedActivityCount.incrementAndGet();
-
-                for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
-                    callback.onActivityCreated(activity);
-                }
+                ActivityLifecycleTracker.onActivityCreated(activity);
             }
 
             @Override
             public void onActivityStarted(Activity activity) {
-                sCreatedActivityCount.compareAndSet(0, 1);
-
-                for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
-                    callback.onActivityStarted(activity);
-                }
-
-                if (sStartedActivityCount.getAndIncrement() == 0) {
-                    onEnterForeground();
-                }
+                ActivityLifecycleTracker.onActivityStarted(activity);
             }
 
             @Override
             public void onActivityResumed(Activity activity) {
-                for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
-                    callback.onActivityResumed(activity);
-                }
+                ActivityLifecycleTracker.onActivityResumed(activity);
             }
 
             @Override
             public void onActivityPaused(Activity activity) {
-                for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
-                    callback.onActivityPaused(activity);
-                }
+                ActivityLifecycleTracker.onActivityPaused(activity);
             }
 
             @Override
             public void onActivityStopped(Activity activity) {
-                sCreatedActivityCount.compareAndSet(0, 1);
-
-                for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
-                    callback.onActivityStopped(activity);
-                }
-
-                if (sStartedActivityCount.decrementAndGet() <= 0) {
-                    sStartedActivityCount.set(0);
-
-                    onEnterBackground();
-                }
+                ActivityLifecycleTracker.onActivityStopped(activity);
             }
 
             @Override
@@ -95,13 +70,91 @@ public class ActivityLifecycleTracker {
 
             @Override
             public void onActivityDestroyed(Activity activity) {
-                sCreatedActivityCount.decrementAndGet();
-
-                for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
-                    callback.onActivityDestroyed(activity);
-                }
+                ActivityLifecycleTracker.onActivityDestroyed(activity);
             }
         });
+    }
+
+    public static void onActivityCreated(Activity activity) {
+        sCreatedActivityCount.incrementAndGet();
+
+        debug(String.format(Locale.getDefault(), "Activity created(%d)", sCreatedActivityCount.get()));
+
+        for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
+            callback.onActivityCreated(activity);
+        }
+    }
+
+    public static void onActivityStarted(Activity activity) {
+        if (sCreatedActivityCount.get() == 0) {
+            onActivityCreated(activity);
+        }
+
+        debug(String.format(Locale.getDefault(), "Activity started(%d)", sCreatedActivityCount.get()));
+
+        for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
+            callback.onActivityStarted(activity);
+        }
+
+        if (sForegroundActivityCount.getAndIncrement() == 0) {
+            onEnterForeground();
+        }
+    }
+
+    public static void onActivityResumed(Activity activity) {
+        if (sCreatedActivityCount.get() == 0) {
+            onActivityStarted(activity);
+        }
+
+        debug(String.format(Locale.getDefault(), "Activity resumed(%d)", sCreatedActivityCount.get()));
+
+        for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
+            callback.onActivityResumed(activity);
+        }
+    }
+
+    public static void onActivityPaused(Activity activity) {
+        sCreatedActivityCount.compareAndSet(0, 1);
+
+        debug(String.format(Locale.getDefault(), "Activity paused(%d)", sCreatedActivityCount.get()));
+
+        for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
+            callback.onActivityPaused(activity);
+        }
+    }
+
+    public static void onActivityStopped(Activity activity) {
+        if (sCreatedActivityCount.get() == 0) {
+            onActivityPaused(activity);
+        }
+
+        debug(String.format(Locale.getDefault(), "Activity stopped(%d)", sCreatedActivityCount.get()));
+
+        for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
+            callback.onActivityStopped(activity);
+        }
+
+        if (sForegroundActivityCount.decrementAndGet() <= 0) {
+            sForegroundActivityCount.set(0);
+
+            onEnterBackground();
+        }
+    }
+
+    public static void onActivityDestroyed(Activity activity) {
+        if (sCreatedActivityCount.get() == 0) {
+            onActivityStopped(activity);
+        }
+
+        if (sCreatedActivityCount.decrementAndGet() <= 0) {
+            sCreatedActivityCount.set(0);
+        }
+
+        debug(String.format(Locale.getDefault(), "Activity destroyed(%d)", sCreatedActivityCount.get()));
+
+        for (ActivityLifecycleCallbacks callback : sActivityLifecycleCallbacks) {
+            callback.onActivityDestroyed(activity);
+        }
     }
 
     private static void onEnterForeground() {
@@ -125,11 +178,11 @@ public class ActivityLifecycleTracker {
     }
 
     public static boolean isBackground() {
-        return sStartedActivityCount.get() <= 0;
+        return sForegroundActivityCount.get() <= 0;
     }
 
     public static boolean isForeground() {
-        return sStartedActivityCount.get() > 0;
+        return sForegroundActivityCount.get() > 0;
     }
 
     public static boolean registerActivityLifecycleCallbacks(

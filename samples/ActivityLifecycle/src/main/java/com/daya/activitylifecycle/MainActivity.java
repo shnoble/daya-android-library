@@ -19,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
 
         DayaLog.d(TAG, "onCreate");
 
+        DayaSdk.initializeLogger();
+
         findViewById(R.id.open_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,8 +52,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         DayaLog.d(TAG, "onStart");
-
-        TaskManager.printTasks(this);
     }
 
     @Override
@@ -59,8 +59,6 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         DayaLog.d(TAG, "onResume");
-
-        TaskManager.printTasks(this);
     }
 
     @Override
@@ -68,8 +66,6 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         DayaLog.d(TAG, "onPause");
-
-        TaskManager.printTasks(this);
     }
 
     @Override
@@ -77,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
 
         DayaLog.d(TAG, "onStop");
-
-        TaskManager.printTasks(this);
     }
 
     @Override
@@ -86,9 +80,5 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
 
         DayaLog.d(TAG, "onDestroy");
-
-        TaskManager.printTasks(this);
-
-        //ActivityLifecycleTracker.unregisterApplicationLifecycleCallbacks(this);
     }
 }

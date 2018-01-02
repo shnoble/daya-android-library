@@ -6,6 +6,8 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+import com.daya.android.util.DayaLog;
+
 import java.util.List;
 
 /**
@@ -16,14 +18,14 @@ public class TaskManager {
     private static final String TAG = TaskManager.class.getSimpleName();
 
     public static void printTasks(Context context) {
-        Log.d(TAG, "Process ID: " + com.daya.android.info.ApplicationInfo.getProcessId());
+        DayaLog.d(TAG, "Process ID: " + com.daya.android.info.ApplicationInfo.getProcessId());
         printRecentTasks(context);
         printRunningTasks(context);
     }
 
     public static void printRecentTasks(Context context) {
         List<ActivityManager.AppTask> appTasks = getRecentAppTasks(context);
-        Log.d(TAG, "Recent task size: " + appTasks.size());
+        DayaLog.d(TAG, "Recent task size: " + appTasks.size());
 
         for (ActivityManager.AppTask appTask : appTasks) {
             ActivityManager.RecentTaskInfo info = appTask.getTaskInfo();
@@ -42,7 +44,7 @@ public class TaskManager {
 
     public static void printRunningTasks(Context context) {
         List<ActivityManager.RunningTaskInfo> tasks = getRunningAppTasks(context);
-        Log.d(TAG, "Running task size: " + tasks.size());
+        DayaLog.d(TAG, "Running task size: " + tasks.size());
 
         for (ActivityManager.RunningTaskInfo info : tasks) {
 
@@ -53,7 +55,7 @@ public class TaskManager {
             CharSequence description = info.description;
             String baseActivity = info.baseActivity.getShortClassName();
 
-            Log.d(TAG, "Running task info:" + String.format("id = %s, desc = %s, numOfActivities = %s, topActivity = %s, description = %s, baseActivity = %s", id, desc, numOfActivities, topActivity, description, baseActivity));
+            DayaLog.d(TAG, "Running task info:" + String.format("id = %s, desc = %s, numOfActivities = %s, topActivity = %s, description = %s, baseActivity = %s", id, desc, numOfActivities, topActivity, description, baseActivity));
         }
     }
 
