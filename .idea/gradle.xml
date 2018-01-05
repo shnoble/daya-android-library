@@ -17,9 +17,11 @@
             <option value="$PROJECT_DIR$/daya-util" />
             <option value="$PROJECT_DIR$/samples" />
             <option value="$PROJECT_DIR$/samples/AccountSample" />
+            <option value="$PROJECT_DIR$/samples/ActivityLifecycle" />
             <option value="$PROJECT_DIR$/samples/FileSample" />
             <option value="$PROJECT_DIR$/samples/HttpSample" />
             <option value="$PROJECT_DIR$/samples/PermissionSample" />
+            <option value="$PROJECT_DIR$/samples/ProcessMonitor" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -50,6 +50,13 @@ public final class ApplicationInfo {
         return packageInfo.versionName;
     }
 
+    /**
+     * Returns the identifier of this process.
+     */
+    public static int getProcessId() {
+        return android.os.Process.myPid();
+    }
+
     private static android.content.pm.ApplicationInfo getApplicationInfo(@NonNull Context context) {
         String packageName = getPackageName(context);
         try {
