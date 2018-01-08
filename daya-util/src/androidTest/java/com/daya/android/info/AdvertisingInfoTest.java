@@ -23,6 +23,9 @@ public class AdvertisingInfoTest {
         Context context = InstrumentationRegistry.getTargetContext();
         AdvertisingInfo advertisingInfo = AdvertisingInfo.getAdvertisingInfo(context);
         assertNotNull(advertisingInfo);
+
+        System.out.println("Advertising ID: " + advertisingInfo.getId());
+        System.out.println("LimitAdTrackingEnabled: " + advertisingInfo.isLimitAdTrackingEnabled());
     }
 
 }

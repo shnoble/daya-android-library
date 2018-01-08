@@ -49,7 +49,7 @@ public class DayaLog {
             return;
         }
 
-        String useMsg = "[TOAST] ";
+        String useMsg = "[DAYA] ";
         if (msg != null) {
             useMsg += msg;
         }

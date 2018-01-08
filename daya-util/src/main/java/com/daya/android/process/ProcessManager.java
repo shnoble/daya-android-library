@@ -62,7 +62,7 @@ public class ProcessManager {
     private static List<ProcessInfo> getRunningAppProcessesFromFile() {
         File[] files = new File("/proc").listFiles();
 
-        List<ProcessManager.ProcessInfo> processInfos = new ArrayList<>();
+        List<ProcessInfo> processInfos = new ArrayList<>();
 
         for (File file : files) {
             if (!file.isDirectory()) {
@@ -93,7 +93,7 @@ public class ProcessManager {
         private long mSystemTime;
         private long mStartTime;
 
-        public ProcessInfo(int pid) {
+        ProcessInfo(int pid) {
             this.mProcessId = pid;
         }
 

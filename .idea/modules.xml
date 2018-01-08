@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/samples/AccountSample/AccountSample.iml" filepath="$PROJECT_DIR$/samples/AccountSample/AccountSample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/ActivityLifecycle/ActivityLifecycle.iml" filepath="$PROJECT_DIR$/samples/ActivityLifecycle/ActivityLifecycle.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/FileSample/FileSample.iml" filepath="$PROJECT_DIR$/samples/FileSample/FileSample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/FileSample/FileSample.iml" filepath="$PROJECT_DIR$/samples/FileSample/FileSample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/HttpSample/HttpSample.iml" filepath="$PROJECT_DIR$/samples/HttpSample/HttpSample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/PermissionSample/PermissionSample.iml" filepath="$PROJECT_DIR$/samples/PermissionSample/PermissionSample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/ProcessMonitor/ProcessMonitor.iml" filepath="$PROJECT_DIR$/samples/ProcessMonitor/ProcessMonitor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/daya-analytics/daya-analytics.iml" filepath="$PROJECT_DIR$/daya-analytics/daya-analytics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/daya-android-library.iml" filepath="$PROJECT_DIR$/daya-android-library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/daya-auth/daya-auth.iml" filepath="$PROJECT_DIR$/daya-auth/daya-auth.iml" />
+      <module fileurl="file://$PROJECT_DIR$/daya-crash/daya-crash.iml" filepath="$PROJECT_DIR$/daya-crash/daya-crash.iml" />
+      <module fileurl="file://$PROJECT_DIR$/daya-develop/daya-develop.iml" filepath="$PROJECT_DIR$/daya-develop/daya-develop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/daya-http/daya-http.iml" filepath="$PROJECT_DIR$/daya-http/daya-http.iml" />
+      <module fileurl="file://$PROJECT_DIR$/daya-sample/daya-sample.iml" filepath="$PROJECT_DIR$/daya-sample/daya-sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/daya-util/daya-util.iml" filepath="$PROJECT_DIR$/daya-util/daya-util.iml" />
+      <module fileurl="file://$PROJECT_DIR$/samples/samples.iml" filepath="$PROJECT_DIR$/samples/samples.iml" />
+    </modules>
+  </component>
+</project>
