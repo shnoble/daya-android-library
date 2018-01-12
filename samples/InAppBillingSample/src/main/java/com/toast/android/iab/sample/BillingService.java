@@ -49,7 +49,7 @@ class BillingService implements Billing {
     }
 
     @Override
-    public void initialize() {
+    public void startSetup() {
         Intent serviceIntent =
                 new Intent("com.android.vending.billing.InAppBillingService.BIND");
         serviceIntent.setPackage("com.android.vending");

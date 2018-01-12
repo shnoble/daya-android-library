@@ -11,7 +11,7 @@ import java.util.Collection;
  */
 
 interface Billing {
-    void initialize();
+    void startSetup();
     void close();
     void queryItems(@NonNull final String purchaseType, @NonNull Collection<String> skuList);
     void purchaseItem(@NonNull Activity activity, @NonNull String sku, @NonNull String purchaseType);

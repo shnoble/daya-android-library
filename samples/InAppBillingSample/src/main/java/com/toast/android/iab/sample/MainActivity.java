@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mBilling = new BillingService(this);
-        mBilling.initialize();
+        mBilling.startSetup();
     }
 
     private void queryItems() {
