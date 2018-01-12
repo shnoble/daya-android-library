@@ -5,7 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/samples/AccountSample/AccountSample.iml" filepath="$PROJECT_DIR$/samples/AccountSample/AccountSample.iml" />
       <module fileurl="file://$PROJECT_DIR$/samples/ActivityLifecycle/ActivityLifecycle.iml" filepath="$PROJECT_DIR$/samples/ActivityLifecycle/ActivityLifecycle.iml" />
       <module fileurl="file://$PROJECT_DIR$/samples/FileSample/FileSample.iml" filepath="$PROJECT_DIR$/samples/FileSample/FileSample.iml" />
-      <module fileurl="file://$PROJECT_DIR$/samples/FileSample/FileSample.iml" filepath="$PROJECT_DIR$/samples/FileSample/FileSample.iml" />
       <module fileurl="file://$PROJECT_DIR$/samples/HttpSample/HttpSample.iml" filepath="$PROJECT_DIR$/samples/HttpSample/HttpSample.iml" />
       <module fileurl="file://$PROJECT_DIR$/samples/InAppBillingSample/InAppBillingSample.iml" filepath="$PROJECT_DIR$/samples/InAppBillingSample/InAppBillingSample.iml" />
       <module fileurl="file://$PROJECT_DIR$/samples/PermissionSample/PermissionSample.iml" filepath="$PROJECT_DIR$/samples/PermissionSample/PermissionSample.iml" />
