@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.toast.android.iab.sample.helper;
+package com.toast.android.iab.sample;
 
 /**
  * Represents the result of an in-app billing operation.

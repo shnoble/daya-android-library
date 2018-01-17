@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.toast.android.iab.sample.helper;
+package com.toast.android.iab.sample;
 
 import android.app.Activity;
 import android.app.PendingIntent;
