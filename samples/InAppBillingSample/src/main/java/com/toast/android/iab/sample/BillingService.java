@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
@@ -71,31 +70,14 @@ class BillingService implements Billing {
     }
 
     @Override
-    public void queryItems(@Nullable final List<String> moreItemSkus,
-                           @Nullable final List<String> moreSubsSkus,
+    public void queryItems(@NonNull final String productType,
+                           @NonNull final List<String> skus,
                            @NonNull final QueryItemFinishedListener listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    List<SkuDetails> itemSkuDetailsList = null;
-                    List<SkuDetails> subsSkuDetailsList = null;
-
-                    if (moreItemSkus != null) {
-                        itemSkuDetailsList = queryItems(ITEM_TYPE_INAPP, moreItemSkus);
-                    }
-
-                    if (moreSubsSkus != null) {
-                        subsSkuDetailsList = queryItems(ITEM_TYPE_SUBS, moreSubsSkus);
-                    }
-
-                    List<SkuDetails> skuDetailsList = new ArrayList<>();
-                    if (itemSkuDetailsList != null) {
-                        skuDetailsList.addAll(itemSkuDetailsList);
-                    }
-                    if (subsSkuDetailsList != null) {
-                        skuDetailsList.addAll(subsSkuDetailsList);
-                    }
+                    List<SkuDetails> skuDetailsList = queryItems(productType, skus);
                     listener.onSuccess(skuDetailsList);
 
                 } catch (RemoteException e) {

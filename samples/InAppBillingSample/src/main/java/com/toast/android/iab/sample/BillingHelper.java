@@ -4,8 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.WorkerThread;
+import android.support.annotation.UiThread;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,9 +47,12 @@ class BillingHelper implements Billing {
     }
 
     @Override
-    public void queryItems(@Nullable final List<String> moreItemSkus,
-                           @Nullable final List<String> moreSubsSkus,
+    public void queryItems(@NonNull String productType,
+                           @NonNull final List<String> skus,
                            @NonNull final QueryItemFinishedListener listener) {
+        final List<String> moreItemSkus = ITEM_TYPE_INAPP.equalsIgnoreCase(productType) ? skus : null;
+        final List<String> moreSubsSkus = ITEM_TYPE_SUBS.equalsIgnoreCase(productType) ? skus : null;
+
         try {
             mHelper.queryInventoryAsync(true, moreItemSkus, moreSubsSkus, new IabHelper.QueryInventoryFinishedListener() {
                 @Override
@@ -60,22 +62,13 @@ class BillingHelper implements Billing {
                         return;
                     }
 
-                    List<SkuDetails> skus = new ArrayList<>();
-                    if (moreItemSkus != null) {
-                        for (String sku : moreItemSkus) {
-                            SkuDetails skuDetails = inv.getSkuDetails(sku);
-                            skus.add(skuDetails);
-                        }
+                    List<SkuDetails> skuDetailsList = new ArrayList<>();
+                    for (String sku : skus) {
+                        SkuDetails skuDetails = inv.getSkuDetails(sku);
+                        skuDetailsList.add(skuDetails);
                     }
 
-                    if (moreSubsSkus != null) {
-                        for (String sku : moreSubsSkus) {
-                            SkuDetails skuDetails = inv.getSkuDetails(sku);
-                            skus.add(skuDetails);
-                        }
-                    }
-
-                    listener.onSuccess(skus);
+                    listener.onSuccess(skuDetailsList);
                 }
             });
         } catch (IabHelper.IabAsyncInProgressException e) {
@@ -114,7 +107,7 @@ class BillingHelper implements Billing {
     }
 
     @Override
-    @WorkerThread
+    @UiThread
     public void queryPurchasedItems(@NonNull final QueryPurchasedItemsFinishedListener listener) {
         try {
             mHelper.queryInventoryAsync(new IabHelper.QueryInventoryFinishedListener() {

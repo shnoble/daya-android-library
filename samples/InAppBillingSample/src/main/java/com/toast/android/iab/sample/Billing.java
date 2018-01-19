@@ -3,7 +3,6 @@ package com.toast.android.iab.sample;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import java.util.List;
 
@@ -19,8 +18,8 @@ interface Billing {
 
     void dispose();
 
-    void queryItems(@Nullable final List<String> moreItemSkus,
-                    @Nullable final List<String> moreSubsSkus,
+    void queryItems(@NonNull final String productType,
+                    @NonNull final List<String> skus,
                     @NonNull final QueryItemFinishedListener listener);
 
     void purchaseItem(@NonNull Activity activity,
