@@ -17,4 +17,4 @@ include 'samples:HttpSample'
 include 'samples:ActivityLifecycle'
 include 'samples:ProcessMonitor'
 include 'samples:InAppBillingSample'
-
+include 'samples:OneStoreSample'
