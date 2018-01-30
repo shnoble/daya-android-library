@@ -39,7 +39,7 @@ public class HttpClient {
             throws IOException {
         Validate.runningOnWorkerThread(
                 HttpClient.class.getCanonicalName()
-                        + "#execute(HttpRequestOld) method should be called from the worker thread");
+                        + "#execute(HttpRequest, Class<T>) method should be called from the worker thread");
         Validate.notNull(request, "request cannot be null");
 
         OutputStream outputStream = null;
@@ -114,10 +114,8 @@ public class HttpClient {
                         .setMessage(responseMessage)
                         .setBody(responseBody);
 
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                throw new IllegalStateException(e);
             }
 
         } finally {
