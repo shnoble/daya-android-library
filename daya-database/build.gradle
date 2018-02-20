@@ -1,0 +1,56 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion Integer.parseInt(project.BUILD_COMPILE_SDK_VERSION)
+    buildToolsVersion project.BUILD_TOOLS_VERSION
+
+    defaultConfig {
+        minSdkVersion Integer.parseInt(project.BUILD_MIN_SDK_VERSION)
+        targetSdkVersion Integer.parseInt(project.BUILD_TARGET_SDK_VERSION)
+        versionCode Integer.parseInt(project.DAYA_SDK_VERSION_CODE)
+        versionName project.DAYA_SDK_VERSION_NAME
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile "com.android.support:support-annotations:${project.ANDROID_SUPPORT_LIBRARY_VERSION}"
+    testCompile 'junit:junit:4.12'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.1', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+
+}
+
+project.ext {
+    groupId = 'com.daya.android'
+    artifactId = 'daya-database'
+    versionName = android.defaultConfig.versionName
+
+    siteUrl = 'https://github.com/shnoble/daya-android-library'
+    gitUrl = 'https://github.com/shnoble/daya-android-library.git'
+    issuesUrl = 'hhttps://github.com/shnoble/daya-android-library/issues'
+
+    description = "Daya Android SDK Database Module"
+
+    bintrayRepo = 'daya-android-library'
+    bintrayUserOrg = 'shnoble79'
+    bintrayLabels = ['android', 'database']
+}
+
+apply from: "${rootDir}/publish.gradle"

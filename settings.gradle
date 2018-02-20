@@ -4,6 +4,7 @@ include ':daya-http'
 include ':daya-auth'
 include ':daya-analytics'
 include ':daya-crash'
+include ':daya-database'
 
 // Daya Apps
 include ':daya-develop'
