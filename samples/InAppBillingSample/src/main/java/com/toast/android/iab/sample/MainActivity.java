@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //mBilling = new BillingService(this);
-        //mBilling = new BillingHelper(this, BASE64_ENCODED_PUBLIC_KEY);
-        mBilling = new BillingPlay(this);
+        mBilling = new BillingHelper(this, BASE64_ENCODED_PUBLIC_KEY);
+        //mBilling = new BillingPlay(this);
         mBilling.startSetup(new OnBillingSetupFinishedListener() {
             @Override
             public void onSuccess() {
@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Purchase purchase) {
                 Log.d(TAG, "Purchase success: " + purchase.toString());
+                Log.d(TAG, "Purchase signature: " + purchase.getSignature());
             }
 
             @Override

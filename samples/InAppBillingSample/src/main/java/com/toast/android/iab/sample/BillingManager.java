@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
+import android.util.Log;
 
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingClientStateListener;
@@ -12,7 +13,6 @@ import com.android.billingclient.api.ConsumeResponseListener;
 import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetailsParams;
 import com.android.billingclient.api.SkuDetailsResponseListener;
-import com.toast.android.log.TLog;
 
 import java.util.List;
 
@@ -136,7 +136,7 @@ public class BillingManager {
                         purchasesResult.getPurchasesList().addAll(
                                 subscriptionResult.getPurchasesList());
                     } else {
-                        TLog.e(TAG, "Got an error response trying to query subscription purchases");
+                        Log.e(TAG, "Got an error response trying to query subscription purchases");
                     }
                 }
 
@@ -159,7 +159,7 @@ public class BillingManager {
     private boolean areSubscriptionsSupported() {
         int responseCode = mBillingClient.isFeatureSupported(FeatureType.SUBSCRIPTIONS);
         if (responseCode != BillingResponse.OK) {
-            TLog.w(TAG, "areSubscriptionsSupported() got an error response: " + responseCode);
+            Log.w(TAG, "areSubscriptionsSupported() got an error response: " + responseCode);
         }
         return responseCode == BillingResponse.OK;
     }
@@ -202,7 +202,7 @@ public class BillingManager {
         mBillingClient.startConnection(new BillingClientStateListener() {
             @Override
             public void onBillingSetupFinished(int responseCode) {
-                TLog.d(TAG, "Setup finished. Response code: " + responseCode);
+                Log.d(TAG, "Setup finished. Response code: " + responseCode);
 
                 if (responseCode == BillingResponse.OK) {
                     mIsServiceConnected = true;
@@ -212,7 +212,7 @@ public class BillingManager {
 
             @Override
             public void onBillingServiceDisconnected() {
-                TLog.i(TAG, "Billing service disconnected.");
+                Log.i(TAG, "Billing service disconnected.");
                 mIsServiceConnected = false;
             }
         });
