@@ -17,4 +17,4 @@ include 'samples:FileSample'
 include 'samples:HttpSample'
 include 'samples:ActivityLifecycle'
 include 'samples:ProcessMonitor'
-
+include 'samples:DatabaseSample'
