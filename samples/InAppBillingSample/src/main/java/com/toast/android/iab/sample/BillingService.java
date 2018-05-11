@@ -66,7 +66,6 @@ class BillingService implements Billing {
         if (mService != null) {
             mContext.unbindService(mServiceConnection);
         }
-        mContext = null;
     }
 
     @Override
