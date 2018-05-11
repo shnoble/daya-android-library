@@ -22,6 +22,7 @@
             <option value="$PROJECT_DIR$/samples/HttpSample" />
             <option value="$PROJECT_DIR$/samples/InAppBillingSample" />
             <option value="$PROJECT_DIR$/samples/OneStoreSample" />
+            <option value="$PROJECT_DIR$/samples/OneStoreV17Sample" />
             <option value="$PROJECT_DIR$/samples/PermissionSample" />
             <option value="$PROJECT_DIR$/samples/ProcessMonitor" />
           </set>
