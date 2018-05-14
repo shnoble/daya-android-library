@@ -16,6 +16,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "OneStoreSampleActivity";
 
+    final String MANAGED_PRODUCT_ID = "ruby_10";
+    final String MANAGED_PRODUCT_NAME = "10 Rubies";
+
+    final String SUBS_PRODUCT_ID = "character_ryan";
+    final String SUBS_PRODUCT_NAME = "Ryan Character";
+
     private OneStoreHelper mOneStoreHelper;
     private Purchase mPurchase;
 
@@ -37,24 +43,56 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.query_product_detail).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                queryProductDetails();
+                login();
             }
         });
 
-        findViewById(R.id.purchase_product).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.query_managed_product_detail).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                purchaseProduct();
+                final ArrayList<String> productIdList = new ArrayList<>();
+                productIdList.add(MANAGED_PRODUCT_ID);
+                queryProductDetails(ProductType.INAPP, productIdList);
             }
         });
 
-        findViewById(R.id.query_purchases).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.query_subscription_detail).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                queryPurchases();
+                final ArrayList<String> productIdList = new ArrayList<>();
+                productIdList.add(SUBS_PRODUCT_ID);
+                queryProductDetails(ProductType.SUBS, productIdList);
+            }
+        });
+
+        findViewById(R.id.purchase_managed_product).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                purchaseProduct(ProductType.INAPP, MANAGED_PRODUCT_ID, MANAGED_PRODUCT_NAME);
+            }
+        });
+
+        findViewById(R.id.purchase_subscription).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                purchaseProduct(ProductType.SUBS, SUBS_PRODUCT_ID, SUBS_PRODUCT_NAME);
+            }
+        });
+
+        findViewById(R.id.query_managed_product_purchases).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                queryPurchases(ProductType.INAPP);
+            }
+        });
+
+        findViewById(R.id.query_subscription_purchases).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                queryPurchases(ProductType.SUBS);
             }
         });
 
@@ -62,6 +100,20 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 consumePurchase();
+            }
+        });
+
+        findViewById(R.id.cancel_subscription).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelSubscription();
+            }
+        });
+
+        findViewById(R.id.reactivate_subscription).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reactivateSubscription();
             }
         });
     }
@@ -73,11 +125,29 @@ public class MainActivity extends AppCompatActivity {
         mOneStoreHelper.dispose();
     }
 
-    private void queryProductDetails() {
-        final String productType = "inapp";           // 관리형 상품("inapp"), 월정액 상품("auto")
-        final ArrayList<String> productIdList = new ArrayList<>();
-        productIdList.add("ruby_10");
+    private void login() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mOneStoreHelper.login(MainActivity.this, new OnLoginCompletedListener() {
+                    @Override
+                    public void onSuccess() {
+                        alertSuccess("Login successful.");
+                    }
 
+                    @Override
+                    public void onFailure(int errorCode, @NonNull String errorMessage) {
+                        alertFailure("Login failed.\n"
+                                + "errorCode: " + errorCode + "\n"
+                                + "errorMessage: " + errorMessage);
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private void queryProductDetails(@ProductType final String productType,
+                                     @NonNull final List<String> productIdList) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -91,7 +161,11 @@ public class MainActivity extends AppCompatActivity {
                                 }
 
                                 /*
-                                 * {"price":1000,"productId":"ruby_10","title":"루비 10","type":"inapp"}
+                                    [Managed]
+                                    {"price":1000,"productId":"ruby_10","title":"루비 10","type":"inapp"}
+
+                                    [Subscription]
+                                    {"price":3000,"productId":"character_ryan","title":"라이언 캐릭터 월정액 상품","type":"auto"}
                                  */
                                 alertSuccess("The query of the product details was successful.\n" + productDetailList.toString());
                             }
@@ -107,11 +181,9 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void purchaseProduct() {
-        final String productType = "inapp";           // 관리형 상품("inapp"), 월정액 상품("auto")
-        final String productId = "ruby_10";
-        final String productName = "10 Rubies";
-
+    private void purchaseProduct(@ProductType final String productType,
+                                 @NonNull final String productId,
+                                 @NonNull final String productName) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -121,6 +193,33 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(@NonNull String purchaseData,
                                                   @NonNull String purchaseSignature) {
+                                /*
+                                    [Managed]
+                                    PurchaseData:
+                                    {
+                                      "orderId": "ONESTORE7_000000000000000000000000014386",
+                                      "packageName": "com.toast.android.iap.onestore.v17.sample",
+                                      "productId": "ruby_10",
+                                      "purchaseTime": 1526277473939,
+                                      "purchaseId": "SANDBOX3000000016384",
+                                      "developerPayload": "developer payload"
+                                    }
+
+                                    PurchaseSignature: "E86XEhTRR+v5Ypc/O9ZEmNcs0dSeh7B+UZF3wNsfLIvBDMvN/BAGZZo6D8e/zHKkhIgrI7wr9kUeftFByDGc66AvDVsA/QnvxBh8FRRpRChJMPWuZ+4Bx4BXFR4HrbWiUWni+357l0EdlIRlI0tjCZd47VMe0jhkHCjuwGEiphI="
+
+                                    [Subscription]
+                                    PurchaseData:
+                                    {
+                                        "orderId": "ONESTORE7_000000000000000000000000014382",
+                                        "packageName": "com.toast.android.iap.onestore.v17.sample",
+                                        "productId": "character_ryan",
+                                        "purchaseTime": 1526277163076,
+                                        "purchaseId": "SANDBOX3000000016380",
+                                        "developerPayload": "developer payload"
+                                    }
+
+                                    PurchaseSignature: "cB/J+pMpsE9HR7te3nEZWOjdKH4zsrIzEByeQLtfmDT5LCzFcPBMZMdgiYQ2cuNeS9PBcPn993JWJLMnSG9/qWeaqF+i2ZZpucE+O0cuIMaSB1V5rcgjm/9hIImCiq4mXq26uMz8z9pjm2ndP8fdQw7sDy9De7j3fAVt2wAZ9aE="
+                                 */
                                 alertSuccess("The product was successfully purchased.\n"
                                         + "PurchaseData: " + purchaseData + "\n"
                                         + "PurchaseSignature: " + purchaseSignature);
@@ -137,9 +236,7 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void queryPurchases() {
-        final String productType = "inapp";           // 관리형 상품("inapp"), 월정액 상품("auto")
-
+    private void queryPurchases(@ProductType final String productType) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -147,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(@NonNull List<Purchase> purchases) {
                         /*
+                            [Managed]
                             {
                               "productId": "ruby_10",
                               "purchaseDetails": {
@@ -160,6 +258,22 @@ public class MainActivity extends AppCompatActivity {
                                 "developerPayload": "developer payload"
                               },
                               "purchaseSignature": "XEavE0WDx5WPi9uQpMiAa3QvrDssESEh0sPGhPMOrN4b9..."
+                            }
+
+                            [Subscription]
+                            {
+                              "productId": "character_ryan",
+                              "purchaseDetails": {
+                                "orderId": "ONESTORE7_000000000000000000000000014382",
+                                "packageName": "com.toast.android.iap.onestore.v17.sample",
+                                "productId": "character_ryan",
+                                "purchaseTime": 1526277162000,
+                                "purchaseState": 1,
+                                "recurringState": 0,
+                                "purchaseId": "SANDBOX3000000016380",
+                                "developerPayload": "developer payload"
+                              },
+                              "purchaseSignature": "FRy5K1nsVZ22jc\/XhhHOGYxEZgxe2CXLwr\/cOW162s1Q1A05NxIJDKumEgA1XGpv15yKjJAja6pNobYyrXngsTyXNA7GBK\/mfP+7qVPes68tH1vzxm07T2rmHLdNgNFAdMbkEwX56Ux\/VEA2cP9kbkVGSc\/eZu0wZaRu2XMINuc="
                             }
                          */
                         alertSuccess("Purchases query succeeded.\n" + purchases.toString());
@@ -193,13 +307,69 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 mOneStoreHelper.consumePurchase(purchaseDetails.getPurchaseId(), new OnConsumePurchaseFinishedListener() {
                     @Override
-                    public void onSuccess(@NonNull String purchaseId) {
+                    public void onSuccess(@Nullable String purchaseId) {
                         alertSuccess("Consumed successfully.\n" + "purchaseId: " + purchaseId);
                     }
 
                     @Override
                     public void onFailure(int errorCode, @NonNull String errorMessage) {
                         alertFailure("Consumption failed..\n"
+                                + "errorCode: " + errorCode + "\n"
+                                + "errorMessage: " + errorMessage);
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private void cancelSubscription() {
+        if (mPurchase == null) {
+            alertFailure("Purchase is null");
+            return;
+        }
+
+        final PurchaseDetails purchaseDetails = mPurchase.getDetails();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mOneStoreHelper.cancelSubscription(purchaseDetails.getPurchaseId(), new OnCancelSubscriptionFinishedListener() {
+                    @Override
+                    public void onSuccess(@Nullable String purchaseId) {
+                        alertSuccess("Cancel successfully.\n" + "purchaseId: " + purchaseId);
+                    }
+
+                    @Override
+                    public void onFailure(int errorCode, @NonNull String errorMessage) {
+                        alertFailure("Cancel failed.\n"
+                                + "errorCode: " + errorCode + "\n"
+                                + "errorMessage: " + errorMessage);
+                    }
+                });
+            }
+        }).start();
+    }
+
+    private void reactivateSubscription() {
+        if (mPurchase == null) {
+            alertFailure("Purchase is null");
+            return;
+        }
+
+        final PurchaseDetails purchaseDetails = mPurchase.getDetails();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                mOneStoreHelper.reactivateSubscription(purchaseDetails.getPurchaseId(), new OnReactivateSubscriptionFinishedListener() {
+                    @Override
+                    public void onSuccess(@Nullable String purchaseId) {
+                        alertSuccess("Reactivation successfully.\n" + "purchaseId: " + purchaseId);
+                    }
+
+                    @Override
+                    public void onFailure(int errorCode, @NonNull String errorMessage) {
+                        alertFailure("Reactivation failed.\n"
                                 + "errorCode: " + errorCode + "\n"
                                 + "errorMessage: " + errorMessage);
                     }

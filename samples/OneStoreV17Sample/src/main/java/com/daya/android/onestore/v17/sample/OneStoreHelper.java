@@ -11,6 +11,9 @@ public interface OneStoreHelper {
 
     void dispose();
 
+    void login(@NonNull Activity activity,
+               @NonNull OnLoginCompletedListener listener);
+
     void queryProductDetails(@NonNull final String productType,
                              @NonNull final List<String> productIdList,
                              @NonNull final QueryProductDetailsFinishedListener listener);
@@ -29,10 +32,17 @@ public interface OneStoreHelper {
                          boolean promotionApplicable,
                          @NonNull OnPurchaseProductFinishedListener listener);
 
-    void queryPurchases(@NonNull String productType, @NonNull QueryPurchasesFinishedListener listener);
+    void queryPurchases(@NonNull String productType,
+                        @NonNull QueryPurchasesFinishedListener listener);
 
     void consumePurchase(@NonNull String purchaseId,
                          @NonNull OnConsumePurchaseFinishedListener listener);
 
-    boolean handleActivityResult(int requestCode, int resultCode, Intent data);
+    void cancelSubscription(@NonNull String purchaseId,
+                            @NonNull OnCancelSubscriptionFinishedListener listener);
+
+    void reactivateSubscription(@NonNull String purchaseId,
+                                @NonNull OnReactivateSubscriptionFinishedListener listener);
+
+    void handleActivityResult(int requestCode, int resultCode, Intent data);
 }

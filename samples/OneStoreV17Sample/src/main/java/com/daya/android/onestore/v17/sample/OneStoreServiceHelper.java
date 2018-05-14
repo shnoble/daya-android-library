@@ -22,6 +22,7 @@ import java.util.List;
 
 public class OneStoreServiceHelper implements OneStoreHelper {
     private static final String TAG = "OneStoreServiceHelper";
+    private static final int LOGIN_REQUEST_CODE = 1611;
     private static final int PURCHASE_REQUEST_CODE = 1511;
 
     @NonNull
@@ -44,6 +45,7 @@ public class OneStoreServiceHelper implements OneStoreHelper {
     };
 
     private OnPurchaseProductFinishedListener mPurchaseProductListener;
+    private OnLoginCompletedListener mLoginCompletedListener;
 
     OneStoreServiceHelper(@NonNull Context context) {
         mContext = context;
@@ -84,6 +86,33 @@ public class OneStoreServiceHelper implements OneStoreHelper {
         if (mServiceConnection != null) {
             mContext.unbindService(mServiceConnection);
         }
+    }
+
+    @WorkerThread
+    @Override
+    public void login(@NonNull Activity activity, @NonNull OnLoginCompletedListener listener) {
+        int apiVersion = 5;
+        String packageName = getPackageName();
+
+        Bundle result = new Bundle();
+        if (mService != null) {
+            try {
+                result = mService.getLoginIntent(apiVersion, packageName);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        int responseCode = result.getInt("responseCode");
+        if (responseCode != 0) {
+            listener.onFailure(responseCode, "");
+            return;
+        }
+
+        mLoginCompletedListener = listener;
+
+        Intent loginIntent = result.getParcelable("loginIntent");
+        activity.startActivityForResult(loginIntent, LOGIN_REQUEST_CODE);
     }
 
     @WorkerThread
@@ -278,23 +307,86 @@ public class OneStoreServiceHelper implements OneStoreHelper {
         listener.onSuccess(responsePurchaseId);
     }
 
+    @WorkerThread
     @Override
-    public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PURCHASE_REQUEST_CODE) {
+    public void cancelSubscription(@NonNull String purchaseId,
+                                   @NonNull OnCancelSubscriptionFinishedListener listener) {
+        int apiVersion = 5;
+        String packageName = getPackageName();
+        String action = "cancel";
+
+        Bundle result = new Bundle();
+        if (mService != null) {
+            try {
+                result = mService.manageRecurringProduct(apiVersion, packageName, action, purchaseId);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        int responseCode = result.getInt("responseCode");
+        if (responseCode != 0) {
+            listener.onFailure(responseCode, "");
+            return;
+        }
+
+        String responsePurchaseId = result.getString("purchaseId");
+        listener.onSuccess(responsePurchaseId);
+    }
+
+    @WorkerThread
+    @Override
+    public void reactivateSubscription(@NonNull String purchaseId,
+                                       @NonNull OnReactivateSubscriptionFinishedListener listener) {
+        int apiVersion = 5;
+        String packageName = getPackageName();
+        String action = "reactivate";
+
+        Bundle result = new Bundle();
+        if (mService != null) {
+            try {
+                result = mService.manageRecurringProduct(apiVersion, packageName, action, purchaseId);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+        int responseCode = result.getInt("responseCode");
+        if (responseCode != 0) {
+            listener.onFailure(responseCode, "");
+            return;
+        }
+
+        String responsePurchaseId = result.getString("purchaseId");
+        listener.onSuccess(responsePurchaseId);
+    }
+
+    @Override
+    public void handleActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == LOGIN_REQUEST_CODE && mLoginCompletedListener != null) {
+            int responseCode = data.getIntExtra("responseCode", -1);
+            if (resultCode == Activity.RESULT_OK && responseCode != 0) {
+                mLoginCompletedListener.onFailure(responseCode, "");
+                return;
+            }
+
+            mLoginCompletedListener.onSuccess();
+            mLoginCompletedListener = null;
+
+        } else if (requestCode == PURCHASE_REQUEST_CODE && mPurchaseProductListener != null) {
             int responseCode = data.getIntExtra("responseCode", -1);
 
             if (resultCode == Activity.RESULT_OK && responseCode != 0) {
                 mPurchaseProductListener.onFailure(responseCode, "");
-                return true;
+                return;
             }
 
             String purchaseData = data.getStringExtra("purchaseData");
             String purchaseSignature = data.getStringExtra("purchaseSignature");
 
             mPurchaseProductListener.onSuccess(purchaseData, purchaseSignature);
-            return true;
+            mPurchaseProductListener = null;
         }
-        return false;
     }
 
     @WorkerThread
@@ -321,6 +413,4 @@ public class OneStoreServiceHelper implements OneStoreHelper {
     private String getPackageName() {
         return mContext.getPackageName();
     }
-
-
 }

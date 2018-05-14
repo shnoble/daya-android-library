@@ -1,9 +1,8 @@
 package com.daya.android.onestore.v17.sample;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
-interface OnConsumePurchaseFinishedListener {
-    void onSuccess(@Nullable String purchaseId);
+interface OnLoginCompletedListener {
+    void onSuccess();
     void onFailure(int errorCode, @NonNull String errorMessage);
 }
