@@ -8,6 +8,12 @@
     tools:context="com.daya.android.onestore.v17.sample.MainActivity">
 
     <Button
+        android:id="@+id/check_billing_supported"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Check Billing Supported"/>
+
+    <Button
         android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

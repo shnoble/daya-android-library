@@ -6,7 +6,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.daya.android.onestore.v17.sample"
+        applicationId "com.toast.android.iap.onestore.v17.sample"
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
@@ -23,6 +23,13 @@ android {
         }
     }
 
+    sourceSets {
+        main {
+            aidl {
+                exclude '**/IInAppPurchaseService.aidl'
+            }
+        }
+    }
 }
 
 dependencies {
@@ -33,5 +40,4 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
 }

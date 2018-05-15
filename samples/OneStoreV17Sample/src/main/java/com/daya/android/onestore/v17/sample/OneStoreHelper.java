@@ -11,8 +11,12 @@ public interface OneStoreHelper {
 
     void dispose();
 
-    void login(@NonNull Activity activity,
-               @NonNull OnLoginCompletedListener listener);
+    void checkBillingSupported(@NonNull final CheckBillingSupportedListener listener);
+
+    void launchUpdateOrInstallFlow(@NonNull Activity activity);
+
+    void launchLoginFlow(@NonNull Activity activity,
+                         @NonNull OnLoginCompletedListener listener);
 
     void queryProductDetails(@NonNull final String productType,
                              @NonNull final List<String> productIdList,

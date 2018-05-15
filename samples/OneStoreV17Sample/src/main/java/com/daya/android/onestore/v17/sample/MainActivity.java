@@ -2,11 +2,11 @@ package com.daya.android.onestore.v17.sample;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
@@ -15,6 +15,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "OneStoreSampleActivity";
+    private static final String BASE64_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCep+OL3gQfFqJvLzUOo5cZ5/Ct2kHEgc92zOepXShFiGhpWo2rE/BH7O30bV/aCa5E5rHpjQFh2OKW/uQdX79KrgMv/+laRA1ntkF5rf9P48tcti3LLmngnUjrr+rzR+aIMrr4t676bWIy5KM7B0c71GswYNj52LiAkJ+qIt4ItQIDAQAB";
 
     final String MANAGED_PRODUCT_ID = "ruby_10";
     final String MANAGED_PRODUCT_NAME = "10 Rubies";
@@ -30,16 +31,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mOneStoreHelper = new OneStoreServiceHelper(this);
-        mOneStoreHelper.startSetup(new OnSetupFinishedListener() {
-            @Override
-            public void onSuccess() {
-                alertSuccess("OneStore setup succeeded.");
-            }
+        //mOneStoreHelper = new OneStoreServiceHelper(this);
+        mOneStoreHelper = new OneStoreClientHelper(this, BASE64_PUBLIC_KEY);
 
+        startSetup();
+
+        findViewById(R.id.check_billing_supported).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFailure(@NonNull String message) {
-                alertFailure("OneStore setup failed.");
+            public void onClick(View v) {
+                checkBillingSupported();
             }
         });
 
@@ -118,6 +118,42 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void startSetup() {
+        mOneStoreHelper.startSetup(new OnSetupFinishedListener() {
+            @Override
+            public void onSuccess() {
+                alertSuccess("OneStore setup succeeded.");
+            }
+
+            @Override
+            public void onFailure(@NonNull String message) {
+                alertFailure("OneStore setup failed.");
+                mOneStoreHelper.launchUpdateOrInstallFlow(MainActivity.this);
+            }
+        });
+    }
+
+    private void checkBillingSupported() {
+        mOneStoreHelper.checkBillingSupported(new CheckBillingSupportedListener() {
+            @Override
+            public void onSuccess() {
+                alertSuccess("Billing supported.");
+            }
+
+            @Override
+            public void onFailure(int errorCode, @NonNull String errorMessage) {
+                alertFailure("Billing not supported.\n"
+                        + "errorCode: " + errorCode + "\n"
+                        + "errorMessage: " + errorMessage);
+            }
+
+            @Override
+            public void onRemoteException() {
+                alertFailure("Billing not supported (RemoteException).");
+            }
+        });
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -129,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                mOneStoreHelper.login(MainActivity.this, new OnLoginCompletedListener() {
+                mOneStoreHelper.launchLoginFlow(MainActivity.this, new OnLoginCompletedListener() {
                     @Override
                     public void onSuccess() {
                         alertSuccess("Login successful.");

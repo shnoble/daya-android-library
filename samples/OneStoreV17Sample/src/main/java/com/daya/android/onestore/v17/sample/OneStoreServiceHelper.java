@@ -90,7 +90,36 @@ public class OneStoreServiceHelper implements OneStoreHelper {
 
     @WorkerThread
     @Override
-    public void login(@NonNull Activity activity, @NonNull OnLoginCompletedListener listener) {
+    public void checkBillingSupported(@NonNull final CheckBillingSupportedListener listener) {
+        int apiVersion = 5;
+        String packageName = getPackageName();
+
+        int responseCode = -1;
+        try {
+            if (mService != null) {
+                responseCode = mService.isBillingSupported(apiVersion, packageName);
+            }
+        } catch (RemoteException e) {
+            listener.onRemoteException();
+            return;
+        }
+
+        if (responseCode != 0) {
+            OneStoreLog.e(TAG, "Error result code: " + responseCode);
+            listener.onFailure(responseCode, "");
+            return;
+        }
+        listener.onSuccess();
+    }
+
+    @Override
+    public void launchUpdateOrInstallFlow(@NonNull Activity activity) {
+        OneStoreLog.e(TAG, "This feature is not supported.");
+    }
+
+    @WorkerThread
+    @Override
+    public void launchLoginFlow(@NonNull Activity activity, @NonNull OnLoginCompletedListener listener) {
         int apiVersion = 5;
         String packageName = getPackageName();
 
@@ -387,27 +416,6 @@ public class OneStoreServiceHelper implements OneStoreHelper {
             mPurchaseProductListener.onSuccess(purchaseData, purchaseSignature);
             mPurchaseProductListener = null;
         }
-    }
-
-    @WorkerThread
-    private boolean isBillingSupported() {
-        int apiVersion = 5;
-        String packageName = getPackageName();
-
-        int responseCode = -1;
-        try {
-            if (mService != null) {
-                responseCode = mService.isBillingSupported(apiVersion, packageName);
-            }
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-
-        if (responseCode != 0) {
-            OneStoreLog.e(TAG, "Error result code: " + responseCode);
-            return false;
-        }
-        return true;
     }
 
     private String getPackageName() {
