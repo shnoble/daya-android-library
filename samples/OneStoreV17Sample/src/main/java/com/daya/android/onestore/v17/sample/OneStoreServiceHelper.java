@@ -127,9 +127,18 @@ public class OneStoreServiceHelper implements OneStoreHelper {
         OneStoreLog.e(TAG, "This feature is not supported.");
     }
 
-    @WorkerThread
     @Override
-    public void launchLoginFlow(@NonNull Activity activity, @NonNull OnLoginCompletedListener listener) {
+    public void launchLoginFlow(@NonNull final Activity activity, @NonNull final OnLoginCompletedListener listener) {
+        runOnWorkerThread(new Runnable() {
+            @Override
+            public void run() {
+                launchLoginFlowInternal(activity, listener);
+            }
+        });
+    }
+
+    @WorkerThread
+    private void launchLoginFlowInternal(@NonNull Activity activity, @NonNull OnLoginCompletedListener listener) {
         int apiVersion = 5;
         String packageName = getPackageName();
 

@@ -5,4 +5,5 @@ import android.support.annotation.NonNull;
 interface OnLoginCompletedListener {
     void onSuccess();
     void onFailure(int errorCode, @NonNull String errorMessage);
+    void onRemoteException();
 }

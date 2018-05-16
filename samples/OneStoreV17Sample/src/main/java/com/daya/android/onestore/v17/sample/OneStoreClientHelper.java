@@ -21,6 +21,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     private static final String TAG = "OneStoreClientHelper";
     private static final int API_VERSION = 5;
     private static final int PURCHASE_REQUEST_CODE = 1000;
+    private static final int LOGIN_REQUEST_CODE = 2000;
 
     private final Context mContext;
     private final String mBase64PublicKey;
@@ -129,14 +130,61 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @Override
-    public void launchUpdateOrInstallFlow(@NonNull Activity activity) {
-        PurchaseClient.launchUpdateOrInstallFlow(activity);
+    public void launchUpdateOrInstallFlow(@NonNull final Activity activity) {
+        Utility.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                PurchaseClient.launchUpdateOrInstallFlow(activity);
+            }
+        });
     }
 
     @Override
-    public void launchLoginFlow(@NonNull Activity activity,
-                                @NonNull OnLoginCompletedListener listener) {
+    public void launchLoginFlow(@NonNull final Activity activity,
+                                @NonNull final OnLoginCompletedListener listener) {
+        Utility.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                launchLoginFlowInternal(activity, listener);
+            }
+        });
+    }
 
+    @UiThread
+    private void launchLoginFlowInternal(@NonNull Activity activity,
+                                         @NonNull final OnLoginCompletedListener listener) {
+        PurchaseClient.LoginFlowListener loginFlowListener =
+                new PurchaseClient.LoginFlowListener() {
+                    @Override
+                    public void onSuccess() {
+                        listener.onSuccess();
+                    }
+
+                    @Override
+                    public void onError(IapResult iapResult) {
+                        listener.onFailure(iapResult.getCode(), iapResult.getDescription());
+                    }
+
+                    @Override
+                    public void onErrorRemoteException() {
+                        listener.onRemoteException();
+                    }
+
+                    @Override
+                    public void onErrorSecurityException() {
+                        listener.onFailure(IapResult.RESULT_SECURITY_ERROR.getCode(), IapResult.RESULT_SECURITY_ERROR.getDescription());
+                    }
+
+                    @Override
+                    public void onErrorNeedUpdateException() {
+                        listener.onFailure(IapResult.RESULT_NEED_UPDATE.getCode(), IapResult.RESULT_NEED_UPDATE.getDescription());
+                    }
+                };
+
+        if (mPurchaseClient == null) {
+            throw new IllegalStateException("Please call the #startSetup() method first.");
+        }
+        mPurchaseClient.launchLoginFlowAsync(API_VERSION, activity, LOGIN_REQUEST_CODE, loginFlowListener);
     }
 
     @Override
@@ -566,13 +614,23 @@ public class OneStoreClientHelper implements OneStoreHelper {
     @Override
     public void handleActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case LOGIN_REQUEST_CODE:
+                if (resultCode == Activity.RESULT_OK && mPurchaseClient != null) {
+                    if (!mPurchaseClient.handleLoginData(data)) {
+                        OneStoreLog.e(TAG, "Handle login activity result: failed.");
+                    }
+                } else {
+                    OneStoreLog.e(TAG, "Handle login activity result: user canceled.");
+                }
+                break;
+
             case PURCHASE_REQUEST_CODE:
                 if (resultCode == Activity.RESULT_OK && mPurchaseClient != null) {
                     if (!mPurchaseClient.handlePurchaseData(data)) {
-                        OneStoreLog.e(TAG, "Handle activity result: failed.");
+                        OneStoreLog.e(TAG, "Handle purchase activity result: failed.");
                     }
                 } else {
-                    OneStoreLog.e(TAG, "Handle activity result: user canceled.");
+                    OneStoreLog.e(TAG, "Handle purchase activity result: user canceled.");
                 }
                 break;
         }

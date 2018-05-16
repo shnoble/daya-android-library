@@ -159,24 +159,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void login() {
-        new Thread(new Runnable() {
+        mOneStoreHelper.launchLoginFlow(MainActivity.this, new OnLoginCompletedListener() {
             @Override
-            public void run() {
-                mOneStoreHelper.launchLoginFlow(MainActivity.this, new OnLoginCompletedListener() {
-                    @Override
-                    public void onSuccess() {
-                        alertSuccess("Login successful.");
-                    }
-
-                    @Override
-                    public void onFailure(int errorCode, @NonNull String errorMessage) {
-                        alertFailure("Login failed.\n"
-                                + "errorCode: " + errorCode + "\n"
-                                + "errorMessage: " + errorMessage);
-                    }
-                });
+            public void onSuccess() {
+                alertSuccess("Login successful.");
             }
-        }).start();
+
+            @Override
+            public void onFailure(int errorCode, @NonNull String errorMessage) {
+                alertFailure("Login failed.\n"
+                        + "errorCode: " + errorCode + "\n"
+                        + "errorMessage: " + errorMessage);
+            }
+
+            @Override
+            public void onRemoteException() {
+                alertFailure("Login failed. (RemoteException)");
+            }
+        });
     }
 
     private void queryProductDetails(@ProductType final String productType,
@@ -190,13 +190,13 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
 
-                                /*
-                                    [Managed]
-                                    {"price":1000,"productId":"ruby_10","title":"루비 10","type":"inapp"}
+                        /*
+                            [Managed]
+                            {"price":1000,"productId":"ruby_10","title":"루비 10","type":"inapp"}
 
-                                    [Subscription]
-                                    {"price":3000,"productId":"character_ryan","title":"라이언 캐릭터 월정액 상품","type":"auto"}
-                                 */
+                            [Subscription]
+                            {"price":3000,"productId":"character_ryan","title":"라이언 캐릭터 월정액 상품","type":"auto"}
+                         */
                         alertSuccess("The query of the product details was successful.\n" + productDetailList.toString());
                     }
 
@@ -277,39 +277,39 @@ public class MainActivity extends AppCompatActivity {
         mOneStoreHelper.queryPurchases(productType, new QueryPurchasesFinishedListener() {
             @Override
             public void onSuccess(@NonNull List<Purchase> purchases) {
-                        /*
-                            [Managed]
-                            {
-                              "productId": "ruby_10",
-                              "purchaseDetails": {
-                                "orderId": "ONESTORE7_000000000000000000000000014072",
-                                "packageName": "com.toast.android.iap.onestore.v17.sample",
-                                "productId": "ruby_10",
-                                "purchaseTime": 1526024995000,
-                                "purchaseState": 1,
-                                "recurringState": -1,
-                                "purchaseId": "SANDBOX3000000016070",
-                                "developerPayload": "developer payload"
-                              },
-                              "purchaseSignature": "XEavE0WDx5WPi9uQpMiAa3QvrDssESEh0sPGhPMOrN4b9..."
-                            }
+                /*
+                    [Managed]
+                    {
+                      "productId": "ruby_10",
+                      "purchaseDetails": {
+                        "orderId": "ONESTORE7_000000000000000000000000014072",
+                        "packageName": "com.toast.android.iap.onestore.v17.sample",
+                        "productId": "ruby_10",
+                        "purchaseTime": 1526024995000,
+                        "purchaseState": 1,
+                        "recurringState": -1,
+                        "purchaseId": "SANDBOX3000000016070",
+                        "developerPayload": "developer payload"
+                      },
+                      "purchaseSignature": "XEavE0WDx5WPi9uQpMiAa3QvrDssESEh0sPGhPMOrN4b9..."
+                    }
 
-                            [Subscription]
-                            {
-                              "productId": "character_ryan",
-                              "purchaseDetails": {
-                                "orderId": "ONESTORE7_000000000000000000000000014382",
-                                "packageName": "com.toast.android.iap.onestore.v17.sample",
-                                "productId": "character_ryan",
-                                "purchaseTime": 1526277162000,
-                                "purchaseState": 1,
-                                "recurringState": 0,
-                                "purchaseId": "SANDBOX3000000016380",
-                                "developerPayload": "developer payload"
-                              },
-                              "purchaseSignature": "FRy5K1nsVZ22jc\/XhhHOGYxEZgxe2CXLwr\/cOW162s1Q1A05NxIJDKumEgA1XGpv15yKjJAja6pNobYyrXngsTyXNA7GBK\/mfP+7qVPes68tH1vzxm07T2rmHLdNgNFAdMbkEwX56Ux\/VEA2cP9kbkVGSc\/eZu0wZaRu2XMINuc="
-                            }
-                         */
+                    [Subscription]
+                    {
+                      "productId": "character_ryan",
+                      "purchaseDetails": {
+                        "orderId": "ONESTORE7_000000000000000000000000014382",
+                        "packageName": "com.toast.android.iap.onestore.v17.sample",
+                        "productId": "character_ryan",
+                        "purchaseTime": 1526277162000,
+                        "purchaseState": 1,
+                        "recurringState": 0,
+                        "purchaseId": "SANDBOX3000000016380",
+                        "developerPayload": "developer payload"
+                      },
+                      "purchaseSignature": "FRy5K1nsVZ22jc\/XhhHOGYxEZgxe2CXLwr\/cOW162s1Q1A05NxIJDKumEgA1XGpv15yKjJAja6pNobYyrXngsTyXNA7GBK\/mfP+7qVPes68tH1vzxm07T2rmHLdNgNFAdMbkEwX56Ux\/VEA2cP9kbkVGSc\/eZu0wZaRu2XMINuc="
+                    }
+                 */
                 alertSuccess("Purchases query succeeded.\n" + purchases.toString());
 
                 if (!purchases.isEmpty()) {
