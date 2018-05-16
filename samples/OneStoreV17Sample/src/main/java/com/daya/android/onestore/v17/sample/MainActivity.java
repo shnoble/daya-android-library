@@ -18,10 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String BASE64_PUBLIC_KEY = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCep+OL3gQfFqJvLzUOo5cZ5/Ct2kHEgc92zOepXShFiGhpWo2rE/BH7O30bV/aCa5E5rHpjQFh2OKW/uQdX79KrgMv/+laRA1ntkF5rf9P48tcti3LLmngnUjrr+rzR+aIMrr4t676bWIy5KM7B0c71GswYNj52LiAkJ+qIt4ItQIDAQAB";
 
     final String MANAGED_PRODUCT_ID = "ruby_10";
-    final String MANAGED_PRODUCT_NAME = "10 Rubies";
-
     final String SUBS_PRODUCT_ID = "character_ryan";
-    final String SUBS_PRODUCT_NAME = "Ryan Character";
 
     private OneStoreHelper mOneStoreHelper;
     private Purchase mPurchase;
@@ -71,14 +68,14 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.purchase_managed_product).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                purchaseProduct(ProductType.INAPP, MANAGED_PRODUCT_ID, MANAGED_PRODUCT_NAME);
+                purchaseProduct(ProductType.INAPP, MANAGED_PRODUCT_ID);
             }
         });
 
         findViewById(R.id.purchase_subscription).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                purchaseProduct(ProductType.SUBS, SUBS_PRODUCT_ID, SUBS_PRODUCT_NAME);
+                purchaseProduct(ProductType.SUBS, SUBS_PRODUCT_ID);
             }
         });
 
@@ -184,17 +181,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void queryProductDetails(@ProductType final String productType,
                                      @NonNull final List<String> productIdList) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mOneStoreHelper.queryProductDetails(productType, productIdList,
-                        new QueryProductDetailsFinishedListener() {
-                            @Override
-                            public void onSuccess(@Nullable List<ProductDetails> productDetailList) {
-                                if (productDetailList == null || productDetailList.isEmpty()) {
-                                    alertSuccess("The product details list is empty.");
-                                    return;
-                                }
+        mOneStoreHelper.queryProductDetails(productType, productIdList,
+                new QueryProductDetailsFinishedListener() {
+                    @Override
+                    public void onSuccess(@Nullable List<ProductDetails> productDetailList) {
+                        if (productDetailList == null || productDetailList.isEmpty()) {
+                            alertSuccess("The product details list is empty.");
+                            return;
+                        }
 
                                 /*
                                     [Managed]
@@ -203,82 +197,86 @@ public class MainActivity extends AppCompatActivity {
                                     [Subscription]
                                     {"price":3000,"productId":"character_ryan","title":"라이언 캐릭터 월정액 상품","type":"auto"}
                                  */
-                                alertSuccess("The query of the product details was successful.\n" + productDetailList.toString());
-                            }
+                        alertSuccess("The query of the product details was successful.\n" + productDetailList.toString());
+                    }
 
-                            @Override
-                            public void onFailure(int errorCode, @NonNull String errorMessage) {
-                                alertFailure("The query of the product details failed.\n"
-                                        + "errorCode: " + errorCode + "\n"
-                                        + "errorMessage: " + errorMessage);
-                            }
-                        });
+                    @Override
+                    public void onFailure(int errorCode, @NonNull String errorMessage) {
+                        alertFailure("The query of the product details failed.\n"
+                                + "errorCode: " + errorCode + "\n"
+                                + "errorMessage: " + errorMessage);
+                    }
+
+                    @Override
+                    public void onRemoteException() {
+                        alertFailure("The query of the product details failed. (RemoteException).");
+                    }
+                });
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
             }
         }).start();
     }
 
     private void purchaseProduct(@ProductType final String productType,
-                                 @NonNull final String productId,
-                                 @NonNull final String productName) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mOneStoreHelper.purchaseProduct(MainActivity.this,
-                        productType, productId, productName,
-                        new OnPurchaseProductFinishedListener() {
-                            @Override
-                            public void onSuccess(@NonNull String purchaseData,
-                                                  @NonNull String purchaseSignature) {
-                                /*
-                                    [Managed]
-                                    PurchaseData:
-                                    {
-                                      "orderId": "ONESTORE7_000000000000000000000000014386",
-                                      "packageName": "com.toast.android.iap.onestore.v17.sample",
-                                      "productId": "ruby_10",
-                                      "purchaseTime": 1526277473939,
-                                      "purchaseId": "SANDBOX3000000016384",
-                                      "developerPayload": "developer payload"
-                                    }
-
-                                    PurchaseSignature: "E86XEhTRR+v5Ypc/O9ZEmNcs0dSeh7B+UZF3wNsfLIvBDMvN/BAGZZo6D8e/zHKkhIgrI7wr9kUeftFByDGc66AvDVsA/QnvxBh8FRRpRChJMPWuZ+4Bx4BXFR4HrbWiUWni+357l0EdlIRlI0tjCZd47VMe0jhkHCjuwGEiphI="
-
-                                    [Subscription]
-                                    PurchaseData:
-                                    {
-                                        "orderId": "ONESTORE7_000000000000000000000000014382",
-                                        "packageName": "com.toast.android.iap.onestore.v17.sample",
-                                        "productId": "character_ryan",
-                                        "purchaseTime": 1526277163076,
-                                        "purchaseId": "SANDBOX3000000016380",
-                                        "developerPayload": "developer payload"
-                                    }
-
-                                    PurchaseSignature: "cB/J+pMpsE9HR7te3nEZWOjdKH4zsrIzEByeQLtfmDT5LCzFcPBMZMdgiYQ2cuNeS9PBcPn993JWJLMnSG9/qWeaqF+i2ZZpucE+O0cuIMaSB1V5rcgjm/9hIImCiq4mXq26uMz8z9pjm2ndP8fdQw7sDy9De7j3fAVt2wAZ9aE="
-                                 */
-                                alertSuccess("The product was successfully purchased.\n"
-                                        + "PurchaseData: " + purchaseData + "\n"
-                                        + "PurchaseSignature: " + purchaseSignature);
+                                 @NonNull final String productId) {
+        mOneStoreHelper.purchaseProduct(MainActivity.this,
+                productType, productId,
+                new OnPurchaseProductFinishedListener() {
+                    @Override
+                    public void onSuccess(@NonNull Purchase purchase) {
+                        /*
+                            [Managed]
+                            PurchaseData:
+                            {
+                              "orderId": "ONESTORE7_000000000000000000000000014386",
+                              "packageName": "com.toast.android.iap.onestore.v17.sample",
+                              "productId": "ruby_10",
+                              "purchaseTime": 1526277473939,
+                              "purchaseId": "SANDBOX3000000016384",
+                              "developerPayload": "developer payload"
                             }
 
-                            @Override
-                            public void onFailure(int errorCode, @NonNull String errorMessage) {
-                                alertFailure("Purchase failed.\n"
-                                        + "errorCode: " + errorCode + "\n"
-                                        + "errorMessage: " + errorMessage);
+                            PurchaseSignature: "E86XEhTRR+v5Ypc/O9ZEmNcs0dSeh7B+UZF3wNsfLIvBDMvN/BAGZZo6D8e/zHKkhIgrI7wr9kUeftFByDGc66AvDVsA/QnvxBh8FRRpRChJMPWuZ+4Bx4BXFR4HrbWiUWni+357l0EdlIRlI0tjCZd47VMe0jhkHCjuwGEiphI="
+
+                            [Subscription]
+                            PurchaseData:
+                            {
+                                "orderId": "ONESTORE7_000000000000000000000000014382",
+                                "packageName": "com.toast.android.iap.onestore.v17.sample",
+                                "productId": "character_ryan",
+                                "purchaseTime": 1526277163076,
+                                "purchaseId": "SANDBOX3000000016380",
+                                "developerPayload": "developer payload"
                             }
+
+                            PurchaseSignature: "cB/J+pMpsE9HR7te3nEZWOjdKH4zsrIzEByeQLtfmDT5LCzFcPBMZMdgiYQ2cuNeS9PBcPn993JWJLMnSG9/qWeaqF+i2ZZpucE+O0cuIMaSB1V5rcgjm/9hIImCiq4mXq26uMz8z9pjm2ndP8fdQw7sDy9De7j3fAVt2wAZ9aE="
+                         */
+                        alertSuccess("The product was successfully purchased.\n"
+                                + "Purchase: " + purchase);
+                    }
+
+                    @Override
+                    public void onFailure(int errorCode, @NonNull String errorMessage) {
+                        alertFailure("Purchase failed.\n"
+                                + "errorCode: " + errorCode + "\n"
+                                + "errorMessage: " + errorMessage);
+                    }
+
+                    @Override
+                    public void onRemoteException() {
+                        alertFailure("Purchase failed. (RemoteException)");
+                    }
                 });
-            }
-        }).start();
     }
 
     private void queryPurchases(@ProductType final String productType) {
-        new Thread(new Runnable() {
+        mOneStoreHelper.queryPurchases(productType, new QueryPurchasesFinishedListener() {
             @Override
-            public void run() {
-                mOneStoreHelper.queryPurchases(productType, new QueryPurchasesFinishedListener() {
-                    @Override
-                    public void onSuccess(@NonNull List<Purchase> purchases) {
+            public void onSuccess(@NonNull List<Purchase> purchases) {
                         /*
                             [Managed]
                             {
@@ -312,22 +310,25 @@ public class MainActivity extends AppCompatActivity {
                               "purchaseSignature": "FRy5K1nsVZ22jc\/XhhHOGYxEZgxe2CXLwr\/cOW162s1Q1A05NxIJDKumEgA1XGpv15yKjJAja6pNobYyrXngsTyXNA7GBK\/mfP+7qVPes68tH1vzxm07T2rmHLdNgNFAdMbkEwX56Ux\/VEA2cP9kbkVGSc\/eZu0wZaRu2XMINuc="
                             }
                          */
-                        alertSuccess("Purchases query succeeded.\n" + purchases.toString());
+                alertSuccess("Purchases query succeeded.\n" + purchases.toString());
 
-                        if (!purchases.isEmpty()) {
-                            mPurchase = purchases.get(0);
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(int errorCode, @NonNull String errorMessage) {
-                        alertFailure("Purchase query failed.\n"
-                                + "errorCode: " + errorCode + "\n"
-                                + "errorMessage: " + errorMessage);
-                    }
-                });
+                if (!purchases.isEmpty()) {
+                    mPurchase = purchases.get(0);
+                }
             }
-        }).start();
+
+            @Override
+            public void onFailure(int errorCode, @NonNull String errorMessage) {
+                alertFailure("Purchase query failed.\n"
+                        + "errorCode: " + errorCode + "\n"
+                        + "errorMessage: " + errorMessage);
+            }
+
+            @Override
+            public void onRemoteException() {
+                alertFailure("Purchase query failed. (RemoteException)");
+            }
+        });
     }
 
     private void consumePurchase() {
@@ -336,26 +337,24 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        final PurchaseDetails purchaseDetails = mPurchase.getDetails();
-
-        new Thread(new Runnable() {
+        mOneStoreHelper.consumePurchase(mPurchase, new OnConsumePurchaseFinishedListener() {
             @Override
-            public void run() {
-                mOneStoreHelper.consumePurchase(purchaseDetails.getPurchaseId(), new OnConsumePurchaseFinishedListener() {
-                    @Override
-                    public void onSuccess(@Nullable String purchaseId) {
-                        alertSuccess("Consumed successfully.\n" + "purchaseId: " + purchaseId);
-                    }
-
-                    @Override
-                    public void onFailure(int errorCode, @NonNull String errorMessage) {
-                        alertFailure("Consumption failed..\n"
-                                + "errorCode: " + errorCode + "\n"
-                                + "errorMessage: " + errorMessage);
-                    }
-                });
+            public void onSuccess(@NonNull Purchase purchase) {
+                alertSuccess("Consumed successfully.\n" + "purchase: " + purchase);
             }
-        }).start();
+
+            @Override
+            public void onFailure(int errorCode, @NonNull String errorMessage) {
+                alertFailure("Consumption failed.\n"
+                        + "errorCode: " + errorCode + "\n"
+                        + "errorMessage: " + errorMessage);
+            }
+
+            @Override
+            public void onRemoteException() {
+                alertFailure("Consumption failed. (RemoteException)");
+            }
+        });
     }
 
     private void cancelSubscription() {
@@ -364,26 +363,24 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        final PurchaseDetails purchaseDetails = mPurchase.getDetails();
-
-        new Thread(new Runnable() {
+        mOneStoreHelper.cancelSubscription(mPurchase, new OnCancelSubscriptionFinishedListener() {
             @Override
-            public void run() {
-                mOneStoreHelper.cancelSubscription(purchaseDetails.getPurchaseId(), new OnCancelSubscriptionFinishedListener() {
-                    @Override
-                    public void onSuccess(@Nullable String purchaseId) {
-                        alertSuccess("Cancel successfully.\n" + "purchaseId: " + purchaseId);
-                    }
-
-                    @Override
-                    public void onFailure(int errorCode, @NonNull String errorMessage) {
-                        alertFailure("Cancel failed.\n"
-                                + "errorCode: " + errorCode + "\n"
-                                + "errorMessage: " + errorMessage);
-                    }
-                });
+            public void onSuccess(@NonNull Purchase purchase) {
+                alertSuccess("Cancel successfully.\n" + "purchase: " + purchase);
             }
-        }).start();
+
+            @Override
+            public void onFailure(int errorCode, @NonNull String errorMessage) {
+                alertFailure("Cancel failed.\n"
+                        + "errorCode: " + errorCode + "\n"
+                        + "errorMessage: " + errorMessage);
+            }
+
+            @Override
+            public void onRemoteException() {
+
+            }
+        });
     }
 
     private void reactivateSubscription() {
@@ -392,26 +389,24 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        final PurchaseDetails purchaseDetails = mPurchase.getDetails();
-
-        new Thread(new Runnable() {
+        mOneStoreHelper.reactivateSubscription(mPurchase, new OnReactivateSubscriptionFinishedListener() {
             @Override
-            public void run() {
-                mOneStoreHelper.reactivateSubscription(purchaseDetails.getPurchaseId(), new OnReactivateSubscriptionFinishedListener() {
-                    @Override
-                    public void onSuccess(@Nullable String purchaseId) {
-                        alertSuccess("Reactivation successfully.\n" + "purchaseId: " + purchaseId);
-                    }
-
-                    @Override
-                    public void onFailure(int errorCode, @NonNull String errorMessage) {
-                        alertFailure("Reactivation failed.\n"
-                                + "errorCode: " + errorCode + "\n"
-                                + "errorMessage: " + errorMessage);
-                    }
-                });
+            public void onSuccess(@NonNull Purchase purchase) {
+                alertSuccess("Reactivation successfully.\n" + "purchase: " + purchase);
             }
-        }).start();
+
+            @Override
+            public void onFailure(int errorCode, @NonNull String errorMessage) {
+                alertFailure("Reactivation failed.\n"
+                        + "errorCode: " + errorCode + "\n"
+                        + "errorMessage: " + errorMessage);
+            }
+
+            @Override
+            public void onRemoteException() {
+
+            }
+        });
     }
 
     @Override

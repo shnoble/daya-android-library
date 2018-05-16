@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -88,9 +89,18 @@ public class OneStoreServiceHelper implements OneStoreHelper {
         }
     }
 
-    @WorkerThread
     @Override
     public void checkBillingSupported(@NonNull final CheckBillingSupportedListener listener) {
+        runOnWorkerThread(new Runnable() {
+            @Override
+            public void run() {
+                checkBillingSupportedInternal(listener);
+            }
+        });
+    }
+
+    @WorkerThread
+    private void checkBillingSupportedInternal(@NonNull final CheckBillingSupportedListener listener) {
         int apiVersion = 5;
         String packageName = getPackageName();
 
@@ -144,11 +154,22 @@ public class OneStoreServiceHelper implements OneStoreHelper {
         activity.startActivityForResult(loginIntent, LOGIN_REQUEST_CODE);
     }
 
-    @WorkerThread
     @Override
-    public void queryProductDetails(@NonNull String productType,
-                                    @NonNull List<String> productIdList,
-                                    @NonNull QueryProductDetailsFinishedListener listener) {
+    public void queryProductDetails(@NonNull @ProductType final String productType,
+                                    @NonNull final List<String> productIdList,
+                                    @NonNull final QueryProductDetailsFinishedListener listener) {
+        runOnWorkerThread(new Runnable() {
+            @Override
+            public void run() {
+                queryProductDetailsInternal(productType, productIdList, listener);
+            }
+        });
+    }
+
+    @WorkerThread
+    private void queryProductDetailsInternal(@NonNull @ProductType String productType,
+                                             @NonNull List<String> productIdList,
+                                             @NonNull QueryProductDetailsFinishedListener listener) {
         int apiVersion = 5;
         String packageName = getPackageName();
 
@@ -187,13 +208,55 @@ public class OneStoreServiceHelper implements OneStoreHelper {
         listener.onSuccess(productDetails);
     }
 
-    @WorkerThread
     @Override
     public void purchaseProduct(@NonNull Activity activity,
-                                @NonNull String productType,
+                                @NonNull @ProductType String productType,
                                 @NonNull String productId,
-                                @NonNull String productName,
                                 @NonNull OnPurchaseProductFinishedListener listener) {
+        purchaseProduct(activity,
+                productType,
+                productId,
+                "",     // "" 일때는 개발자센터에 등록된 상품명 노출
+                listener);
+    }
+
+    @Override
+    public void purchaseProduct(@NonNull final Activity activity,
+                                @NonNull @ProductType final String productType,
+                                @NonNull final String productId,
+                                @NonNull final String productName,
+                                @NonNull final OnPurchaseProductFinishedListener listener) {
+        runOnWorkerThread(new Runnable() {
+            @Override
+            public void run() {
+                purchaseProductInternal(activity, productType, productId, productName, listener);
+            }
+        });
+    }
+
+    @Override
+    public void purchaseProduct(@NonNull final Activity activity,
+                                @NonNull @ProductType final String productType,
+                                @NonNull final String productId,
+                                @NonNull final String productName,
+                                @NonNull final String userId,
+                                final boolean promotionApplicable,
+                                @NonNull final OnPurchaseProductFinishedListener listener) {
+        runOnWorkerThread(new Runnable() {
+            @Override
+            public void run() {
+                purchaseProductInternal(activity, productType, productId, productName,
+                        userId, promotionApplicable, listener);
+            }
+        });
+    }
+
+    @WorkerThread
+    private void purchaseProductInternal(@NonNull Activity activity,
+                                         @NonNull @ProductType String productType,
+                                         @NonNull String productId,
+                                         @NonNull String productName,
+                                         @NonNull OnPurchaseProductFinishedListener listener) {
         int apiVersion = 5;
         String packageName = getPackageName();
         String developerPayload = "developer payload";
@@ -221,14 +284,13 @@ public class OneStoreServiceHelper implements OneStoreHelper {
     }
 
     @WorkerThread
-    @Override
-    public void purchaseProduct(@NonNull Activity activity,
-                                @NonNull String productType,
-                                @NonNull String productId,
-                                @NonNull String productName,
-                                @NonNull String userId,
-                                boolean promotionApplicable,
-                                @NonNull OnPurchaseProductFinishedListener listener) {
+    private void purchaseProductInternal(@NonNull Activity activity,
+                                         @NonNull @ProductType String productType,
+                                         @NonNull String productId,
+                                         @NonNull String productName,
+                                         @NonNull String userId,
+                                         boolean promotionApplicable,
+                                         @NonNull OnPurchaseProductFinishedListener listener) {
         int apiVersion = 5;
         String packageName = getPackageName();
         String developerPayload = "developer payload";
@@ -259,10 +321,20 @@ public class OneStoreServiceHelper implements OneStoreHelper {
         activity.startActivityForResult(purchaseIntent, PURCHASE_REQUEST_CODE);
     }
 
-    @WorkerThread
     @Override
-    public void queryPurchases(@NonNull String productType,
-                               @NonNull QueryPurchasesFinishedListener listener) {
+    public void queryPurchases(@NonNull @ProductType final String productType,
+                               @NonNull final QueryPurchasesFinishedListener listener) {
+        runOnWorkerThread(new Runnable() {
+            @Override
+            public void run() {
+                queryPurchasesInternal(productType, listener);
+            }
+        });
+    }
+
+    @WorkerThread
+    private void queryPurchasesInternal(@NonNull @ProductType String productType,
+                                        @NonNull QueryPurchasesFinishedListener listener) {
         int apiVersion = 5;
         String packageName = getPackageName();
         String continuationKey = null;     // 서버응답이 100개 넘을 경우 다음 조회를 위해 서버에서 내려주는 token
@@ -295,11 +367,10 @@ public class OneStoreServiceHelper implements OneStoreHelper {
             }
 
             for (int i = 0; i < purchaseDetailsList.size(); i++) {
-                String productId = productIdList.get(i);
                 String purchaseDetails = purchaseDetailsList.get(i);
                 String purchaseSignature = purchaseSignatureList.get(i);
                 try {
-                    purchases.add(new Purchase(productId, purchaseDetails, purchaseSignature));
+                    purchases.add(new Purchase(purchaseDetails, purchaseSignature));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -311,11 +382,23 @@ public class OneStoreServiceHelper implements OneStoreHelper {
         listener.onSuccess(purchases);
     }
 
-    @WorkerThread
     @Override
-    public void consumePurchase(@NonNull String purchaseId, @NonNull OnConsumePurchaseFinishedListener listener) {
+    public void consumePurchase(@NonNull final Purchase purchase,
+                                @NonNull final OnConsumePurchaseFinishedListener listener) {
+        runOnWorkerThread(new Runnable() {
+            @Override
+            public void run() {
+                consumePurchaseInternal(purchase, listener);
+            }
+        });
+    }
+
+    @WorkerThread
+    private void consumePurchaseInternal(@NonNull Purchase purchase,
+                                         @NonNull OnConsumePurchaseFinishedListener listener) {
         int apiVersion = 5;
         String packageName = getPackageName();
+        String purchaseId = purchase.getDetails().getPurchaseId();
 
         Bundle result = new Bundle();
         try {
@@ -332,17 +415,28 @@ public class OneStoreServiceHelper implements OneStoreHelper {
             return;
         }
 
-        String responsePurchaseId = result.getString("purchaseId");
-        listener.onSuccess(responsePurchaseId);
+        //String responsePurchaseId = result.getString("purchaseId");
+        listener.onSuccess(purchase);
+    }
+
+    @Override
+    public void cancelSubscription(@NonNull final Purchase purchase,
+                                   @NonNull final OnCancelSubscriptionFinishedListener listener) {
+        runOnWorkerThread(new Runnable() {
+            @Override
+            public void run() {
+                cancelSubscriptionInternal(purchase, listener);
+            }
+        });
     }
 
     @WorkerThread
-    @Override
-    public void cancelSubscription(@NonNull String purchaseId,
-                                   @NonNull OnCancelSubscriptionFinishedListener listener) {
+    private void cancelSubscriptionInternal(@NonNull Purchase purchase,
+                                            @NonNull OnCancelSubscriptionFinishedListener listener) {
         int apiVersion = 5;
         String packageName = getPackageName();
         String action = "cancel";
+        String purchaseId = purchase.getDetails().getPurchaseId();
 
         Bundle result = new Bundle();
         if (mService != null) {
@@ -359,17 +453,28 @@ public class OneStoreServiceHelper implements OneStoreHelper {
             return;
         }
 
-        String responsePurchaseId = result.getString("purchaseId");
-        listener.onSuccess(responsePurchaseId);
+        //String responsePurchaseId = result.getString("purchaseId");
+        listener.onSuccess(purchase);
+    }
+
+    @Override
+    public void reactivateSubscription(@NonNull final Purchase purchase,
+                                       @NonNull final OnReactivateSubscriptionFinishedListener listener) {
+        runOnWorkerThread(new Runnable() {
+            @Override
+            public void run() {
+                reactivateSubscriptionInternal(purchase, listener);
+            }
+        });
     }
 
     @WorkerThread
-    @Override
-    public void reactivateSubscription(@NonNull String purchaseId,
-                                       @NonNull OnReactivateSubscriptionFinishedListener listener) {
+    private void reactivateSubscriptionInternal(@NonNull Purchase purchase,
+                                                @NonNull OnReactivateSubscriptionFinishedListener listener) {
         int apiVersion = 5;
         String packageName = getPackageName();
         String action = "reactivate";
+        String purchaseId = purchase.getDetails().getPurchaseId();
 
         Bundle result = new Bundle();
         if (mService != null) {
@@ -386,8 +491,8 @@ public class OneStoreServiceHelper implements OneStoreHelper {
             return;
         }
 
-        String responsePurchaseId = result.getString("purchaseId");
-        listener.onSuccess(responsePurchaseId);
+        //String responsePurchaseId = result.getString("purchaseId");
+        listener.onSuccess(purchase);
     }
 
     @Override
@@ -413,12 +518,25 @@ public class OneStoreServiceHelper implements OneStoreHelper {
             String purchaseData = data.getStringExtra("purchaseData");
             String purchaseSignature = data.getStringExtra("purchaseSignature");
 
-            mPurchaseProductListener.onSuccess(purchaseData, purchaseSignature);
-            mPurchaseProductListener = null;
+            try {
+                Purchase purchase = new Purchase(purchaseData, purchaseSignature);
+                mPurchaseProductListener.onSuccess(purchase);
+                mPurchaseProductListener = null;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     private String getPackageName() {
         return mContext.getPackageName();
+    }
+
+    private static void runOnWorkerThread(@NonNull Runnable action) {
+        if (Looper.getMainLooper().equals(Looper.myLooper())) {
+            new Thread(action).start();
+        } else {
+            action.run();
+        }
     }
 }

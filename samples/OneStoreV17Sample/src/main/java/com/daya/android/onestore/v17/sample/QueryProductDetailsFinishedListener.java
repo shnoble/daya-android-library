@@ -8,4 +8,5 @@ import java.util.List;
 interface QueryProductDetailsFinishedListener {
     void onSuccess(@Nullable List<ProductDetails> productDetailList);
     void onFailure(int errorCode, @NonNull String errorMessage);
+    void onRemoteException();
 }

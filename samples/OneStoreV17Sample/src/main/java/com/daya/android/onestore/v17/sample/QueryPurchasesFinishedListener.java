@@ -7,4 +7,5 @@ import java.util.List;
 interface QueryPurchasesFinishedListener {
     void onSuccess(@NonNull List<Purchase> purchases);
     void onFailure(int errorCode, @NonNull String errorMessage);
+    void onRemoteException();
 }

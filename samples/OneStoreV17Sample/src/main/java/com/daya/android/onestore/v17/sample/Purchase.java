@@ -6,31 +6,61 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 class Purchase {
-    private final String mProductId;
-    private final PurchaseDetails mPurchaseDetails;
-    private final String mPurchaseSignature;
+    private PurchaseDetails mPurchaseDetails;
+    private String mPurchaseSignature;
 
-    Purchase(@NonNull String productId, String purchaseDetails, String purchaseSignature) throws JSONException {
-        mProductId = productId;
+    Purchase(@NonNull String purchaseDetails,
+             @NonNull String purchaseSignature) throws JSONException {
         mPurchaseDetails = new PurchaseDetails(purchaseDetails);
         mPurchaseSignature = purchaseSignature;
+    }
+
+    Purchase() {
+    }
+
+    PurchaseDetails getDetails() {
+        return mPurchaseDetails;
+    }
+
+    String getSignature() {
+        return mPurchaseSignature;
+    }
+
+    static Builder newBuilder() {
+        return new Builder();
     }
 
     @Override
     public String toString() {
         try {
             return new JSONObject()
-                    .put("productId", mProductId)
-                    .put("purchaseDetails", mPurchaseDetails.getJSONObject())
+                    .put("purchaseDetails", mPurchaseDetails)
                     .put("purchaseSignature", mPurchaseSignature)
                     .toString();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return null;
+        return super.toString();
     }
 
-    public PurchaseDetails getDetails() {
-        return mPurchaseDetails;
+    static class Builder {
+        private Purchase mPurchase = new Purchase();
+
+        private Builder() {
+        }
+
+        Builder setPurchaseDetails(@NonNull PurchaseDetails purchaseDetails) {
+            mPurchase.mPurchaseDetails = purchaseDetails;
+            return this;
+        }
+
+        Builder setPurchaseSignature(@NonNull String purchaseSignature) {
+            mPurchase.mPurchaseSignature = purchaseSignature;
+            return this;
+        }
+
+        Purchase build() {
+            return mPurchase;
+        }
     }
 }
