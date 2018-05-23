@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.daya.android.gcm.sample">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+        A declaration of GcmReceiver, which handles messages sent from GCM to your application.
+        Because this service needs permission to receive messages from GCM,
+        add com.google.android.c2dm.permission.SEND to the receiver.
+        -->
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.daya.android.gcm.sample" />
+            </intent-filter>
+        </receiver>
+
+        <!--
+        A declaration of GcmListenerService,
+        which enables various aspects of handling messages such as detecting different downstream message types,
+        determining upstream send status, and automatically displaying simple notifications on the app’s behalf.
+        -->
+        <service
+            android:name="com.daya.android.gcm.sample.DayaGcmListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
+        <!--
+        A service that extends InstanceIDListenerService,
+        to handle the creation, rotation, and updating of registration tokens.
+        -->
+        <service
+            android:name="com.daya.android.gcm.sample.DayaInstanceIDListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.daya.android.gcm.sample.RegistrationIntentService"
+            android:exported="false" >
+
+        </service>
+
+    </application>
+
+</manifest>
