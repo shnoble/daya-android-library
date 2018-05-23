@@ -6,7 +6,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.toast.android.iap.onestore.v17.sample"
+        applicationId "com.daya.android.iap.onestore.v17.sample"
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
@@ -23,11 +23,12 @@ android {
         }
     }
 
-    sourceSets {
-        main {
-            aidl {
-                exclude '**/IInAppPurchaseService.aidl'
-            }
+    productFlavors {
+        daya {
+            applicationId "com.daya.android.iap.onestore.v17.sample"
+        }
+        toast {
+            applicationId "com.toast.android.iap.onestore.v17.sample"
         }
     }
 }
