@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.daya.android.onestore.v17.sample.MainActivity">
+
+    <Button
+        android:id="@+id/check_billing_supported"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Check Billing Supported"/>
+
+    <Button
+        android:id="@+id/login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login"/>
+
+    <Button
+        android:id="@+id/query_managed_product_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Query Product Detail (Managed)"/>
+
+    <Button
+        android:id="@+id/query_subscription_detail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Query Product Detail (Subscription)"/>
+
+    <Button
+        android:id="@+id/purchase_managed_product"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Purchase Product (Managed)"/>
+
+    <Button
+        android:id="@+id/purchase_subscription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Purchase Product (Subscription)"/>
+
+    <Button
+        android:id="@+id/query_managed_product_purchases"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Query Purchases (Managed)"/>
+
+    <Button
+        android:id="@+id/query_subscription_purchases"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Query Purchases (Subscription)"/>
+
+    <Button
+        android:id="@+id/consume_purchase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Consume Purchase"/>
+
+    <Button
+        android:id="@+id/cancel_subscription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cancel Subscription"/>
+
+    <Button
+        android:id="@+id/reactivate_subscription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Reactivate Subscription"/>
+
+</LinearLayout>

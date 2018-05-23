@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.daya.android.onestore.sample.MainActivity">
+
+    <Button
+        android:id="@+id/query_product_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Query Product Info"/>
+
+    <Button
+        android:id="@+id/query_purchases"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Query Purchases"/>
+
+    <Button
+        android:id="@+id/check_available_purchase"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Check Available For Purchase"/>
+
+    <Button
+        android:id="@+id/request_payment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Request Payment"/>
+
+    <Button
+        android:id="@+id/subtract_points"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Subtract Points"/>
+
+</LinearLayout>
