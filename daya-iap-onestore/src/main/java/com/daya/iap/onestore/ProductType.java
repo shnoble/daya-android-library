@@ -1,18 +1,16 @@
 package com.daya.iap.onestore;
 
-import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 
-public enum ProductType {
-    IN_APP("inapp"),
-    AUTO("auto");
+import java.lang.annotation.Retention;
 
-    private final String mType;
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-    ProductType(@NonNull String type) {
-        mType = type;
-    }
-
-    public String getType() {
-        return mType;
-    }
+@StringDef({ProductType.INAPP, ProductType.SUBS})
+@Retention(SOURCE)
+public @interface ProductType {
+    /** A type of product for managed products. */
+    String INAPP = "inapp";
+    /** A type of product for subscriptions. */
+    String SUBS = "auto";
 }

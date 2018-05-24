@@ -58,7 +58,7 @@ class ProductDetails {
             return this;
         }
 
-        Builder setProductId(@NonNull String productId) {
+        Builder setProductId(@Nullable String productId) {
             mProductDetails.mProductId = productId;
             return this;
         }

@@ -7,47 +7,50 @@ import android.support.annotation.Nullable;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 class QueryPurchasesResponse {
     @NonNull
-    private final IapResult mResult;
-
-    @Nullable
-    private ArrayList<String> mPurchaseDetailsList;
-
-    @Nullable
-    private ArrayList<String> mPurchaseSignatureList;
+    private final List<PurchaseData> mPurchaseDataList = new ArrayList<>();
 
     @Nullable
     private String mContinuationKey;
 
-    QueryPurchasesResponse(@NonNull Bundle bundle) {
+    QueryPurchasesResponse(@NonNull Bundle bundle)
+            throws SecurityException, NeedUpdateException, IapException {
         int responseCode = bundle.getInt("responseCode");
-        mResult = IapResult.getResult(responseCode);
-        if (mResult.isSuccess()) {
-            mPurchaseDetailsList = bundle.getStringArrayList("purchaseDetailList");
-            mPurchaseSignatureList = bundle.getStringArrayList("purchaseSignatureList");
-            mContinuationKey = bundle.getString("continuationKey");
+        IapResult result = IapResult.getResult(responseCode);
+        if (result.isFailed()) {
+            switch (result) {
+                case RESULT_SECURITY_ERROR:
+                    throw new SecurityException();
+                case RESULT_NEED_UPDATE:
+                    throw new NeedUpdateException();
+                default:
+                    throw new IapException(result);
+            }
         }
-    }
 
-    int size() {
-        if (mPurchaseDetailsList == null) {
-            return 0;
+        ArrayList<String> purchaseDetailsList = bundle.getStringArrayList("purchaseDetailList");
+        ArrayList<String> purchaseSignatureList = bundle.getStringArrayList("purchaseSignatureList");
+        mContinuationKey = bundle.getString("continuationKey");
+
+        if (purchaseSignatureList != null && purchaseDetailsList != null) {
+            for (int i = 0; i < purchaseDetailsList.size(); i++) {
+                String purchaseSignature = purchaseSignatureList.get(i);
+                String purchaseDetails = purchaseDetailsList.get(i);
+                try {
+                    mPurchaseDataList.add(new PurchaseData(purchaseDetails, purchaseSignature));
+                } catch (JSONException e) {
+                    throw new IapException(IapResult.IAP_ERROR_DATA_PARSING);
+                }
+            }
         }
-        return mPurchaseDetailsList.size();
     }
 
     @NonNull
-    PurchaseData getPurchaseData(int index) throws JSONException {
-        if (mPurchaseSignatureList == null
-                || mPurchaseDetailsList == null) {
-            throw new NullPointerException();
-        }
-
-        String purchaseSignature = mPurchaseSignatureList.get(index);
-        String purchaseDetails = mPurchaseDetailsList.get(index);
-        return new PurchaseData(purchaseDetails, purchaseSignature);
+    List<PurchaseData> getPurchaseDataList() {
+        return mPurchaseDataList;
     }
 
     @Nullable

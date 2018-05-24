@@ -20,8 +20,6 @@ import android.util.Log;
 import com.daya.iap.onestore.installer.AppInstaller;
 import com.onestore.extern.iap.IInAppPurchaseService;
 
-import org.json.JSONException;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -34,7 +32,7 @@ public class PurchaseClient {
     private static final String SERVICE_ACTION_NAME = "com.onestore.extern.iap.InAppBillingService.ACTION";
 
     private final Context mContext;
-    private final ExecutorService mExcutorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService mExecutorService = Executors.newSingleThreadExecutor();
 
     @Nullable
     private ServiceConnection mServiceConnection;
@@ -89,7 +87,7 @@ public class PurchaseClient {
 
     public void isBillingSupportedAsync(final int apiVersion,
                                         @NonNull final BillingSupportedListener listener) {
-        mExcutorService.execute(new Runnable() {
+        mExecutorService.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -102,7 +100,18 @@ public class PurchaseClient {
                                 listener.onSuccess();
                                 return;
                             }
-                            handleResponseCode(result, listener);
+
+                            switch (result) {
+                                case RESULT_SECURITY_ERROR:
+                                    listener.onErrorSecurityException();
+                                    break;
+                                case RESULT_NEED_UPDATE:
+                                    listener.onErrorNeedUpdateException();
+                                    break;
+                                default:
+                                    listener.onError(result);
+                                    break;
+                            }
                         }
                     });
 
@@ -122,9 +131,9 @@ public class PurchaseClient {
     }
 
     public void queryPurchasesAsync(final int apiVersion,
-                                    @NonNull final ProductType productType,
+                                    @NonNull @ProductType final String productType,
                                     @NonNull final QueryPurchaseListener listener) {
-        mExcutorService.execute(new Runnable() {
+        mExecutorService.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -140,6 +149,10 @@ public class PurchaseClient {
                     listener.onErrorRemoteException();
                 } catch (IapException e) {
                     listener.onError(e.getResult());
+                } catch (SecurityException e) {
+                    listener.onErrorSecurityException();
+                } catch (NeedUpdateException e) {
+                    listener.onErrorNeedUpdateException();
                 }
             }
         });
@@ -147,8 +160,9 @@ public class PurchaseClient {
 
     @WorkerThread
     @NonNull
-    public List<PurchaseData> queryPurchases(int apiVersion, @NonNull ProductType productType)
-            throws RemoteException, IapException {
+    public List<PurchaseData> queryPurchases(int apiVersion,
+                                             @NonNull @ProductType String productType)
+            throws RemoteException, IapException, NeedUpdateException, SecurityException {
         if (mServiceConnection == null || mInAppPurchaseService == null) {
             throw new RemoteException();
         }
@@ -158,19 +172,16 @@ public class PurchaseClient {
 
         do {
             Bundle bundle = mInAppPurchaseService.getPurchases(
-                    apiVersion, mContext.getPackageName(), productType.getType(), continuationKey);
+                    apiVersion, mContext.getPackageName(), productType, continuationKey);
             if (bundle == null) {
                 throw new IapException(IapResult.IAP_ERROR_DATA_PARSING);
             }
 
             QueryPurchasesResponse response = new QueryPurchasesResponse(bundle);
-            for (int i = 0; i < response.size(); i++) {
-                try {
-                    purchaseDataList.add(response.getPurchaseData(i));
-                } catch (JSONException e) {
-                    throw new IapException(IapResult.IAP_ERROR_DATA_PARSING);
-                }
-            }
+
+            List<PurchaseData> responsePurchaseDataList = response.getPurchaseDataList();
+            purchaseDataList.addAll(responsePurchaseDataList);
+
             continuationKey = response.getContinuationKey();
 
         } while (!TextUtils.isEmpty(continuationKey));
@@ -178,21 +189,49 @@ public class PurchaseClient {
         return purchaseDataList;
     }
 
-    public void queryProductsAsync(int apiVersion,
-                                   @NonNull List<String> productIdList,
-                                   @NonNull ProductType productType,
-                                   @NonNull QueryProductsListener listener) {
-
+    public void queryProductsAsync(final int apiVersion,
+                                   @NonNull final ArrayList<String> productIdList,
+                                   @NonNull @ProductType final String productType,
+                                   @NonNull final QueryProductsListener listener) {
+        mExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final List<ProductDetails> productDetails = queryProducts(apiVersion, productIdList, productType);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onSuccess(productDetails);
+                        }
+                    });
+                } catch (RemoteException e) {
+                    listener.onErrorRemoteException();
+                } catch (IapException e) {
+                    listener.onError(e.getResult());
+                } catch (SecurityException e) {
+                    listener.onErrorSecurityException();
+                } catch (NeedUpdateException e) {
+                    listener.onErrorNeedUpdateException();
+                }
+            }
+        });
     }
 
+    @NonNull
     public List<ProductDetails> queryProducts(int apiVersion,
-                                              @NonNull List<String> productIdList,
-                                              @NonNull ProductType productType) throws RemoteException {
+                                              @NonNull ArrayList<String> productIdList,
+                                              @NonNull @ProductType String productType)
+            throws RemoteException, IapException, SecurityException, NeedUpdateException {
         if (mServiceConnection == null || mInAppPurchaseService == null) {
             throw new RemoteException();
         }
 
-        return null;
+        Bundle productIdsBundle = new Bundle();
+        productIdsBundle.putStringArrayList("productDetailList", productIdList);
+        Bundle bundle = mInAppPurchaseService.getProductDetails(apiVersion,
+                mContext.getPackageName(), productType, productIdsBundle);
+        QueryProductsResponse response = new QueryProductsResponse(bundle);
+        return response.getProductDetails();
     }
 
     @NonNull
@@ -208,21 +247,6 @@ public class PurchaseClient {
             throw new ClassNotFoundException();
         }
         return serviceIntent;
-    }
-
-    @UiThread
-    private void handleResponseCode(@NonNull final IapResult result, @NonNull final ErrorListener listener) {
-        switch (result) {
-            case RESULT_SECURITY_ERROR:
-                listener.onErrorSecurityException();
-                break;
-            case RESULT_NEED_UPDATE:
-                listener.onErrorNeedUpdateException();
-                break;
-            default:
-                listener.onError(result);
-                break;
-        }
     }
 
     /**
@@ -254,7 +278,8 @@ public class PurchaseClient {
     }
 
     public interface QueryPurchaseListener extends ErrorListener {
-        void onSuccess(@NonNull List<PurchaseData> purchaseDataList, @NonNull ProductType productType);
+        void onSuccess(@NonNull List<PurchaseData> purchaseDataList,
+                       @NonNull @ProductType String productType);
     }
 
     public interface QueryProductsListener extends ErrorListener {

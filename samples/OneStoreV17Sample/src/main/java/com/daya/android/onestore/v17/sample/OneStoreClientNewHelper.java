@@ -137,8 +137,50 @@ public class OneStoreClientNewHelper implements OneStoreHelper {
     }
 
     @Override
-    public void queryProductDetails(@NonNull String productType, @NonNull List<String> productIdList, @NonNull QueryProductDetailsFinishedListener listener) {
+    public void queryProductDetails(@NonNull String productType,
+                                    @NonNull List<String> productIdList,
+                                    @NonNull final QueryProductDetailsFinishedListener listener) {
+        PurchaseClient.QueryProductsListener queryProductsListener =
+        new PurchaseClient.QueryProductsListener() {
+            @Override
+            public void onSuccess(@NonNull List<com.daya.iap.onestore.ProductDetails> productDetailsList) {
+                ArrayList<ProductDetails> results = new ArrayList<>();
+                for (com.daya.iap.onestore.ProductDetails productDetails : productDetailsList) {
+                    results.add(ProductDetails.newBuilder()
+                            .setPrice(Long.valueOf(productDetails.getPrice()))
+                            .setProductId(productDetails.getProductId())
+                            .setProductType(productDetails.getType())
+                            .setDescription(productDetails.getTitle())
+                            .build());
+                }
+                listener.onSuccess(results);
+            }
 
+            @Override
+            public void onError(@NonNull IapResult result) {
+                listener.onFailure(result.getCode(), result.getDescription());
+            }
+
+            @Override
+            public void onErrorRemoteException() {
+                listener.onRemoteException();
+            }
+
+            @Override
+            public void onErrorSecurityException() {
+                listener.onFailure(RESULT_SECURITY_ERROR.getCode(), RESULT_SECURITY_ERROR.getDescription());
+            }
+
+            @Override
+            public void onErrorNeedUpdateException() {
+                listener.onFailure(RESULT_NEED_UPDATE.getCode(), RESULT_NEED_UPDATE.getDescription());
+            }
+        };
+
+        if (mPurchaseClient == null) {
+            throw new IllegalStateException("Please call the #startSetup() method first.");
+        }
+        mPurchaseClient.queryProductsAsync(API_VERSION, new ArrayList<>(productIdList), productType, queryProductsListener);
     }
 
     @Override
@@ -164,7 +206,7 @@ public class OneStoreClientNewHelper implements OneStoreHelper {
 
                     @Override
                     public void onSuccess(@NonNull List<PurchaseData> purchaseDataList,
-                                          @NonNull ProductType productType) {
+                                          @NonNull @ProductType String productType) {
                         ArrayList<Purchase> purchases = new ArrayList<>();
                         for (PurchaseData purchaseData : purchaseDataList) {
                             PurchaseDetails purchaseDetails = PurchaseDetails.newBuilder()
@@ -213,12 +255,7 @@ public class OneStoreClientNewHelper implements OneStoreHelper {
         if (mPurchaseClient == null) {
             throw new IllegalStateException("Please call the #startSetup() method first.");
         }
-
-        ProductType type = ProductType.IN_APP;
-        if ("auto".equalsIgnoreCase(productType)) {
-            type = ProductType.AUTO;
-        }
-        mPurchaseClient.queryPurchasesAsync(API_VERSION, type, queryPurchaseListener);
+        mPurchaseClient.queryPurchasesAsync(API_VERSION, productType, queryPurchaseListener);
     }
 
     @Override
