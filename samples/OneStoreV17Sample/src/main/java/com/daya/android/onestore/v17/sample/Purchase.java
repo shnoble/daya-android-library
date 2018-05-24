@@ -1,6 +1,7 @@
 package com.daya.android.onestore.v17.sample;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,12 +50,12 @@ class Purchase {
         private Builder() {
         }
 
-        Builder setPurchaseDetails(@NonNull PurchaseDetails purchaseDetails) {
+        Builder setPurchaseDetails(@Nullable PurchaseDetails purchaseDetails) {
             mPurchase.mPurchaseDetails = purchaseDetails;
             return this;
         }
 
-        Builder setPurchaseSignature(@NonNull String purchaseSignature) {
+        Builder setPurchaseSignature(@Nullable String purchaseSignature) {
             mPurchase.mPurchaseSignature = purchaseSignature;
             return this;
         }
