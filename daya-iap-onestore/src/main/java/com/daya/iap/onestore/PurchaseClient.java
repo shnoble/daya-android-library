@@ -217,6 +217,7 @@ public class PurchaseClient {
         });
     }
 
+    @WorkerThread
     @NonNull
     public List<ProductDetails> queryProducts(int apiVersion,
                                               @NonNull ArrayList<String> productIdList,
