@@ -232,7 +232,7 @@ public class PurchaseClient {
      *
      * @param action the action to run on the UI thread
      */
-    public static void runOnUiThread(@NonNull Runnable action) {
+    private static void runOnUiThread(@NonNull Runnable action) {
         if (!Looper.getMainLooper().equals(Looper.myLooper())) {
             Handler mainHandler = new Handler(Looper.getMainLooper());
             mainHandler.post(action);
