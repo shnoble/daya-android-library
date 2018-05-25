@@ -40,7 +40,7 @@ class QueryProductsResponse {
     }
 
     @NonNull
-    public List<ProductDetails> getProductDetails() {
+    public List<ProductDetails> getProductDetailsList() {
         return mProductDetailsList;
     }
 }

@@ -20,6 +20,8 @@ import android.util.Log;
 import com.daya.iap.onestore.installer.AppInstaller;
 import com.onestore.extern.iap.IInAppPurchaseService;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -39,6 +41,12 @@ public class PurchaseClient {
 
     @Nullable
     private IInAppPurchaseService mInAppPurchaseService;
+
+    @Nullable
+    private PurchaseFlowListener mPurchaseFlowListener;
+
+    @Nullable
+    private LoginFlowListener mLoginFlowListener;
 
     public PurchaseClient(@NonNull Context context) {
         mContext = context.getApplicationContext();
@@ -85,14 +93,29 @@ public class PurchaseClient {
         mInAppPurchaseService = null;
     }
 
+    @NonNull
+    private Intent buildIapServiceIntent() throws ClassNotFoundException {
+        Intent serviceIntent = new Intent();
+        ComponentName componentName = new ComponentName(
+                SERVICE_PACKAGE_NAME,
+                SERVICE_CLASS_NAME);
+        serviceIntent.setComponent(componentName);
+        serviceIntent.setAction(SERVICE_ACTION_NAME);
+
+        if (mContext.getPackageManager().resolveService(serviceIntent, 0) == null) {
+            throw new ClassNotFoundException();
+        }
+        return serviceIntent;
+    }
+
     public void isBillingSupportedAsync(final int apiVersion,
                                         @NonNull final BillingSupportedListener listener) {
         mExecutorService.execute(new Runnable() {
             @Override
             public void run() {
                 try {
-                    int response = isBillingSupported(apiVersion);
-                    final IapResult result = IapResult.getResult(response);
+                    int responseCode = isBillingSupported(apiVersion);
+                    final IapResult result = IapResult.getResult(responseCode);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -100,18 +123,7 @@ public class PurchaseClient {
                                 listener.onSuccess();
                                 return;
                             }
-
-                            switch (result) {
-                                case RESULT_SECURITY_ERROR:
-                                    listener.onErrorSecurityException();
-                                    break;
-                                case RESULT_NEED_UPDATE:
-                                    listener.onErrorNeedUpdateException();
-                                    break;
-                                default:
-                                    listener.onError(result);
-                                    break;
-                            }
+                            handleFailedResult(result, listener);
                         }
                     });
 
@@ -165,6 +177,10 @@ public class PurchaseClient {
             throws RemoteException, IapException, NeedUpdateException, SecurityException {
         if (mServiceConnection == null || mInAppPurchaseService == null) {
             throw new RemoteException();
+        }
+
+        if (TextUtils.isEmpty(productType)) {
+            throw new IapException(IapResult.IAP_ERROR_ILLEGAL_ARGUMENT);
         }
 
         String continuationKey = null;
@@ -227,27 +243,303 @@ public class PurchaseClient {
             throw new RemoteException();
         }
 
+        if (TextUtils.isEmpty(productType)) {
+            throw new IapException(IapResult.IAP_ERROR_ILLEGAL_ARGUMENT);
+        }
+
         Bundle productIdsBundle = new Bundle();
         productIdsBundle.putStringArrayList("productDetailList", productIdList);
         Bundle bundle = mInAppPurchaseService.getProductDetails(apiVersion,
                 mContext.getPackageName(), productType, productIdsBundle);
         QueryProductsResponse response = new QueryProductsResponse(bundle);
-        return response.getProductDetails();
+        return response.getProductDetailsList();
     }
 
-    @NonNull
-    private Intent buildIapServiceIntent() throws ClassNotFoundException {
-        Intent serviceIntent = new Intent();
-        ComponentName componentName = new ComponentName(
-                SERVICE_PACKAGE_NAME,
-                SERVICE_CLASS_NAME);
-        serviceIntent.setComponent(componentName);
-        serviceIntent.setAction(SERVICE_ACTION_NAME);
+    public void consumeAsync(final int apiVersion,
+                             @NonNull final PurchaseData purchaseData,
+                             @NonNull final ConsumeListener listener) {
+        mExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    int responseCode = consume(apiVersion, purchaseData);
+                    final IapResult result = IapResult.getResult(responseCode);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (result.isSuccess()) {
+                                listener.onSuccess(purchaseData);
+                                return;
+                            }
+                            handleFailedResult(result, listener);
+                        }
+                    });
 
-        if (mContext.getPackageManager().resolveService(serviceIntent, 0) == null) {
-            throw new ClassNotFoundException();
+                } catch (RemoteException e) {
+                    listener.onErrorRemoteException();
+                } catch (IapException e) {
+                    listener.onError(e.getResult());
+                }
+            }
+        });
+    }
+
+    @WorkerThread
+    public int consume(int apiVersion, @NonNull PurchaseData purchaseData)
+            throws RemoteException, IapException {
+        if (mServiceConnection == null || mInAppPurchaseService == null) {
+            throw new RemoteException();
         }
-        return serviceIntent;
+
+        String purchaseId = purchaseData.getPurchaseId();
+        if (TextUtils.isEmpty(purchaseId)) {
+            throw new IapException(IapResult.IAP_ERROR_ILLEGAL_ARGUMENT);
+        }
+
+        Bundle bundle = mInAppPurchaseService.consumePurchase(
+                apiVersion, mContext.getPackageName(), purchaseId);
+        return bundle.getInt("responseCode");
+    }
+
+    public void manageRecurringProductAsync(final int apiVersion,
+                                            @NonNull final PurchaseData purchaseData,
+                                            @NonNull @RecurringAction final String action,
+                                            @NonNull final ManageRecurringProductListener listener) {
+        mExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    int responseCode = manageRecurringProduct(apiVersion, purchaseData, action);
+                    final IapResult result = IapResult.getResult(responseCode);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (result.isSuccess()) {
+                                listener.onSuccess(purchaseData, action);
+                                return;
+                            }
+                            handleFailedResult(result, listener);
+                        }
+                    });
+
+                } catch (RemoteException e) {
+                    listener.onErrorRemoteException();
+                } catch (IapException e) {
+                    listener.onError(e.getResult());
+                }
+            }
+        });
+    }
+
+    @WorkerThread
+    public int manageRecurringProduct(int apiVersion,
+                                      @NonNull PurchaseData purchaseData,
+                                      @NonNull @RecurringAction String action)
+            throws RemoteException, IapException {
+        if (mServiceConnection == null || mInAppPurchaseService == null) {
+            throw new RemoteException();
+        }
+
+        String purchaseId = purchaseData.getPurchaseId();
+        if (TextUtils.isEmpty(purchaseId) || TextUtils.isEmpty(action)) {
+            throw new IapException(IapResult.IAP_ERROR_ILLEGAL_ARGUMENT);
+        }
+
+        Bundle bundle = mInAppPurchaseService.manageRecurringProduct(
+                apiVersion, mContext.getPackageName(), action, purchaseId);
+        return bundle.getInt("responseCode");
+    }
+
+    public void launchPurchaseFlow(final int apiVersion,
+                                   @NonNull final Activity activity,
+                                   final int requestCode,
+                                   @NonNull final String productId,
+                                   @NonNull final String productName,
+                                   @NonNull @ProductType final String productType,
+                                   @NonNull final String developerPayload,
+                                   @NonNull final String gameUserId,
+                                   final boolean promotionApplicable,
+                                   @NonNull final PurchaseFlowListener listener) {
+        mExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Intent purchaseIntent = getPurchaseIntent(
+                            apiVersion,
+                            productId,
+                            productName,
+                            productType,
+                            developerPayload,
+                            gameUserId,
+                            promotionApplicable);
+
+                    mPurchaseFlowListener = listener;
+                    activity.startActivityForResult(purchaseIntent, requestCode);
+
+                } catch (RemoteException e) {
+                    listener.onErrorRemoteException();
+                } catch (IapException e) {
+                    listener.onError(e.getResult());
+                }
+            }
+        });
+    }
+
+    @WorkerThread
+    @NonNull
+    private Intent getPurchaseIntent(int apiVersion,
+                                     @NonNull String productId,
+                                     @NonNull String productName,
+                                     @NonNull @ProductType String productType,
+                                     @NonNull String developerPayload,
+                                     @NonNull String gameUserId,
+                                     boolean promotionApplicable)
+            throws RemoteException, IapException {
+        if (mServiceConnection == null || mInAppPurchaseService == null) {
+            throw new RemoteException();
+        }
+
+        int developerPayloadLength = developerPayload.getBytes().length;
+        if (TextUtils.isEmpty(productId)
+                || TextUtils.isEmpty(productType)
+                || developerPayloadLength > 100) {
+            throw new IapException(IapResult.IAP_ERROR_ILLEGAL_ARGUMENT);
+        }
+
+        Bundle bundle;
+        if (TextUtils.isEmpty(gameUserId)) {
+            bundle = mInAppPurchaseService.getPurchaseIntent(apiVersion,
+                    mContext.getPackageName(), productId, productName, productType, developerPayload);
+        } else {
+            Bundle extraParams = new Bundle();
+            extraParams.putString("gameUserId", gameUserId);
+            extraParams.putBoolean("promotionApplicable", promotionApplicable);
+            bundle = mInAppPurchaseService.getPurchaseIntentExtraParams(apiVersion,
+                    mContext.getPackageName(), productId, productName, productType, developerPayload, extraParams);
+        }
+
+        if (bundle == null) {
+            throw new IapException(IapResult.IAP_ERROR_DATA_PARSING);
+        }
+
+        int responseCode = bundle.getInt("responseCode");
+        if (!IapResult.RESULT_OK.equalCode(responseCode)) {
+            throw new IapException(IapResult.getResult(responseCode));
+        }
+
+        Intent intent = bundle.getParcelable("purchaseIntent");
+        if (intent == null) {
+            throw new IapException(IapResult.IAP_ERROR_DATA_PARSING);
+        }
+        return intent;
+    }
+
+    public void launchLoginFlow(final int apiVersion,
+                                @NonNull final Activity activity,
+                                final int requestCode,
+                                @NonNull final LoginFlowListener listener) {
+        mExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Intent loginIntent = getLoginIntent(apiVersion);
+
+                    mLoginFlowListener = listener;
+                    activity.startActivityForResult(loginIntent, requestCode);
+
+                } catch (RemoteException e) {
+                    listener.onErrorRemoteException();
+                } catch (IapException e) {
+                    listener.onError(e.getResult());
+                }
+            }
+        });
+    }
+
+    @WorkerThread
+    private Intent getLoginIntent(int apiVersion)
+            throws RemoteException, IapException {
+        if (mServiceConnection == null || mInAppPurchaseService == null) {
+            throw new RemoteException();
+        }
+
+        Bundle bundle = mInAppPurchaseService.getLoginIntent(apiVersion, mContext.getPackageName());
+        if (bundle == null) {
+            throw new IapException(IapResult.IAP_ERROR_DATA_PARSING);
+        }
+
+        int responseCode = bundle.getInt("responseCode");
+        if (!IapResult.RESULT_OK.equalCode(responseCode)) {
+            throw new IapException(IapResult.getResult(responseCode));
+        }
+
+        Intent intent = bundle.getParcelable("loginIntent");
+        if (intent == null) {
+            throw new IapException(IapResult.IAP_ERROR_DATA_PARSING);
+        }
+        return intent;
+    }
+
+    @UiThread
+    private void handleFailedResult(@NonNull IapResult result,
+                                    @NonNull ErrorListener listener) {
+        switch (result) {
+            case RESULT_SECURITY_ERROR:
+                listener.onErrorSecurityException();
+                break;
+            case RESULT_NEED_UPDATE:
+                listener.onErrorNeedUpdateException();
+                break;
+            default:
+                listener.onError(result);
+                break;
+        }
+    }
+
+    public boolean handlePurchaseData(@Nullable Intent intent) {
+        if (intent == null || mPurchaseFlowListener == null) {
+            return false;
+        }
+
+        try {
+            PurchaseResult purchaseResult = new PurchaseResult(intent);
+
+            String purchaseDetails = purchaseResult.getPurchaseData();
+            String purchaseSignature = purchaseResult.getPurchaseSignature();
+            if (purchaseDetails == null || purchaseSignature == null) {
+                mPurchaseFlowListener.onError(IapResult.IAP_ERROR_DATA_PARSING);
+                return false;
+            }
+
+            PurchaseData purchaseData = new PurchaseData(purchaseDetails, purchaseSignature);
+            mPurchaseFlowListener.onSuccess(purchaseData);
+            return true;
+
+        } catch (SecurityException e) {
+            mPurchaseFlowListener.onErrorSecurityException();
+        } catch (NeedUpdateException e) {
+            mPurchaseFlowListener.onErrorNeedUpdateException();
+        } catch (IapException e) {
+            mPurchaseFlowListener.onError(e.getResult());
+        } catch (JSONException e) {
+            mPurchaseFlowListener.onError(IapResult.IAP_ERROR_DATA_PARSING);
+        }
+        return false;
+    }
+
+    public boolean handleLoginData(@Nullable Intent intent) {
+        if (intent == null || mLoginFlowListener == null) {
+            return false;
+        }
+
+        int responseCode = intent.getIntExtra("responseCode", -1);
+        IapResult result = IapResult.getResult(responseCode);
+        if (result.isSuccess()) {
+            mLoginFlowListener.onSuccess();
+        } else {
+            handleFailedResult(result, mLoginFlowListener);
+        }
+        return true;
     }
 
     /**
@@ -285,6 +577,23 @@ public class PurchaseClient {
 
     public interface QueryProductsListener extends ErrorListener {
         void onSuccess(@NonNull List<ProductDetails> productDetailsList);
+    }
+
+    public interface ConsumeListener extends ErrorListener {
+        void onSuccess(@NonNull PurchaseData purchaseData);
+    }
+
+    public interface ManageRecurringProductListener extends ErrorListener {
+        void onSuccess(@NonNull PurchaseData purchaseData,
+                       @NonNull @RecurringAction String action);
+    }
+
+    public interface PurchaseFlowListener extends ErrorListener {
+        void onSuccess(@NonNull PurchaseData purchaseData);
+    }
+
+    public interface LoginFlowListener extends ErrorListener {
+        void onSuccess();
     }
 
     public interface ErrorListener {

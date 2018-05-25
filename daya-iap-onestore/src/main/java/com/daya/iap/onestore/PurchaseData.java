@@ -7,16 +7,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class PurchaseData {
-    private final String mOrderId;
-    private final String mPackageName;
-    private final String mProductId;
-    private final long mPurchaseTime;
-    private final String mPurchaseId;
-    private final int mPurchaseState;
-    private final int mRecurringState;
-    private final String mDeveloperPayload;
-    private final String mPurchaseDetails;
-    private final String mPurchaseSignature;
+    private String mOrderId;
+    private String mPackageName;
+    private String mProductId;
+    private long mPurchaseTime;
+    private String mPurchaseId;
+    private int mPurchaseState;
+    private int mRecurringState;
+    private String mDeveloperPayload;
+    private String mPurchaseDetails;
+    private String mPurchaseSignature;
 
     PurchaseData(@NonNull String purchaseDetails,
                  @NonNull String purchaseSignature) throws JSONException {
@@ -31,6 +31,9 @@ public class PurchaseData {
         mDeveloperPayload = jsonObject.optString("developerPayload");
         mPurchaseDetails = purchaseDetails;
         mPurchaseSignature = purchaseSignature;
+    }
+
+    private PurchaseData() {
     }
 
     @Nullable
@@ -80,6 +83,10 @@ public class PurchaseData {
         return mPurchaseSignature;
     }
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
     @Override
     public String toString() {
         try {
@@ -91,5 +98,74 @@ public class PurchaseData {
             e.printStackTrace();
         }
         return super.toString();
+    }
+
+    public static class Builder {
+        private final PurchaseData mPurchaseData = new PurchaseData();
+
+        @NonNull
+        public Builder setOrderId(@Nullable String orderId) {
+            mPurchaseData.mOrderId = orderId;
+            return this;
+        }
+
+        @NonNull
+        public Builder setPackageName(@Nullable String packageName) {
+            mPurchaseData.mPackageName = packageName;
+            return this;
+        }
+
+        @NonNull
+        public Builder setProductId(@Nullable String productId) {
+            mPurchaseData.mProductId = productId;
+            return this;
+        }
+
+        @NonNull
+        public Builder setPurchaseTime(long purchaseTime) {
+            mPurchaseData.mPurchaseTime = purchaseTime;
+            return this;
+        }
+
+        @NonNull
+        public Builder setPurchaseId(@Nullable String purchaseId) {
+            mPurchaseData.mPurchaseId = purchaseId;
+            return this;
+        }
+
+        @NonNull
+        public Builder setPurchaseState(int purchaseState) {
+            mPurchaseData.mPurchaseState = purchaseState;
+            return this;
+        }
+
+        @NonNull
+        public Builder setRecurringState(int recurringState) {
+            mPurchaseData.mRecurringState = recurringState;
+            return this;
+        }
+
+        @NonNull
+        public Builder setDeveloperPayload(@Nullable String developerPayload) {
+            mPurchaseData.mDeveloperPayload = developerPayload;
+            return this;
+        }
+
+        @NonNull
+        public Builder setPurchaseDetails(@Nullable String purchaseDetails) {
+            mPurchaseData.mPurchaseDetails = purchaseDetails;
+            return this;
+        }
+
+        @NonNull
+        public Builder setPurchaseSignature(@Nullable String purchaseSignature) {
+            mPurchaseData.mPurchaseSignature = purchaseSignature;
+            return this;
+        }
+
+        @NonNull
+        public PurchaseData build() {
+            return mPurchaseData;
+        }
     }
 }

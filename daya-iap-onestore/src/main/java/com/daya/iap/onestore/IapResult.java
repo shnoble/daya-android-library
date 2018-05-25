@@ -14,7 +14,7 @@ public enum IapResult {
     RESULT_DEVELOPER_ERROR(5, "구매에 실패했습니다. (올바르지 않은 구매 요청입니다)"),
     RESULT_ERROR(6, "구매에 실패했습니다. (정의되지 않은 기타 오류가 발생했습니다)"),
     RESULT_ITEM_ALREADY_OWNED(7, "구매에 실패했습니다. (이미 아이템을 소유하고 있습니다)"),
-    RESULT_ITEM_NOT_OWNED(8, "구매에 실패했습니다. (아이템을 소유하고 있지 않아 comsume 할 수 없습니다)"),
+    RESULT_ITEM_NOT_OWNED(8, "구매에 실패했습니다. (아이템을 소유하고 있지 않아 consume 할 수 없습니다)"),
     RESULT_FAIL(9, "결제에 실패했습니다. 결제 가능 여부 및 결제 수단 확인 후 다시 결제해주세요."),
     RESULT_NEED_LOGIN(10, "구매에 실패했습니다. (구매를 위해 원스토어 로그인이 필요합니다)"),
     RESULT_NEED_UPDATE(11, "구매에 실패했습니다. (원스토어 서비스앱의 업데이트가 필요합니다)"),
