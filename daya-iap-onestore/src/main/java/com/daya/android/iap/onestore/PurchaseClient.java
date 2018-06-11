@@ -173,7 +173,7 @@ public class PurchaseClient {
     @WorkerThread
     @NonNull
     public List<PurchaseData> queryPurchases(int apiVersion,
-                                                                   @NonNull @ProductType String productType)
+                                             @NonNull @ProductType String productType)
             throws RemoteException, IapException, NeedUpdateException, SecurityException {
         if (mServiceConnection == null || mInAppPurchaseService == null) {
             throw new RemoteException();
@@ -236,8 +236,8 @@ public class PurchaseClient {
     @WorkerThread
     @NonNull
     public List<ProductDetails> queryProducts(int apiVersion,
-                                                                    @NonNull ArrayList<String> productIdList,
-                                                                    @NonNull @ProductType String productType)
+                                              @NonNull ArrayList<String> productIdList,
+                                              @NonNull @ProductType String productType)
             throws RemoteException, IapException, SecurityException, NeedUpdateException {
         if (mServiceConnection == null || mInAppPurchaseService == null) {
             throw new RemoteException();
