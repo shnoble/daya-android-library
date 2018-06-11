@@ -2,232 +2,114 @@ package com.daya.android.iap.google.billing;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+public abstract class BillingClient {
+    /** Builder to configure and create a BillingClient instance. */
+    public static final class Builder {
+        private final Context mContext;
+        private String mBase64PublicKey;
 
-import static com.daya.android.iap.google.billing.IabHelper.BILLING_RESPONSE_RESULT_DEVELOPER_ERROR;
-import static com.daya.android.iap.google.billing.IabHelper.BILLING_RESPONSE_RESULT_OK;
-import static com.daya.android.iap.google.billing.IabHelper.ITEM_TYPE_INAPP;
-import static com.daya.android.iap.google.billing.IabHelper.ITEM_TYPE_SUBS;
-import static com.daya.android.iap.google.billing.IabHelper.IabAsyncInProgressException;
-import static com.daya.android.iap.google.billing.IabHelper.OnConsumeFinishedListener;
-import static com.daya.android.iap.google.billing.IabHelper.OnIabPurchaseFinishedListener;
-import static com.daya.android.iap.google.billing.IabHelper.OnIabSetupFinishedListener;
-import static com.daya.android.iap.google.billing.IabHelper.QueryInventoryFinishedListener;
+        private Builder(Context context) {
+            mContext = context;
+        }
 
-public class BillingClient {
-    @NonNull
-    private IabHelper mIabHelper;
+        /**
+         *
+         * @param base64PublicKey
+         * @return
+         */
+        public Builder setBase64PublicKey(@NonNull String base64PublicKey) {
+            mBase64PublicKey = base64PublicKey;
+            return this;
+        }
 
-    public BillingClient(@NonNull Context context,
-                         @NonNull String base64PublicKey) {
-        mIabHelper = new IabHelper(context, base64PublicKey);
-    }
-
-    public void startSetup(final OnIabSetupFinishedListener listener) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                mIabHelper.startSetup(listener);
+        /**
+         * Creates a BillingClient instance.
+         *
+         * <p>After creation, it will not yet be ready to use. You must initiate setup by calling {@link
+         * #startSetup} and wait for setup to complete.
+         *
+         * @return BillingClient instance
+         * @throws IllegalArgumentException if Context were not set.
+         */
+        public BillingClient build() {
+            if (mContext == null) {
+                throw new IllegalArgumentException("Please provide a valid Context.");
             }
-        });
-    }
-
-    public void dispose() {
-        mIabHelper.disposeWhenFinished();
-    }
-
-    private boolean isReady() {
-        return mIabHelper.mService != null;
-    }
-
-    public void launchPurchaseFlow(@NonNull final Activity activity,
-                                   @NonNull final String sku,
-                                   @NonNull final String itemType,
-                                   final int requestCode,
-                                   @Nullable final String developerPayload,
-                                   @NonNull final OnIabPurchaseFinishedListener listener) {
-        Executable executable = new Executable() {
-            @Override
-            public void execute(@NonNull IabResult result) {
-                if (result.isFailure()) {
-                    listener.onIabPurchaseFinished(result, null);
-                    return;
-                }
-
-                try {
-                    mIabHelper.launchPurchaseFlow(activity, sku, itemType, null, requestCode, listener, developerPayload);
-                } catch (IabAsyncInProgressException e) {
-                    result = new IabResult(BILLING_RESPONSE_RESULT_DEVELOPER_ERROR, e.getMessage());
-                    listener.onIabPurchaseFinished(result, null);
-                }
-            }
-        };
-        connectServiceAndExecute(executable);
-    }
-
-    public interface QueryPurchasesFinishedListener {
-        void onQueryPurchasesFinished(@NonNull IabResult result,
-                                      @Nullable List<Purchase> purchases);
-    }
-
-    public void queryPurchasesAsync(@NonNull final String skuType,
-                                    @NonNull final QueryPurchasesFinishedListener listener) {
-        Executable executable = new Executable() {
-            @Override
-            public void execute(@NonNull IabResult result) {
-                if (result.isFailure()) {
-                    listener.onQueryPurchasesFinished(result, null);
-                    return;
-                }
-
-                try {
-                    mIabHelper.queryInventoryAsync(new QueryInventoryFinishedListener() {
-                        @Override
-                        public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-                            List<Purchase> purchases = new ArrayList<>();
-                            if (inv != null) {
-                                List<String> ownedSkus = inv.getAllOwnedSkus(skuType);
-                                for (String sku : ownedSkus) {
-                                    purchases.add(inv.getPurchase(sku));
-                                }
-                            }
-                            listener.onQueryPurchasesFinished(result, purchases);
-                        }
-                    });
-                } catch (IabAsyncInProgressException e) {
-                    result = new IabResult(BILLING_RESPONSE_RESULT_DEVELOPER_ERROR, e.getMessage());
-                    listener.onQueryPurchasesFinished(result, null);
-                }
-            }
-        };
-        connectServiceAndExecute(executable);
-    }
-
-    public interface QuerySkuDetailsFinishedListener {
-        void onQuerySkuDetailsFinished(@NonNull IabResult result,
-                                       @Nullable List<SkuDetails> skuDetailsList);
-    }
-
-    public void querySkuDetailsAsync(@NonNull final String skuType,
-                                     @NonNull final List<String> skus,
-                                     @NonNull final QuerySkuDetailsFinishedListener listener) {
-        final List<String> moreItemSkus = ITEM_TYPE_INAPP.equalsIgnoreCase(skuType) ? skus : null;
-        final List<String> moreSubsSkus = ITEM_TYPE_SUBS.equalsIgnoreCase(skuType) ? skus : null;
-
-        Executable executable = new Executable() {
-            @Override
-            public void execute(@NonNull IabResult result) {
-                if (result.isFailure()) {
-                    listener.onQuerySkuDetailsFinished(result, null);
-                    return;
-                }
-
-                try {
-                    mIabHelper.queryInventoryAsync(true, moreItemSkus, moreSubsSkus,
-                            new QueryInventoryFinishedListener() {
-                                @Override
-                                public void onQueryInventoryFinished(IabResult result, Inventory inv) {
-                                    List<SkuDetails> skuDetailsList = new ArrayList<>();
-                                    for (String sku : skus) {
-                                        skuDetailsList.add(inv.getSkuDetails(sku));
-                                    }
-                                    listener.onQuerySkuDetailsFinished(
-                                            result,
-                                            skuDetailsList);
-                                }
-                            });
-                } catch (IabAsyncInProgressException e) {
-                    result = new IabResult(BILLING_RESPONSE_RESULT_DEVELOPER_ERROR, e.getMessage());
-                    listener.onQuerySkuDetailsFinished(result, null);
-                }
-            }
-        };
-        connectServiceAndExecute(executable);
-    }
-
-    public void consumeAsync(@NonNull final Purchase purchase,
-                             @NonNull final OnConsumeFinishedListener listener) {
-        Executable executable = new Executable() {
-            @Override
-            public void execute(@NonNull IabResult result) {
-                if (result.isFailure()) {
-                    listener.onConsumeFinished(null, result);
-                    return;
-                }
-
-                try {
-                    mIabHelper.consumeAsync(purchase, listener);
-                } catch (IabAsyncInProgressException e) {
-                    result = new IabResult(BILLING_RESPONSE_RESULT_DEVELOPER_ERROR, e.getMessage());
-                    listener.onConsumeFinished(null, result);
-                }
-            }
-        };
-        connectServiceAndExecute(executable);
-    }
-
-    private interface Executable {
-        void execute(@NonNull IabResult result);
-    }
-
-    private void connectServiceAndExecute(@NonNull final Executable executable) {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                if (isReady()) {
-                    executable.execute(new IabResult(BILLING_RESPONSE_RESULT_OK, "Already connected to the service."));
-                    return;
-                }
-
-                mIabHelper.disposeWhenFinished();
-                mIabHelper.startSetup(new OnIabSetupFinishedListener() {
-                    @Override
-                    public void onIabSetupFinished(IabResult result) {
-                        executable.execute(result);
-                    }
-                });
-            }
-        };
-        runOnUiThread(runnable);
-    }
-
-    /**
-     * Handles an activity result that's part of the purchase flow in in-app billing. If you
-     * are calling {@link #launchPurchaseFlow}, then you must call this method from your
-     * Activity's {@link Activity@onActivityResult} method. This method
-     * MUST be called from the UI thread of the Activity.
-     *
-     * @param requestCode The requestCode as you received it.
-     * @param resultCode The resultCode as you received it.
-     * @param data The data (Intent) as you received it.
-     * @return Returns true if the result was related to a purchase flow and was handled;
-     *     false if the result was not related to a purchase, in which case you should
-     *     handle it normally.
-     */
-    public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        return mIabHelper.handleActivityResult(requestCode, resultCode, data);
-    }
-
-    /**
-     * Runs the specified action on the UI thread. If the current thread is the UI
-     * thread, then the action is executed immediately. If the current thread is
-     * not the UI thread, the action is posted to the event queue of the UI thread.
-     *
-     * @param action the action to run on the UI thread
-     */
-    private static void runOnUiThread(@NonNull Runnable action) {
-        if (!Looper.getMainLooper().equals(Looper.myLooper())) {
-            Handler mainHandler = new Handler(Looper.getMainLooper());
-            mainHandler.post(action);
-        } else {
-            action.run();
+            return new BillingClientImpl(mContext, mBase64PublicKey);
         }
     }
+
+    /**
+     * Constructs a new {@link Builder} instance.
+     *
+     * @param context It will be used to get an application context to bind to the in-app billing
+     *     service.
+     */
+    public static Builder newBuilder(@NonNull Context context) {
+        return new Builder(context);
+    }
+
+    /**
+     * Callback for setup process. This listener's {@link #onSetupFinished} method is called
+     * when the setup process is complete.
+     */
+    public interface BillingSetupFinishedListener {
+        /**
+         * Called to notify that setup is complete.
+         *
+         * @param result The result of the setup process.
+         */
+        void onSetupFinished(@NonNull IabResult result);
+    }
+
+    /**
+     * Starts up BillingClient setup process asynchronously. You will be notified through the {@link
+     * BillingSetupFinishedListener} listener when the setup process is complete.
+     *
+     * @param listener The listener to notify when the setup process is complete.
+     */
+    public abstract void startSetup(@NonNull final BillingSetupFinishedListener listener);
+
+    /**
+     * Dispose of object, releasing resources. It's very important to call this
+     * method when you are done with this object. It will release any resources
+     * used by it such as service connections. Naturally, once the object is
+     * disposed of, it can't be used again.
+     */
+    public abstract void dispose();
+
+    /**
+     * Callback that notifies when a purchase is finished.
+     */
+    public interface PurchaseFinishedListener {
+        /**
+         * Called to notify that an in-app purchase finished. If the purchase was successful,
+         * then the sku parameter specifies which item was purchased. If the purchase failed,
+         * the sku and extraData parameters may or may not be null, depending on how far the purchase
+         * process went.
+         *
+         * @param result The result of the purchase.
+         * @param purchase The purchase information (null if purchase failed)
+         */
+        void onPurchaseFinished(@NonNull IabResult result, @Nullable Purchase purchase);
+    }
+
+    /**
+     * Initiate the billing flow for an in-app purchase or subscription.
+     *
+     * <p>It will show the Google Play purchase screen.
+     *
+     * @param activity An activity reference from which the billing flow will be launched.
+     * @param params Params specific to the request {@link PurchaseFlowParams}).
+     * @param requestCode A request code (to differentiate from other responses -- as in
+     *      {@link Activity#startActivityForResult}).
+     * @param listener The listener to notify when the purchase process finishes.
+     */
+    public abstract void launchPurchaseFlow(@NonNull Activity activity,
+                                            @NonNull PurchaseFlowParams params,
+                                            final int requestCode,
+                                            @NonNull final PurchaseFinishedListener listener);
 }

@@ -119,6 +119,8 @@ public class IabHelper {
     String mSignatureBase64 = null;
 
     // Billing response codes
+    public static final int BILLING_RESPONSE_FEATURE_NOT_SUPPORTED = -2;
+    public static final int BILLING_RESPONSE_SERVICE_DISCONNECTED = -1;
     public static final int BILLING_RESPONSE_RESULT_OK = 0;
     public static final int BILLING_RESPONSE_RESULT_USER_CANCELED = 1;
     public static final int BILLING_RESPONSE_RESULT_SERVICE_UNAVAILABLE = 2;

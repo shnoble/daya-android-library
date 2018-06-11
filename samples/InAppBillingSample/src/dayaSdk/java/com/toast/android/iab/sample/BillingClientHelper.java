@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.daya.android.iap.google.billing.BillingClient;
+import com.daya.android.iap.google.billing.BillingClientLegacy;
 import com.daya.android.iap.google.billing.IabHelper;
 import com.daya.android.iap.google.billing.IabResult;
 import com.daya.android.iap.google.billing.Purchase;
@@ -22,11 +22,11 @@ import java.util.List;
  */
 
 class BillingClientHelper implements BillingHelper {
-    private final BillingClient mBillingClient;
+    private final BillingClientLegacy mBillingClient;
 
     BillingClientHelper(@NonNull Context context,
                         @NonNull String base64PublicKey) {
-        this.mBillingClient = new BillingClient(context.getApplicationContext(), base64PublicKey);
+        this.mBillingClient = new BillingClientLegacy(context.getApplicationContext(), base64PublicKey);
     }
 
     @Override
@@ -74,7 +74,7 @@ class BillingClientHelper implements BillingHelper {
     @Override
     public void queryPurchases(@NonNull final String skuType,
                                @NonNull final QueryPurchasesFinishedListener listener) {
-        mBillingClient.queryPurchasesAsync(skuType, new BillingClient.QueryPurchasesFinishedListener() {
+        mBillingClient.queryPurchasesAsync(skuType, new BillingClientLegacy.QueryPurchasesFinishedListener() {
             @Override
             public void onQueryPurchasesFinished(@NonNull IabResult result,
                                                  @Nullable List<Purchase> purchases) {
@@ -101,7 +101,7 @@ class BillingClientHelper implements BillingHelper {
                                      @NonNull final List<String> skus,
                                      @NonNull final QuerySkuDetailsFinishedListener listener) {
         mBillingClient.querySkuDetailsAsync(skuType, skus,
-                new BillingClient.QuerySkuDetailsFinishedListener() {
+                new BillingClientLegacy.QuerySkuDetailsFinishedListener() {
                     @Override
                     public void onQuerySkuDetailsFinished(@NonNull IabResult result,
                                                           @Nullable List<SkuDetails> skuDetailsList) {
