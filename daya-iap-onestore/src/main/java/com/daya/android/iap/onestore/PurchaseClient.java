@@ -1,4 +1,4 @@
-package com.daya.iap.onestore;
+package com.daya.android.iap.onestore;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -17,7 +17,7 @@ import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.daya.iap.onestore.installer.AppInstaller;
+import com.daya.android.iap.onestore.installer.AppInstaller;
 import com.onestore.extern.iap.IInAppPurchaseService;
 
 import org.json.JSONException;
@@ -173,7 +173,7 @@ public class PurchaseClient {
     @WorkerThread
     @NonNull
     public List<PurchaseData> queryPurchases(int apiVersion,
-                                             @NonNull @ProductType String productType)
+                                                                   @NonNull @ProductType String productType)
             throws RemoteException, IapException, NeedUpdateException, SecurityException {
         if (mServiceConnection == null || mInAppPurchaseService == null) {
             throw new RemoteException();
@@ -236,8 +236,8 @@ public class PurchaseClient {
     @WorkerThread
     @NonNull
     public List<ProductDetails> queryProducts(int apiVersion,
-                                              @NonNull ArrayList<String> productIdList,
-                                              @NonNull @ProductType String productType)
+                                                                    @NonNull ArrayList<String> productIdList,
+                                                                    @NonNull @ProductType String productType)
             throws RemoteException, IapException, SecurityException, NeedUpdateException {
         if (mServiceConnection == null || mInAppPurchaseService == null) {
             throw new RemoteException();

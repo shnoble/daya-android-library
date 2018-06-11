@@ -1,4 +1,4 @@
-package com.daya.iap.onestore.installer;
+package com.daya.android.iap.onestore.installer;
 
 import android.app.Activity;
 import android.app.AlertDialog;

@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class ProductDetails {
+class OneStoreProductDetails {
     private static final String PRICE_KEY = "price";
     private static final String PRODUCT_ID_KEY = "productId";
     private static final String PRODUCT_TYPE_KEY = "type";
@@ -14,10 +14,11 @@ class ProductDetails {
 
     private long mPrice;
     private String mProductId;
-    private @ProductType String mProductType;
+    private @OneStoreProductType
+    String mProductType;
     private String mDescription;
 
-    ProductDetails(@NonNull String jsonString) throws JSONException {
+    OneStoreProductDetails(@NonNull String jsonString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonString);
         mPrice = jsonObject.optLong(PRICE_KEY);
         mProductId = jsonObject.optString(PRODUCT_ID_KEY);
@@ -25,7 +26,7 @@ class ProductDetails {
         mDescription = jsonObject.optString(DESCRIPTION_KEY);
     }
 
-    private ProductDetails() {
+    private OneStoreProductDetails() {
     }
 
     @Override
@@ -48,7 +49,7 @@ class ProductDetails {
     }
 
     static class Builder {
-        private final ProductDetails mProductDetails = new ProductDetails();
+        private final OneStoreProductDetails mProductDetails = new OneStoreProductDetails();
 
         private Builder() {
         }
@@ -63,7 +64,7 @@ class ProductDetails {
             return this;
         }
 
-        Builder setProductType(@ProductType String productType) {
+        Builder setProductType(@OneStoreProductType String productType) {
             mProductDetails.mProductType = productType;
             return this;
         }
@@ -73,7 +74,7 @@ class ProductDetails {
             return this;
         }
 
-        ProductDetails build() {
+        OneStoreProductDetails build() {
             return mProductDetails;
         }
     }

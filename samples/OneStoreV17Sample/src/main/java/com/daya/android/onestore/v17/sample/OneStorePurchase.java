@@ -6,20 +6,20 @@ import android.support.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class Purchase {
-    private PurchaseDetails mPurchaseDetails;
+class OneStorePurchase {
+    private OneStorePurchaseDetails mPurchaseDetails;
     private String mPurchaseSignature;
 
-    Purchase(@NonNull String purchaseDetails,
-             @NonNull String purchaseSignature) throws JSONException {
-        mPurchaseDetails = new PurchaseDetails(purchaseDetails);
+    OneStorePurchase(@NonNull String purchaseDetails,
+                     @NonNull String purchaseSignature) throws JSONException {
+        mPurchaseDetails = new OneStorePurchaseDetails(purchaseDetails);
         mPurchaseSignature = purchaseSignature;
     }
 
-    Purchase() {
+    OneStorePurchase() {
     }
 
-    PurchaseDetails getDetails() {
+    OneStorePurchaseDetails getDetails() {
         return mPurchaseDetails;
     }
 
@@ -45,12 +45,12 @@ class Purchase {
     }
 
     static class Builder {
-        private Purchase mPurchase = new Purchase();
+        private OneStorePurchase mPurchase = new OneStorePurchase();
 
         private Builder() {
         }
 
-        Builder setPurchaseDetails(@Nullable PurchaseDetails purchaseDetails) {
+        Builder setPurchaseDetails(@Nullable OneStorePurchaseDetails purchaseDetails) {
             mPurchase.mPurchaseDetails = purchaseDetails;
             return this;
         }
@@ -60,7 +60,7 @@ class Purchase {
             return this;
         }
 
-        Purchase build() {
+        OneStorePurchase build() {
             return mPurchase;
         }
     }

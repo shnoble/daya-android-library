@@ -6,18 +6,18 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.daya.android.iap.onestore.IapResult;
+import com.daya.android.iap.onestore.ProductDetails;
+import com.daya.android.iap.onestore.PurchaseClient;
+import com.daya.android.iap.onestore.PurchaseData;
+import com.daya.android.iap.onestore.RecurringAction;
 import com.daya.android.util.Utility;
-import com.daya.iap.onestore.IapResult;
-import com.daya.iap.onestore.ProductType;
-import com.daya.iap.onestore.PurchaseClient;
-import com.daya.iap.onestore.PurchaseData;
-import com.daya.iap.onestore.RecurringAction;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.daya.iap.onestore.IapResult.RESULT_NEED_UPDATE;
-import static com.daya.iap.onestore.IapResult.RESULT_SECURITY_ERROR;
+import static com.daya.android.iap.onestore.IapResult.RESULT_NEED_UPDATE;
+import static com.daya.android.iap.onestore.IapResult.RESULT_SECURITY_ERROR;
 
 public class OneStoreClientHelper implements OneStoreHelper {
     private static final String TAG = "OneStoreClientHelper";
@@ -178,10 +178,10 @@ public class OneStoreClientHelper implements OneStoreHelper {
         PurchaseClient.QueryProductsListener queryProductsListener =
         new PurchaseClient.QueryProductsListener() {
             @Override
-            public void onSuccess(@NonNull List<com.daya.iap.onestore.ProductDetails> productDetailsList) {
-                ArrayList<ProductDetails> results = new ArrayList<>();
-                for (com.daya.iap.onestore.ProductDetails productDetails : productDetailsList) {
-                    results.add(ProductDetails.newBuilder()
+            public void onSuccess(@NonNull List<ProductDetails> productDetailsList) {
+                ArrayList<OneStoreProductDetails> results = new ArrayList<>();
+                for (ProductDetails productDetails : productDetailsList) {
+                    results.add(OneStoreProductDetails.newBuilder()
                             .setPrice(Long.valueOf(productDetails.getPrice()))
                             .setProductId(productDetails.getProductId())
                             .setProductType(productDetails.getType())
@@ -257,7 +257,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
                 new PurchaseClient.PurchaseFlowListener() {
                     @Override
                     public void onSuccess(@NonNull PurchaseData purchaseData) {
-                        PurchaseDetails purchaseDetails = PurchaseDetails.newBuilder()
+                        OneStorePurchaseDetails purchaseDetails = OneStorePurchaseDetails.newBuilder()
                                 .setOrderId(purchaseData.getOrderId())
                                 .setProductId(purchaseData.getProductId())
                                 .setPurchaseId(purchaseData.getPurchaseId())
@@ -267,7 +267,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
                                 .setOriginPurchaseData(purchaseData.getPurchaseData())
                                 .build();
 
-                        listener.onSuccess(Purchase.newBuilder()
+                        listener.onSuccess(OneStorePurchase.newBuilder()
                                 .setPurchaseDetails(purchaseDetails)
                                 .setPurchaseSignature(purchaseData.getPurchaseSignature())
                                 .build());
@@ -285,12 +285,12 @@ public class OneStoreClientHelper implements OneStoreHelper {
 
                     @Override
                     public void onErrorSecurityException() {
-                        listener.onFailure(IapResult.RESULT_SECURITY_ERROR.getCode(), IapResult.RESULT_SECURITY_ERROR.getDescription());
+                        listener.onFailure(RESULT_SECURITY_ERROR.getCode(), RESULT_SECURITY_ERROR.getDescription());
                     }
 
                     @Override
                     public void onErrorNeedUpdateException() {
-                        listener.onFailure(IapResult.RESULT_NEED_UPDATE.getCode(), IapResult.RESULT_NEED_UPDATE.getDescription());
+                        listener.onFailure(RESULT_NEED_UPDATE.getCode(), RESULT_NEED_UPDATE.getDescription());
                     }
                 };
 
@@ -312,10 +312,10 @@ public class OneStoreClientHelper implements OneStoreHelper {
 
                     @Override
                     public void onSuccess(@NonNull List<PurchaseData> purchaseDataList,
-                                          @NonNull @ProductType String productType) {
-                        ArrayList<Purchase> purchases = new ArrayList<>();
+                                          @NonNull @OneStoreProductType String productType) {
+                        ArrayList<OneStorePurchase> purchases = new ArrayList<>();
                         for (PurchaseData purchaseData : purchaseDataList) {
-                            PurchaseDetails purchaseDetails = PurchaseDetails.newBuilder()
+                            OneStorePurchaseDetails purchaseDetails = OneStorePurchaseDetails.newBuilder()
                                     .setOrderId(purchaseData.getOrderId())
                                     .setProductId(purchaseData.getProductId())
                                     .setPurchaseId(purchaseData.getPurchaseId())
@@ -327,7 +327,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
                                     .setOriginPurchaseData(purchaseData.getPurchaseData())
                                     .build();
 
-                            purchases.add(Purchase.newBuilder()
+                            purchases.add(OneStorePurchase.newBuilder()
                                     .setPurchaseDetails(purchaseDetails)
                                     .setPurchaseSignature(purchaseData.getPurchaseSignature())
                                     .build());
@@ -365,7 +365,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @Override
-    public void consumePurchase(@NonNull final Purchase purchase,
+    public void consumePurchase(@NonNull final OneStorePurchase purchase,
                                 @NonNull final OnConsumePurchaseFinishedListener listener) {
         PurchaseClient.ConsumeListener consumeListener =
                 new PurchaseClient.ConsumeListener() {
@@ -399,7 +399,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
             throw new IllegalStateException("Please call the #startSetup() method first.");
         }
 
-        PurchaseDetails purchaseDetails = purchase.getDetails();
+        OneStorePurchaseDetails purchaseDetails = purchase.getDetails();
         PurchaseData purchaseData = PurchaseData.newBuilder()
                 .setOrderId(purchaseDetails.getOrderId())
                 .setPackageName(purchaseDetails.getPackageName())
@@ -417,7 +417,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @Override
-    public void cancelSubscription(@NonNull final Purchase purchase,
+    public void cancelSubscription(@NonNull final OneStorePurchase purchase,
                                    @NonNull final OnCancelSubscriptionFinishedListener listener) {
         PurchaseClient.ManageRecurringProductListener manageRecurringProductListener =
                 new PurchaseClient.ManageRecurringProductListener() {
@@ -438,12 +438,12 @@ public class OneStoreClientHelper implements OneStoreHelper {
 
                     @Override
                     public void onErrorSecurityException() {
-                        listener.onFailure(IapResult.RESULT_SECURITY_ERROR.getCode(), IapResult.RESULT_SECURITY_ERROR.getDescription());
+                        listener.onFailure(RESULT_SECURITY_ERROR.getCode(), RESULT_SECURITY_ERROR.getDescription());
                     }
 
                     @Override
                     public void onErrorNeedUpdateException() {
-                        listener.onFailure(IapResult.RESULT_NEED_UPDATE.getCode(), IapResult.RESULT_NEED_UPDATE.getDescription());
+                        listener.onFailure(RESULT_NEED_UPDATE.getCode(), RESULT_NEED_UPDATE.getDescription());
                     }
                 };
 
@@ -451,7 +451,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
             throw new IllegalStateException("Please call the #startSetup() method first.");
         }
 
-        PurchaseDetails purchaseDetails = purchase.getDetails();
+        OneStorePurchaseDetails purchaseDetails = purchase.getDetails();
         PurchaseData purchaseData = PurchaseData.newBuilder()
                 .setOrderId(purchaseDetails.getOrderId())
                 .setPackageName(purchaseDetails.getPackageName())
@@ -469,7 +469,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @Override
-    public void reactivateSubscription(@NonNull final Purchase purchase,
+    public void reactivateSubscription(@NonNull final OneStorePurchase purchase,
                                        @NonNull final OnReactivateSubscriptionFinishedListener listener) {
         PurchaseClient.ManageRecurringProductListener manageRecurringProductListener =
                 new PurchaseClient.ManageRecurringProductListener() {
@@ -490,12 +490,12 @@ public class OneStoreClientHelper implements OneStoreHelper {
 
                     @Override
                     public void onErrorSecurityException() {
-                        listener.onFailure(IapResult.RESULT_SECURITY_ERROR.getCode(), IapResult.RESULT_SECURITY_ERROR.getDescription());
+                        listener.onFailure(RESULT_SECURITY_ERROR.getCode(), RESULT_SECURITY_ERROR.getDescription());
                     }
 
                     @Override
                     public void onErrorNeedUpdateException() {
-                        listener.onFailure(IapResult.RESULT_NEED_UPDATE.getCode(), IapResult.RESULT_NEED_UPDATE.getDescription());
+                        listener.onFailure(RESULT_NEED_UPDATE.getCode(), RESULT_NEED_UPDATE.getDescription());
                     }
                 };
 
@@ -503,7 +503,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
             throw new IllegalStateException("Please call the #startSetup() method first.");
         }
 
-        PurchaseDetails purchaseDetails = purchase.getDetails();
+        OneStorePurchaseDetails purchaseDetails = purchase.getDetails();
         PurchaseData purchaseData = PurchaseData.newBuilder()
                 .setOrderId(purchaseDetails.getOrderId())
                 .setPackageName(purchaseDetails.getPackageName())

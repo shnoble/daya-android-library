@@ -6,7 +6,7 @@ android {
 
 
     defaultConfig {
-        applicationId "com.toast.android.iap.onestore.v17.sample"
+        applicationId "com.daya.android.iap.onestore.v17.sample"
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1

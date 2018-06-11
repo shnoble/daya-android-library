@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-class PurchaseDetails {
+class OneStorePurchaseDetails {
     private static final String ORDER_ID_KEY = "orderId";
     private static final String PRODUCT_ID_KEY = "productId";
     private static final String PURCHASE_ID_KEY = "purchaseId";
@@ -26,7 +26,7 @@ class PurchaseDetails {
     private String mDeveloperPayload;
     private String mOrginPurchaseData;
 
-    PurchaseDetails(@NonNull String jsonString) throws JSONException {
+    OneStorePurchaseDetails(@NonNull String jsonString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonString);
         mOrderId = jsonObject.optString(ORDER_ID_KEY);
         mProductId = jsonObject.optString(PRODUCT_ID_KEY);
@@ -39,7 +39,7 @@ class PurchaseDetails {
         mOrginPurchaseData = jsonString;
     }
 
-    private PurchaseDetails() {
+    private OneStorePurchaseDetails() {
     }
 
     public String getOrderId() {
@@ -102,7 +102,7 @@ class PurchaseDetails {
     }
 
     static class Builder {
-        private PurchaseDetails mPurchaseDetails = new PurchaseDetails();
+        private OneStorePurchaseDetails mPurchaseDetails = new OneStorePurchaseDetails();
 
         private Builder() {
         }
@@ -152,7 +152,7 @@ class PurchaseDetails {
             return this;
         }
 
-        PurchaseDetails build() {
+        OneStorePurchaseDetails build() {
             return mPurchaseDetails;
         }
     }

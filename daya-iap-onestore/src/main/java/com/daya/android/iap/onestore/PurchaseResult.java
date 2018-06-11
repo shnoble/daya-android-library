@@ -1,4 +1,4 @@
-package com.daya.iap.onestore;
+package com.daya.android.iap.onestore;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;

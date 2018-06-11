@@ -188,7 +188,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @Override
-    public void queryProductDetails(@NonNull @ProductType final String productType,
+    public void queryProductDetails(@NonNull @OneStoreProductType final String productType,
                                     @NonNull final List<String> productIdList,
                                     @NonNull final QueryProductDetailsFinishedListener listener) {
         Utility.runOnUiThread(new Runnable() {
@@ -200,16 +200,16 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @UiThread
-    private void queryProductDetailsInternal(@NonNull @ProductType String productType,
+    private void queryProductDetailsInternal(@NonNull @OneStoreProductType String productType,
                                              @NonNull List<String> productIdList,
                                              @NonNull final QueryProductDetailsFinishedListener listener) {
         PurchaseClient.QueryProductsListener queryProductsListener =
                 new PurchaseClient.QueryProductsListener() {
                     @Override
                     public void onSuccess(List<ProductDetail> list) {
-                        ArrayList<ProductDetails> results = new ArrayList<>();
+                        ArrayList<OneStoreProductDetails> results = new ArrayList<>();
                         for (ProductDetail productDetail : list) {
-                            results.add(ProductDetails.newBuilder()
+                            results.add(OneStoreProductDetails.newBuilder()
                                     .setPrice(Long.valueOf(productDetail.getPrice()))
                                     .setProductId(productDetail.getProductId())
                                     .setProductType(productDetail.getType())
@@ -248,7 +248,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
 
     @Override
     public void purchaseProduct(@NonNull Activity activity,
-                                @NonNull @ProductType String productType,
+                                @NonNull @OneStoreProductType String productType,
                                 @NonNull String productId,
                                 @NonNull OnPurchaseProductFinishedListener listener) {
         purchaseProduct(activity,
@@ -260,7 +260,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
 
     @Override
     public void purchaseProduct(@NonNull Activity activity,
-                                @NonNull @ProductType String productType,
+                                @NonNull @OneStoreProductType String productType,
                                 @NonNull String productId,
                                 @NonNull String productName,
                                 @NonNull OnPurchaseProductFinishedListener listener) {
@@ -275,7 +275,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
 
     @Override
     public void purchaseProduct(@NonNull final Activity activity,
-                                @NonNull @ProductType final String productType,
+                                @NonNull @OneStoreProductType final String productType,
                                 @NonNull final String productId,
                                 @NonNull final String productName,
                                 @NonNull final String userId,
@@ -297,7 +297,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
 
     @UiThread
     private void purchaseProductInternal(@NonNull Activity activity,
-                                         @NonNull @ProductType final String productType,
+                                         @NonNull @OneStoreProductType final String productType,
                                          @NonNull String productId,
                                          @NonNull String productName,
                                          @NonNull String userId,
@@ -307,7 +307,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
                 new PurchaseClient.PurchaseFlowListener() {
                     @Override
                     public void onSuccess(PurchaseData purchaseData) {
-                        PurchaseDetails purchaseDetails = PurchaseDetails.newBuilder()
+                        OneStorePurchaseDetails purchaseDetails = OneStorePurchaseDetails.newBuilder()
                                 .setOrderId(purchaseData.getOrderId())
                                 .setProductId(purchaseData.getProductId())
                                 .setPurchaseId(purchaseData.getPurchaseId())
@@ -317,7 +317,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
                                 .setOriginPurchaseData(purchaseData.getPurchaseData())
                                 .build();
 
-                        listener.onSuccess(Purchase.newBuilder()
+                        listener.onSuccess(OneStorePurchase.newBuilder()
                                 .setPurchaseDetails(purchaseDetails)
                                 .setPurchaseSignature(purchaseData.getSignature())
                                 .build());
@@ -355,7 +355,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @Override
-    public void queryPurchases(@NonNull @ProductType final String productType,
+    public void queryPurchases(@NonNull @OneStoreProductType final String productType,
                                @NonNull final QueryPurchasesFinishedListener listener) {
         Utility.runOnUiThread(new Runnable() {
             @Override
@@ -366,15 +366,15 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @UiThread
-    private void queryPurchasesInternal(@NonNull @ProductType final String productType,
+    private void queryPurchasesInternal(@NonNull @OneStoreProductType final String productType,
                                         @NonNull final QueryPurchasesFinishedListener listener) {
         PurchaseClient.QueryPurchaseListener queryPurchaseListener =
                 new PurchaseClient.QueryPurchaseListener() {
                     @Override
                     public void onSuccess(List<PurchaseData> list, String s) {
-                        ArrayList<Purchase> purchases = new ArrayList<>();
+                        ArrayList<OneStorePurchase> purchases = new ArrayList<>();
                         for (PurchaseData purchaseData : list) {
-                            PurchaseDetails purchaseDetails = PurchaseDetails.newBuilder()
+                            OneStorePurchaseDetails purchaseDetails = OneStorePurchaseDetails.newBuilder()
                                     .setOrderId(purchaseData.getOrderId())
                                     .setProductId(purchaseData.getProductId())
                                     .setPurchaseId(purchaseData.getPurchaseId())
@@ -386,7 +386,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
                                     .setOriginPurchaseData(purchaseData.getPurchaseData())
                                     .build();
 
-                            purchases.add(Purchase.newBuilder()
+                            purchases.add(OneStorePurchase.newBuilder()
                                     .setPurchaseDetails(purchaseDetails)
                                     .setPurchaseSignature(purchaseData.getSignature())
                                     .build());
@@ -422,7 +422,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @Override
-    public void consumePurchase(@NonNull final Purchase purchase,
+    public void consumePurchase(@NonNull final OneStorePurchase purchase,
                                 @NonNull final OnConsumePurchaseFinishedListener listener) {
         Utility.runOnUiThread(new Runnable() {
             @Override
@@ -433,7 +433,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @UiThread
-    private void consumePurchaseInternal(@NonNull final Purchase purchase,
+    private void consumePurchaseInternal(@NonNull final OneStorePurchase purchase,
                                          @NonNull final OnConsumePurchaseFinishedListener listener) {
         PurchaseClient.ConsumeListener consumeListener =
                 new PurchaseClient.ConsumeListener() {
@@ -467,7 +467,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
             throw new IllegalStateException("Please call the #startSetup() method first.");
         }
 
-        PurchaseDetails purchaseDetails = purchase.getDetails();
+        OneStorePurchaseDetails purchaseDetails = purchase.getDetails();
         PurchaseData purchaseData = PurchaseData.builder()
                 .orderId(purchaseDetails.getOrderId())
                 .packageName(purchaseDetails.getPackageName())
@@ -484,7 +484,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @Override
-    public void cancelSubscription(@NonNull final Purchase purchase,
+    public void cancelSubscription(@NonNull final OneStorePurchase purchase,
                                    @NonNull final OnCancelSubscriptionFinishedListener listener) {
         Utility.runOnUiThread(new Runnable() {
             @Override
@@ -495,7 +495,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @UiThread
-    private void cancelSubscriptionInternal(@NonNull final Purchase purchase,
+    private void cancelSubscriptionInternal(@NonNull final OneStorePurchase purchase,
                                             @NonNull final OnCancelSubscriptionFinishedListener listener) {
         PurchaseClient.ManageRecurringProductListener manageRecurringProductListener =
                 new PurchaseClient.ManageRecurringProductListener() {
@@ -529,7 +529,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
             throw new IllegalStateException("Please call the #startSetup() method first.");
         }
 
-        PurchaseDetails purchaseDetails = purchase.getDetails();
+        OneStorePurchaseDetails purchaseDetails = purchase.getDetails();
         PurchaseData purchaseData = PurchaseData.builder()
                 .orderId(purchaseDetails.getOrderId())
                 .packageName(purchaseDetails.getPackageName())
@@ -548,7 +548,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @Override
-    public void reactivateSubscription(@NonNull final Purchase purchase,
+    public void reactivateSubscription(@NonNull final OneStorePurchase purchase,
                                        @NonNull final OnReactivateSubscriptionFinishedListener listener) {
         Utility.runOnUiThread(new Runnable() {
             @Override
@@ -559,7 +559,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
     }
 
     @UiThread
-    private void reactivateSubscriptionInternal(@NonNull final Purchase purchase,
+    private void reactivateSubscriptionInternal(@NonNull final OneStorePurchase purchase,
                                                 @NonNull final OnReactivateSubscriptionFinishedListener listener) {
         PurchaseClient.ManageRecurringProductListener manageRecurringProductListener =
                 new PurchaseClient.ManageRecurringProductListener() {
@@ -593,7 +593,7 @@ public class OneStoreClientHelper implements OneStoreHelper {
             throw new IllegalStateException("Please call the #startSetup() method first.");
         }
 
-        PurchaseDetails purchaseDetails = purchase.getDetails();
+        OneStorePurchaseDetails purchaseDetails = purchase.getDetails();
         PurchaseData purchaseData = PurchaseData.builder()
                 .orderId(purchaseDetails.getOrderId())
                 .packageName(purchaseDetails.getPackageName())

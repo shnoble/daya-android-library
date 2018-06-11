@@ -21,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     final String SUBS_PRODUCT_ID = "character_ryan";
 
     private OneStoreHelper mOneStoreHelper;
-    private Purchase mPurchase;
+    private OneStorePurchase mPurchase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final ArrayList<String> productIdList = new ArrayList<>();
                 productIdList.add(MANAGED_PRODUCT_ID);
-                queryProductDetails(ProductType.INAPP, productIdList);
+                queryProductDetails(OneStoreProductType.INAPP, productIdList);
             }
         });
 
@@ -68,35 +68,35 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final ArrayList<String> productIdList = new ArrayList<>();
                 productIdList.add(SUBS_PRODUCT_ID);
-                queryProductDetails(ProductType.SUBS, productIdList);
+                queryProductDetails(OneStoreProductType.SUBS, productIdList);
             }
         });
 
         findViewById(R.id.purchase_managed_product).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                purchaseProduct(ProductType.INAPP, MANAGED_PRODUCT_ID);
+                purchaseProduct(OneStoreProductType.INAPP, MANAGED_PRODUCT_ID);
             }
         });
 
         findViewById(R.id.purchase_subscription).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                purchaseProduct(ProductType.SUBS, SUBS_PRODUCT_ID);
+                purchaseProduct(OneStoreProductType.SUBS, SUBS_PRODUCT_ID);
             }
         });
 
         findViewById(R.id.query_managed_product_purchases).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                queryPurchases(ProductType.INAPP);
+                queryPurchases(OneStoreProductType.INAPP);
             }
         });
 
         findViewById(R.id.query_subscription_purchases).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                queryPurchases(ProductType.SUBS);
+                queryPurchases(OneStoreProductType.SUBS);
             }
         });
 
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startSetup() {
-        mOneStoreHelper.startSetup(new OnSetupFinishedListener() {
+        mOneStoreHelper.startSetup(new OneStoreHelper.OnSetupFinishedListener() {
             @Override
             public void onSuccess() {
                 alertSuccess("OneStore setup succeeded.");
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkBillingSupported() {
-        mOneStoreHelper.checkBillingSupported(new CheckBillingSupportedListener() {
+        mOneStoreHelper.checkBillingSupported(new OneStoreHelper.CheckBillingSupportedListener() {
             @Override
             public void onSuccess() {
                 alertSuccess("Billing supported.");
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void login() {
-        mOneStoreHelper.launchLoginFlow(MainActivity.this, new OnLoginCompletedListener() {
+        mOneStoreHelper.launchLoginFlow(MainActivity.this, new OneStoreHelper.OnLoginCompletedListener() {
             @Override
             public void onSuccess() {
                 alertSuccess("Login successful.");
@@ -190,12 +190,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void queryProductDetails(@ProductType final String productType,
+    private void queryProductDetails(@OneStoreProductType final String productType,
                                      @NonNull final List<String> productIdList) {
         mOneStoreHelper.queryProductDetails(productType, productIdList,
-                new QueryProductDetailsFinishedListener() {
+                new OneStoreHelper.QueryProductDetailsFinishedListener() {
                     @Override
-                    public void onSuccess(@Nullable List<ProductDetails> productDetailList) {
+                    public void onSuccess(@Nullable List<OneStoreProductDetails> productDetailList) {
                         if (productDetailList == null || productDetailList.isEmpty()) {
                             alertSuccess("The product details list is empty.");
                             return;
@@ -232,13 +232,13 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void purchaseProduct(@ProductType final String productType,
+    private void purchaseProduct(@OneStoreProductType final String productType,
                                  @NonNull final String productId) {
         mOneStoreHelper.purchaseProduct(MainActivity.this,
                 productType, productId,
-                new OnPurchaseProductFinishedListener() {
+                new OneStoreHelper.OnPurchaseProductFinishedListener() {
                     @Override
-                    public void onSuccess(@NonNull Purchase purchase) {
+                    public void onSuccess(@NonNull OneStorePurchase purchase) {
                         /*
                             [Managed]
                             PurchaseData:
@@ -284,10 +284,10 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void queryPurchases(@ProductType final String productType) {
-        mOneStoreHelper.queryPurchases(productType, new QueryPurchasesFinishedListener() {
+    private void queryPurchases(@OneStoreProductType final String productType) {
+        mOneStoreHelper.queryPurchases(productType, new OneStoreHelper.QueryPurchasesFinishedListener() {
             @Override
-            public void onSuccess(@NonNull List<Purchase> purchases) {
+            public void onSuccess(@NonNull List<OneStorePurchase> purchases) {
                 /*
                     [Managed]
                     {
@@ -348,9 +348,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        mOneStoreHelper.consumePurchase(mPurchase, new OnConsumePurchaseFinishedListener() {
+        mOneStoreHelper.consumePurchase(mPurchase, new OneStoreHelper.OnConsumePurchaseFinishedListener() {
             @Override
-            public void onSuccess(@NonNull Purchase purchase) {
+            public void onSuccess(@NonNull OneStorePurchase purchase) {
                 alertSuccess("Consumed successfully.\n" + "purchase: " + purchase);
             }
 
@@ -374,9 +374,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        mOneStoreHelper.cancelSubscription(mPurchase, new OnCancelSubscriptionFinishedListener() {
+        mOneStoreHelper.cancelSubscription(mPurchase, new OneStoreHelper.OnCancelSubscriptionFinishedListener() {
             @Override
-            public void onSuccess(@NonNull Purchase purchase) {
+            public void onSuccess(@NonNull OneStorePurchase purchase) {
                 alertSuccess("Cancel successfully.\n" + "purchase: " + purchase);
             }
 
@@ -400,9 +400,9 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        mOneStoreHelper.reactivateSubscription(mPurchase, new OnReactivateSubscriptionFinishedListener() {
+        mOneStoreHelper.reactivateSubscription(mPurchase, new OneStoreHelper.OnReactivateSubscriptionFinishedListener() {
             @Override
-            public void onSuccess(@NonNull Purchase purchase) {
+            public void onSuccess(@NonNull OneStorePurchase purchase) {
                 alertSuccess("Reactivation successfully.\n" + "purchase: " + purchase);
             }
 

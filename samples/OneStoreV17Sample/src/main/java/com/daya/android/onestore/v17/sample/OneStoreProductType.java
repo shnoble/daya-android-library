@@ -6,9 +6,9 @@ import java.lang.annotation.Retention;
 
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-@StringDef({ProductType.INAPP, ProductType.SUBS})
+@StringDef({OneStoreProductType.INAPP, OneStoreProductType.SUBS})
 @Retention(SOURCE)
-public @interface ProductType {
+public @interface OneStoreProductType {
     /** A type of product for managed products. */
     String INAPP = "inapp";
     /** A type of product for subscriptions. */
