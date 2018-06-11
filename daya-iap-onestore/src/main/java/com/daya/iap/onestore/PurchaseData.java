@@ -15,12 +15,12 @@ public class PurchaseData {
     private int mPurchaseState;
     private int mRecurringState;
     private String mDeveloperPayload;
-    private String mPurchaseDetails;
+    private String mPurchaseData;
     private String mPurchaseSignature;
 
-    PurchaseData(@NonNull String purchaseDetails,
+    PurchaseData(@NonNull String purchaseData,
                  @NonNull String purchaseSignature) throws JSONException {
-        JSONObject jsonObject = new JSONObject(purchaseDetails);
+        JSONObject jsonObject = new JSONObject(purchaseData);
         mOrderId = jsonObject.optString("orderId");
         mPackageName = jsonObject.optString("packageName");
         mProductId = jsonObject.optString("productId");
@@ -29,7 +29,7 @@ public class PurchaseData {
         mPurchaseState = jsonObject.optInt("purchaseState");
         mRecurringState = jsonObject.optInt("recurringState");
         mDeveloperPayload = jsonObject.optString("developerPayload");
-        mPurchaseDetails = purchaseDetails;
+        mPurchaseData = purchaseData;
         mPurchaseSignature = purchaseSignature;
     }
 
@@ -74,8 +74,8 @@ public class PurchaseData {
     }
 
     @Nullable
-    public String getPurchaseDetails() {
-        return mPurchaseDetails;
+    public String getPurchaseData() {
+        return mPurchaseData;
     }
 
     @Nullable
@@ -91,7 +91,7 @@ public class PurchaseData {
     public String toString() {
         try {
             return new JSONObject()
-                    .put("purchaseDetails", new JSONObject(mPurchaseDetails))
+                    .put("purchaseData", new JSONObject(mPurchaseData))
                     .put("purchaseSignature", mPurchaseSignature)
                     .toString(2);
         } catch (JSONException e) {
@@ -152,8 +152,8 @@ public class PurchaseData {
         }
 
         @NonNull
-        public Builder setPurchaseDetails(@Nullable String purchaseDetails) {
-            mPurchaseData.mPurchaseDetails = purchaseDetails;
+        public Builder setPurchaseData(@Nullable String purchaseData) {
+            mPurchaseData.mPurchaseData = purchaseData;
             return this;
         }
 

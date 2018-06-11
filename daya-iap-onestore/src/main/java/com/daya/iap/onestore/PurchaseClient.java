@@ -504,15 +504,13 @@ public class PurchaseClient {
         try {
             PurchaseResult purchaseResult = new PurchaseResult(intent);
 
-            String purchaseDetails = purchaseResult.getPurchaseData();
+            String purchaseData = purchaseResult.getPurchaseData();
             String purchaseSignature = purchaseResult.getPurchaseSignature();
-            if (purchaseDetails == null || purchaseSignature == null) {
+            if (purchaseData == null || purchaseSignature == null) {
                 mPurchaseFlowListener.onError(IapResult.IAP_ERROR_DATA_PARSING);
                 return false;
             }
-
-            PurchaseData purchaseData = new PurchaseData(purchaseDetails, purchaseSignature);
-            mPurchaseFlowListener.onSuccess(purchaseData);
+            mPurchaseFlowListener.onSuccess(new PurchaseData(purchaseData, purchaseSignature));
             return true;
 
         } catch (SecurityException e) {
