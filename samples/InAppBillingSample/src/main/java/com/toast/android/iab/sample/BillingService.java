@@ -15,6 +15,8 @@ import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.android.vending.billing.IInAppBillingService;
+import com.toast.android.iab.sample.billing.helper.Purchase;
+import com.toast.android.iab.sample.billing.helper.SkuDetails;
 
 import org.json.JSONException;
 

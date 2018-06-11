@@ -1,5 +1,7 @@
 package com.toast.android.iab.sample;
 
+import com.toast.android.iab.sample.billing.helper.Purchase;
+
 import java.util.List;
 
 /**

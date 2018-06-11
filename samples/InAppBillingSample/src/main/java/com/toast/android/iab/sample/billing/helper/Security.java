@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.toast.android.iab.sample;
+package com.toast.android.iab.sample.billing.helper;
 
 import android.text.TextUtils;
 import android.util.Base64;

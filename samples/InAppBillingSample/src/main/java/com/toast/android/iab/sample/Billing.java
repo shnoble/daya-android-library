@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import com.toast.android.iab.sample.billing.helper.Purchase;
+
 import java.util.List;
 
 /**

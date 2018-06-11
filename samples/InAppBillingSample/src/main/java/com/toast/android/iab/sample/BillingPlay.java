@@ -8,8 +8,13 @@ import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 import android.util.Log;
 
-import com.android.billingclient.api.*;
+import com.android.billingclient.api.BillingClient;
+import com.android.billingclient.api.BillingClientStateListener;
+import com.android.billingclient.api.BillingFlowParams;
+import com.android.billingclient.api.PurchasesUpdatedListener;
 import com.android.billingclient.api.SkuDetails;
+import com.android.billingclient.api.SkuDetailsParams;
+import com.android.billingclient.api.SkuDetailsResponseListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,7 +46,7 @@ public class BillingPlay implements Billing {
                     Log.d(TAG, "Purchase Updated: " + purchase);
 
                     try {
-                        Purchase result = new Purchase(mPurchasingItemType, purchase.getOriginalJson(), purchase.getSignature());
+                        com.toast.android.iab.sample.billing.helper.Purchase result = new com.toast.android.iab.sample.billing.helper.Purchase(mPurchasingItemType, purchase.getOriginalJson(), purchase.getSignature());
                         if (mOnPurchaseFinishedListener != null) {
                             mOnPurchaseFinishedListener.onSuccess(result);
                         }
@@ -115,7 +120,7 @@ public class BillingPlay implements Billing {
                 if (responseCode == BillingClient.BillingResponse.OK
                         && skuDetailsList != null) {
 
-                    List<com.toast.android.iab.sample.SkuDetails> result = new ArrayList<>();
+                    List<com.toast.android.iab.sample.billing.helper.SkuDetails> result = new ArrayList<>();
                     for (SkuDetails skuDetails : skuDetailsList) {
                         JSONObject o = new JSONObject();
                         try {
@@ -126,7 +131,7 @@ public class BillingPlay implements Billing {
                             o.put("price_currency_code", skuDetails.getPriceCurrencyCode());
                             o.put("title", skuDetails.getTitle());
                             o.put("description", skuDetails.getDescription());
-                            com.toast.android.iab.sample.SkuDetails a = new com.toast.android.iab.sample.SkuDetails(o.toString());
+                            com.toast.android.iab.sample.billing.helper.SkuDetails a = new com.toast.android.iab.sample.billing.helper.SkuDetails(o.toString());
                             result.add(a);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -162,7 +167,7 @@ public class BillingPlay implements Billing {
     }
 
     @Override
-    public void consumePurchase(@NonNull Purchase purchase, @NonNull OnConsumeFinishedListener listener) {
+    public void consumePurchase(@NonNull com.toast.android.iab.sample.billing.helper.Purchase purchase, @NonNull OnConsumeFinishedListener listener) {
 
     }
 

@@ -6,6 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 
+import com.toast.android.iab.sample.billing.helper.Purchase;
+import com.toast.android.iab.sample.billing.helper.SkuDetails;
+
 import java.util.ArrayList;
 import java.util.List;
 
