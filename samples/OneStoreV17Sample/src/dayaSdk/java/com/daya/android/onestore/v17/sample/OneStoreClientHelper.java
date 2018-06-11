@@ -19,8 +19,8 @@ import java.util.List;
 import static com.daya.iap.onestore.IapResult.RESULT_NEED_UPDATE;
 import static com.daya.iap.onestore.IapResult.RESULT_SECURITY_ERROR;
 
-public class OneStoreClientNewHelper implements OneStoreHelper {
-    private static final String TAG = "OneStoreClientNewHelper";
+public class OneStoreClientHelper implements OneStoreHelper {
+    private static final String TAG = "OneStoreClientHelper";
     private static final int API_VERSION = 5;
     private static final int PURCHASE_REQUEST_CODE = 1000;
     private static final int LOGIN_REQUEST_CODE = 2000;
@@ -64,7 +64,7 @@ public class OneStoreClientNewHelper implements OneStoreHelper {
                 }
             };
 
-    OneStoreClientNewHelper(@NonNull Context context) {
+    OneStoreClientHelper(@NonNull Context context, @NonNull String base64PublicKey) {
         mContext = context;
     }
 
@@ -264,7 +264,7 @@ public class OneStoreClientNewHelper implements OneStoreHelper {
                                 .setPurchaseTime(purchaseData.getPurchaseTime())
                                 .setPackageName(purchaseData.getPackageName())
                                 .setDeveloperPayload(purchaseData.getDeveloperPayload())
-                                .setOriginPurchaseData(purchaseData.getPurchaseDetails())
+                                .setOriginPurchaseData(purchaseData.getPurchaseData())
                                 .build();
 
                         listener.onSuccess(Purchase.newBuilder()
@@ -324,7 +324,7 @@ public class OneStoreClientNewHelper implements OneStoreHelper {
                                     .setDeveloperPayload(purchaseData.getDeveloperPayload())
                                     .setPurchaseState(purchaseData.getPurchaseState())
                                     .setRecurringState(purchaseData.getRecurringState())
-                                    .setOriginPurchaseData(purchaseData.getPurchaseDetails())
+                                    .setOriginPurchaseData(purchaseData.getPurchaseData())
                                     .build();
 
                             purchases.add(Purchase.newBuilder()
@@ -409,7 +409,7 @@ public class OneStoreClientNewHelper implements OneStoreHelper {
                 .setRecurringState(purchaseDetails.getRecurringState())
                 .setPurchaseId(purchaseDetails.getPurchaseId())
                 .setDeveloperPayload(purchaseDetails.getDeveloperPayload())
-                .setPurchaseDetails(purchaseDetails.getOrginPurchaseData())
+                .setPurchaseData(purchaseDetails.getOrginPurchaseData())
                 .setPurchaseSignature(purchase.getSignature())
                 .build();
 
@@ -461,7 +461,7 @@ public class OneStoreClientNewHelper implements OneStoreHelper {
                 .setRecurringState(purchaseDetails.getRecurringState())
                 .setPurchaseId(purchaseDetails.getPurchaseId())
                 .setDeveloperPayload(purchaseDetails.getDeveloperPayload())
-                .setPurchaseDetails(purchaseDetails.getOrginPurchaseData())
+                .setPurchaseData(purchaseDetails.getOrginPurchaseData())
                 .setPurchaseSignature(purchase.getSignature())
                 .build();
 
@@ -513,7 +513,7 @@ public class OneStoreClientNewHelper implements OneStoreHelper {
                 .setRecurringState(purchaseDetails.getRecurringState())
                 .setPurchaseId(purchaseDetails.getPurchaseId())
                 .setDeveloperPayload(purchaseDetails.getDeveloperPayload())
-                .setPurchaseDetails(purchaseDetails.getOrginPurchaseData())
+                .setPurchaseData(purchaseDetails.getOrginPurchaseData())
                 .setPurchaseSignature(purchase.getSignature())
                 .build();
 

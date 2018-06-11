@@ -29,8 +29,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //mOneStoreHelper = new OneStoreServiceHelper(this);
-        //mOneStoreHelper = new OneStoreClientHelper(this, BASE64_PUBLIC_KEY);
-        mOneStoreHelper = new OneStoreClientNewHelper(this);
+        mOneStoreHelper = new OneStoreClientHelper(this, BASE64_PUBLIC_KEY);
 
         startSetup();
 
