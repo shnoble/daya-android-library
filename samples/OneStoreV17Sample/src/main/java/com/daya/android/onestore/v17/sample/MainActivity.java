@@ -29,7 +29,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //mOneStoreHelper = new OneStoreServiceHelper(this);
-        mOneStoreHelper = new OneStoreClientHelper(this, BASE64_PUBLIC_KEY);
+        //mOneStoreHelper = new OneStoreClientHelper(this, BASE64_PUBLIC_KEY);
+        mOneStoreHelper = new OneStoreClientNewHelper(this);
 
         startSetup();
 
@@ -37,6 +38,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 checkBillingSupported();
+            }
+        });
+
+        findViewById(R.id.update_or_install).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateOrInstall();
             }
         });
 
@@ -149,6 +157,10 @@ public class MainActivity extends AppCompatActivity {
                 alertFailure("Billing not supported (RemoteException).");
             }
         });
+    }
+
+    private void updateOrInstall() {
+        mOneStoreHelper.launchUpdateOrInstallFlow(this);
     }
 
     @Override

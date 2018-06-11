@@ -1,6 +1,7 @@
 package com.daya.android.onestore.v17.sample;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -106,17 +107,17 @@ class PurchaseDetails {
         private Builder() {
         }
 
-        Builder setOrderId(@NonNull String orderId) {
+        Builder setOrderId(@Nullable String orderId) {
             mPurchaseDetails.mOrderId = orderId;
             return this;
         }
 
-        Builder setProductId(@NonNull String productId) {
+        Builder setProductId(@Nullable String productId) {
             mPurchaseDetails.mProductId = productId;
             return this;
         }
 
-        Builder setPurchaseId(@NonNull String purchaseId) {
+        Builder setPurchaseId(@Nullable String purchaseId) {
             mPurchaseDetails.mPurchaseId = purchaseId;
             return this;
         }
@@ -136,17 +137,17 @@ class PurchaseDetails {
             return this;
         }
 
-        Builder setPackageName(@NonNull String packageName) {
+        Builder setPackageName(@Nullable String packageName) {
             mPurchaseDetails.mPackageName = packageName;
             return this;
         }
 
-        Builder setDeveloperPayload(@NonNull String developerPayload) {
+        Builder setDeveloperPayload(@Nullable String developerPayload) {
             mPurchaseDetails.mDeveloperPayload = developerPayload;
             return this;
         }
 
-        Builder setOriginPurchaseData(@NonNull String originPurchaseData) {
+        Builder setOriginPurchaseData(@Nullable String originPurchaseData) {
             mPurchaseDetails.mOrginPurchaseData = originPurchaseData;
             return this;
         }
