@@ -11,12 +11,11 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
 import com.android.vending.billing.IInAppBillingService;
-import com.toast.android.iab.sample.billing.helper.Purchase;
-import com.toast.android.iab.sample.billing.helper.SkuDetails;
 
 import org.json.JSONException;
 
@@ -27,17 +26,23 @@ import java.util.List;
  * Created by shhong on 2018. 1. 12..
  */
 
-class BillingService implements Billing {
-    private static final String TAG = "Billing." + BillingService.class.getSimpleName();
+class BillingServiceHelper implements BillingHelper {
+    private static final String TAG = "BillingHelper." + BillingServiceHelper.class.getSimpleName();
     private static final int BILLING_RESPONSE_RESULT_OK = 0;
+    private static final int BILLING_RESPONSE_RESULT_ERROR = 1;
+
+    // Item types
+    public static final String ITEM_TYPE_INAPP = "inapp";
+    public static final String ITEM_TYPE_SUBS = "subs";
 
     private Context mContext;
     private IInAppBillingService mService;
     private ServiceConnection mServiceConnection;
     private OnPurchaseFinishedListener mPurchaseFinishedListener;
     private String mPurchasingItemType;
+    private int mPurchasingRequestCode;
 
-    public BillingService(@NonNull Context context) {
+    public BillingServiceHelper(@NonNull Context context) {
         this.mContext = context;
     }
 
@@ -47,13 +52,12 @@ class BillingService implements Billing {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                 mService = IInAppBillingService.Stub.asInterface(iBinder);
-                listener.onSuccess();
+                listener.onSetupFinished(new BillingResult(BILLING_RESPONSE_RESULT_OK, "Setup successful."));
             }
 
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
                 mService = null;
-                listener.onSuccess();
             }
         };
 
@@ -71,31 +75,125 @@ class BillingService implements Billing {
     }
 
     @Override
-    public void queryItems(@NonNull final String productType,
-                           @NonNull final List<String> skus,
-                           @NonNull final QueryItemFinishedListener listener) {
+    public void launchBillingFlow(@NonNull Activity activity,
+                                  @NonNull String skuType,
+                                  @NonNull String sku,
+                                  int requestCode,
+                                  @Nullable String developerPayload,
+                                  @NonNull OnPurchaseFinishedListener listener) {
+        try {
+            Bundle buyIntentBundle = mService.getBuyIntent(3, mContext.getPackageName(), sku, skuType, developerPayload);
+            int response = buyIntentBundle.getInt("RESPONSE_CODE");
+            Log.d(TAG, "Purchase Item - Response code: " + response);
+
+            if (response == BILLING_RESPONSE_RESULT_OK) {
+                PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
+                if (pendingIntent != null) {
+                    try {
+                        mPurchasingItemType = skuType;
+                        mPurchaseFinishedListener = listener;
+                        mPurchasingRequestCode = requestCode;
+
+                        activity.startIntentSenderForResult(
+                                pendingIntent.getIntentSender(),
+                                requestCode,
+                                new Intent(),
+                                Integer.valueOf(0),
+                                Integer.valueOf(0),
+                                Integer.valueOf(0));
+                    } catch (IntentSender.SendIntentException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void queryPurchases(@NonNull final String skuType,
+                               @NonNull QueryPurchasesFinishedListener listener) {
+        List<BillingPurchase> purchases = queryPurchasesInternal(skuType);
+        listener.onQueryPurchasesFinished(new BillingResult(BILLING_RESPONSE_RESULT_OK, "Success"), purchases);
+    }
+
+    private List<BillingPurchase> queryPurchasesInternal(String purchaseType) {
+        try {
+            Bundle ownedItems = mService.getPurchases(3, mContext.getPackageName(), purchaseType, null);
+            int response = ownedItems.getInt("RESPONSE_CODE");
+            if (response == 0) {
+                ArrayList<String> ownedSkus =
+                        ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
+                ArrayList<String> purchaseDataList =
+                        ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
+                ArrayList<String> signatureList =
+                        ownedItems.getStringArrayList("INAPP_DATA_SIGNATURE_LIST");
+                String continuationToken =
+                        ownedItems.getString("INAPP_CONTINUATION_TOKEN");
+
+                if (ownedSkus == null
+                        || purchaseDataList == null
+                        || signatureList == null) {
+                    return null;
+                }
+
+                List<BillingPurchase> purchases = new ArrayList<>();
+
+                for (int i = 0; i < purchaseDataList.size(); ++i) {
+                    String purchaseData = purchaseDataList.get(i);
+                    String signature = signatureList.get(i);
+                    String sku = ownedSkus.get(i);
+
+                    Log.d(TAG, "Purchased Item - Purchase Data: " + purchaseData);
+                    Log.d(TAG, "Purchased Item - Signature: " + signature);
+                    Log.d(TAG, "Purchased Item - SKU: " + sku);
+
+                    try {
+                        BillingPurchase purchase = new BillingPurchase(purchaseType, purchaseData, signature);
+                        purchases.add(purchase);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Log.d(TAG, "Purchased Item - Continuation token: " + continuationToken);
+                return purchases;
+            }
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void querySkuDetailsAsync(@NonNull final String skuType,
+                                     @NonNull final List<String> skus,
+                                     @NonNull final QuerySkuDetailsFinishedListener listener) {
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    List<SkuDetails> skuDetailsList = queryItems(productType, skus);
-                    listener.onSuccess(skuDetailsList);
+                    List<BillingSkuDetails> skuDetailsList = querySkuDetails(skuType, skus);
+                    listener.onQuerySkuDetailsFinished(new BillingResult(BILLING_RESPONSE_RESULT_OK, "Success"), skuDetailsList);
 
                 } catch (RemoteException e) {
-                    listener.onFailure("QueryItem- exception " + e.toString());
-                    e.printStackTrace();
+                    listener.onQuerySkuDetailsFinished(new BillingResult(BILLING_RESPONSE_RESULT_ERROR, e.toString()), null);
                 }
             }
         }).start();
     }
 
     @WorkerThread
-    private List<SkuDetails> queryItems(@NonNull String purchaseType,
-                                        @NonNull List<String> skuList) throws RemoteException {
+    private List<BillingSkuDetails> querySkuDetails(@NonNull String skuType,
+                                                    @NonNull List<String> skus) throws RemoteException {
         final Bundle querySkus = new Bundle();
-        querySkus.putStringArrayList("ITEM_ID_LIST", new ArrayList<>(skuList));
+        querySkus.putStringArrayList("ITEM_ID_LIST", new ArrayList<>(skus));
 
-        Bundle skuDetails = mService.getSkuDetails(3, mContext.getPackageName(), purchaseType, querySkus);
+        Bundle skuDetails = mService.getSkuDetails(3, mContext.getPackageName(), skuType, querySkus);
 
         int response = skuDetails.getInt("RESPONSE_CODE");
         Log.d(TAG, "Query Item - Response code: " + response);
@@ -109,119 +207,21 @@ class BillingService implements Billing {
             return null;
         }
 
-        List<SkuDetails> skus = new ArrayList<>();
+        List<BillingSkuDetails> skuDetailsList = new ArrayList<>();
         for (String thisResponse : responseList) {
             Log.d(TAG, "Query Item - Response: " + thisResponse);
             try {
-                SkuDetails sku = new SkuDetails(thisResponse);
-                skus.add(sku);
+                skuDetailsList.add(new BillingSkuDetails(thisResponse));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        return skus;
+        return skuDetailsList;
     }
 
     @Override
-    public void purchaseItem(@NonNull Activity activity,
-                             @NonNull String sku,
-                             @NonNull String purchaseType,
-                             @NonNull OnPurchaseFinishedListener listener) {
-        if (mPurchaseFinishedListener != null) {
-            return;
-        }
-
-        try {
-            Bundle buyIntentBundle = mService.getBuyIntent(3, mContext.getPackageName(), sku, purchaseType, "bGoa+V7g/yqDXvKRqq+JTFn4uQZbPiQJo4pf9RzJ");
-            int response = buyIntentBundle.getInt("RESPONSE_CODE");
-            Log.d(TAG, "Purchase Item - Response code: " + response);
-
-            if (response == BILLING_RESPONSE_RESULT_OK) {
-                PendingIntent pendingIntent = buyIntentBundle.getParcelable("BUY_INTENT");
-                if (pendingIntent != null) {
-                    try {
-                        mPurchasingItemType = purchaseType;
-                        mPurchaseFinishedListener = listener;
-
-                        activity.startIntentSenderForResult(pendingIntent.getIntentSender(), 1001, new Intent(), Integer.valueOf(0), Integer.valueOf(0), Integer.valueOf(0));
-                    } catch (IntentSender.SendIntentException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void queryPurchasedItems(@NonNull QueryPurchasedItemsFinishedListener listener) {
-        List<Purchase> purchases = new ArrayList<>();
-        List<Purchase> purchasedItems = queryPurchasedItems(ITEM_TYPE_INAPP);
-        if (purchasedItems != null && !purchasedItems.isEmpty()) {
-            purchases.addAll(purchasedItems);
-        }
-        List<Purchase> purchasedSubs = queryPurchasedItems(ITEM_TYPE_SUBS);
-        if (purchasedSubs != null && !purchasedSubs.isEmpty()) {
-            purchases.addAll(purchasedSubs);
-        }
-        listener.onSuccess(purchases);
-    }
-
-    private List<Purchase> queryPurchasedItems(String purchaseType) {
-        try {
-            Bundle ownedItems = mService.getPurchases(3, mContext.getPackageName(), purchaseType, null);
-            int response = ownedItems.getInt("RESPONSE_CODE");
-            if (response == 0) {
-                ArrayList<String> ownedSkus =
-                        ownedItems.getStringArrayList("INAPP_PURCHASE_ITEM_LIST");
-                ArrayList<String>  purchaseDataList =
-                        ownedItems.getStringArrayList("INAPP_PURCHASE_DATA_LIST");
-                ArrayList<String>  signatureList =
-                        ownedItems.getStringArrayList("INAPP_DATA_SIGNATURE_LIST");
-                String continuationToken =
-                        ownedItems.getString("INAPP_CONTINUATION_TOKEN");
-
-                if (ownedSkus == null
-                        || purchaseDataList == null
-                        || signatureList == null) {
-                    return null;
-                }
-
-                List<Purchase> purchases = new ArrayList<>();
-
-                for (int i = 0; i < purchaseDataList.size(); ++i) {
-                    String purchaseData = purchaseDataList.get(i);
-                    String signature = signatureList.get(i);
-                    String sku = ownedSkus.get(i);
-
-                    Log.d(TAG, "Purchased Item - Purchase Data: " + purchaseData);
-                    Log.d(TAG, "Purchased Item - Signature: " + signature);
-                    Log.d(TAG, "Purchased Item - SKU: " + sku);
-
-                    try {
-                        Purchase purchase = new Purchase(purchaseType, purchaseData, signature);
-                        purchases.add(purchase);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                Log.d(TAG, "Purchased Item - Continuation token: " + continuationToken);
-
-                return purchases;
-            }
-
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public void consumePurchase(@NonNull final Purchase purchase, @NonNull final OnConsumeFinishedListener listener) {
+    public void consumeAsync(@NonNull final BillingPurchase purchase,
+                             @NonNull final OnConsumeFinishedListener listener) {
         final String purchaseToken = purchase.getToken();
         if (purchaseToken == null) {
             return;
@@ -235,9 +235,9 @@ class BillingService implements Billing {
                     Log.d(TAG, "Consume purchase - Response code: " + response);
 
                     if (response == BILLING_RESPONSE_RESULT_OK) {
-                        listener.onSuccess(purchase);
+                        listener.onConsumeFinished(new BillingResult(BILLING_RESPONSE_RESULT_OK, "Success"), purchase);
                     } else {
-                        listener.onFailure("Response code: " + response);
+                        listener.onConsumeFinished(new BillingResult(response, "Failed"), purchase);
                     }
 
                 } catch (RemoteException e) {
@@ -263,19 +263,18 @@ class BillingService implements Billing {
                 Log.d(TAG, "Purchase result code: OK");
 
                 try {
-                    Purchase purchase = new Purchase(mPurchasingItemType, purchaseData, dataSignature);
-                    mPurchaseFinishedListener.onSuccess(purchase);
+                    BillingPurchase purchase = new BillingPurchase(mPurchasingItemType, purchaseData, dataSignature);
+                    mPurchaseFinishedListener.onPurchaseFinished(new BillingResult(BILLING_RESPONSE_RESULT_OK, "Success"), purchase);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-            } else if (resultCode == Activity.RESULT_CANCELED){
+            } else if (resultCode == Activity.RESULT_CANCELED) {
                 Log.d(TAG, "Purchase result code: CANCELED");
 
-                mPurchaseFinishedListener.onCancel();
+                mPurchaseFinishedListener.onPurchaseFinished(new BillingResult(responseCode, "Canceled"), null);
             } else {
-
-                mPurchaseFinishedListener.onFailure("Response code: " + resultCode);
+                mPurchaseFinishedListener.onPurchaseFinished(new BillingResult(responseCode, "Failed"), null);
             }
 
             mPurchaseFinishedListener = null;

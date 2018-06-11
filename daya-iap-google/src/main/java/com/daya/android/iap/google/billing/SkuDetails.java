@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.daya.android.iap.google.billing.helper;
+package com.daya.android.iap.google.billing;
 
 import org.json.JSONException;
 import org.json.JSONObject;

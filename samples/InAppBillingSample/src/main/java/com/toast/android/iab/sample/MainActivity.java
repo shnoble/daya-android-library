@@ -2,12 +2,11 @@ package com.toast.android.iab.sample;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-
-import com.toast.android.iab.sample.billing.helper.Purchase;
-import com.toast.android.iab.sample.billing.helper.SkuDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +14,16 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "IAP." + MainActivity.class.getSimpleName();
-    private static final String PURCHASE_TYPE = Billing.ITEM_TYPE_INAPP;
+    private static final String ITEM_TYPE = "inapp";
     private static final String ITEM_SKU = "ruby_000001";
-    private static final String SUBS_SKU = "pro_000001";
+    /*private static final String ITEM_TYPE = "subs";
+    private static final String ITEM_SKU = "pro_000001";*/
+
     private static final String BASE64_ENCODED_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk7EBgTBgsQT9uXJR6r/TBgoSALbDTHd5EuhJyFqrK+VY0BbuFDAs0L9/n6bHDG+Y7UgM36IghZX8rvlplD2ctcfp4gSi1K/pZ3b2NFA6CmiHMo1axX+Utv5fz745bxiQYDjtaTrCqZh4rUCPSt/eBKFlYU3+Drpqh/A+tBHAvPRYGJLc0+fAI6XV7E5LRuFCMD8rLnTkIH/rCf6142dYuf5S9ZXwzsWVjb472iomu9QbpxPIdc66cVehuJ8CKF7GHxo2S4sR2QhQo5d8Hr3AXkmzYI101gyPdsB+2h/3uEkHfLGtuYPEEG+vYEwaEBaXFaj+ANJLPqVMmvB0oDq9BQIDAQAB";
 
-    /*private static final String PURCHASE_TYPE = "subs";
-    private static final String PURCHASE_SKU = "pro_000001";*/
 
-    private Billing mBilling;
-    private Purchase mConsumablePurchase;
+    private BillingHelper mBillingHelper;
+    private BillingPurchase mPurchase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,21 +33,21 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.query_items).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                queryItems();
+                querySkuDetails();
             }
         });
 
         findViewById(R.id.purchase_item).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                purchaseItem();
+                launchBillingFlow();
             }
         });
 
         findViewById(R.id.query_purchased_items).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                queryPurchasedItems();
+                queryPurchases();
             }
         });
 
@@ -59,98 +58,97 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //mBilling = new BillingService(this);
-        mBilling = new BillingHelper(this, BASE64_ENCODED_PUBLIC_KEY);
-        //mBilling = new BillingPlay(this);
-        mBilling.startSetup(new OnBillingSetupFinishedListener() {
+        //mBillingHelper = new BillingServiceHelper(this);
+        mBillingHelper = new BillingClientHelper(this, BASE64_ENCODED_PUBLIC_KEY);
+        //mBillingHelper = new BillingClientHelper(this);
+        mBillingHelper.startSetup(new OnBillingSetupFinishedListener() {
             @Override
-            public void onSuccess() {
-                Log.d(TAG, "Setup success");
-            }
+            public void onSetupFinished(@NonNull BillingResult result) {
+                if (result.isFailure()) {
+                    Log.d(TAG, "Setup failure: " + result.toString());
+                    return;
+                }
 
-            @Override
-            public void onFailure(String message) {
-                Log.d(TAG, "Setup failure: " + message);
+                Log.d(TAG, "Setup success");
             }
         });
     }
 
-    private void queryItems() {
+    private void querySkuDetails() {
         ArrayList<String> itemSkuList = new ArrayList<>();
         itemSkuList.add(ITEM_SKU);
 
-        mBilling.queryItems(Billing.ITEM_TYPE_INAPP, itemSkuList, new QueryItemFinishedListener() {
+        mBillingHelper.querySkuDetailsAsync(ITEM_TYPE, itemSkuList, new QuerySkuDetailsFinishedListener() {
             @Override
-            public void onSuccess(List<SkuDetails> skus) {
+            public void onQuerySkuDetailsFinished(@NonNull BillingResult result,
+                                                  @Nullable List<BillingSkuDetails> skus) {
+                if (result.isFailure()) {
+                    Log.d(TAG, "Query items failure: " + result.toString());
+                    return;
+                }
+
                 Log.d(TAG, "Query items: " + skus.toString());
             }
-
-            @Override
-            public void onFailure(String message) {
-                Log.d(TAG, "Query items failure: " + message);
-            }
         });
     }
 
-    private void purchaseItem() {
-        mBilling.purchaseItem(this, ITEM_SKU, PURCHASE_TYPE, new OnPurchaseFinishedListener() {
-            @Override
-            public void onSuccess(Purchase purchase) {
-                Log.d(TAG, "Purchase success: " + purchase.toString());
-                Log.d(TAG, "Purchase signature: " + purchase.getSignature());
-            }
+    private void launchBillingFlow() {
+        mBillingHelper.launchBillingFlow(this,
+                ITEM_TYPE, ITEM_SKU,
+                100, null,
+                new OnPurchaseFinishedListener() {
+                    @Override
+                    public void onPurchaseFinished(@NonNull BillingResult result,
+                                                   @Nullable BillingPurchase purchase) {
+                        if (result.isFailure()) {
+                            Log.d(TAG, "Purchase failure: " + result);
+                            return;
+                        }
 
-            @Override
-            public void onFailure(String message) {
-                Log.d(TAG, "Purchase failure: " + message);
-            }
-
-            @Override
-            public void onCancel() {
-                Log.d(TAG, "Purchase cancel");
-            }
-        });
+                        Log.d(TAG, "Purchase success: " + purchase);
+                    }
+                });
     }
 
-    private void queryPurchasedItems() {
-        mBilling.queryPurchasedItems(new QueryPurchasedItemsFinishedListener() {
+    private void queryPurchases() {
+        mBillingHelper.queryPurchases(ITEM_TYPE, new QueryPurchasesFinishedListener() {
             @Override
-            public void onSuccess(List<Purchase> purchases) {
-                Log.d(TAG, "Query purchased items success: " + purchases.toString());
+            public void onQueryPurchasesFinished(@NonNull BillingResult result,
+                                                 @Nullable List<BillingPurchase> purchases) {
+                if (result.isFailure()) {
+                    Log.d(TAG, "Query purchased items failure: " + result);
+                    return;
+                }
 
-                if (!purchases.isEmpty()) {
-                    for (Purchase purchase : purchases) {
-                        if (Billing.ITEM_TYPE_INAPP.equalsIgnoreCase(purchase.getItemType())) {
-                            mConsumablePurchase = purchase;
+                Log.d(TAG, "Query purchased success: " + purchases);
+
+                if (purchases != null && !purchases.isEmpty()) {
+                    for (BillingPurchase purchase : purchases) {
+                        if (ITEM_TYPE.equalsIgnoreCase(purchase.getItemType())) {
+                            mPurchase = purchase;
                             break;
                         }
                     }
                 }
             }
-
-            @Override
-            public void onFailure(String message) {
-                Log.d(TAG, "Query purchased items failure: " + message);
-            }
         });
     }
 
     private void consumePurchase() {
-        if (mConsumablePurchase == null
-                || Billing.ITEM_TYPE_SUBS.equalsIgnoreCase(mConsumablePurchase.getItemType())) {
+        if (mPurchase == null
+                || !ITEM_TYPE.equalsIgnoreCase(mPurchase.getItemType())) {
             return;
         }
 
-        mBilling.consumePurchase(mConsumablePurchase, new OnConsumeFinishedListener() {
+        mBillingHelper.consumeAsync(mPurchase, new OnConsumeFinishedListener() {
             @Override
-            public void onSuccess(Purchase purchase) {
-                Log.d(TAG, "Consume success: " + purchase.toString());
-                mConsumablePurchase = null;
-            }
-
-            @Override
-            public void onFailure(String message) {
-                Log.d(TAG, "Consume failure: " + message);
+            public void onConsumeFinished(@NonNull BillingResult result,
+                                          @Nullable BillingPurchase purchase) {
+                if (result.isFailure()) {
+                    Log.d(TAG, "Consume failure: " + purchase);
+                    return;
+                }
+                Log.d(TAG, "Consume success: " + purchase);
             }
         });
     }
@@ -159,13 +157,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        mBilling.dispose();
+        mBillingHelper.dispose();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        mBilling.handleActivityResult(requestCode, resultCode, data);
+        mBillingHelper.handleActivityResult(requestCode, resultCode, data);
     }
 }

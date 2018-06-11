@@ -20,6 +20,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    flavorDimensions "sdk"
+
+    productFlavors {
+        dayaSdk {
+            dimension "sdk"
+        }
+        googleSdk {
+            dimension "sdk"
+        }
+    }
 }
 
 dependencies {
@@ -30,5 +41,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
-    compile 'com.android.billingclient:billing:1.1'
+
+    dayaSdkCompile project(':daya-iap-google')
+    googleSdkCompile 'com.android.billingclient:billing:1.1'
 }

@@ -212,7 +212,7 @@ public class BillingManager {
 
             @Override
             public void onBillingServiceDisconnected() {
-                Log.i(TAG, "Billing service disconnected.");
+                Log.i(TAG, "BillingHelper service disconnected.");
                 mIsServiceConnected = false;
             }
         });
@@ -229,7 +229,7 @@ public class BillingManager {
             case BillingResponse.OK:                    return "OK";
             case BillingResponse.USER_CANCELED:         return "User Canceled";
             case BillingResponse.SERVICE_UNAVAILABLE:   return "Service Unavailable";
-            case BillingResponse.BILLING_UNAVAILABLE:   return "Billing Unavailable";
+            case BillingResponse.BILLING_UNAVAILABLE:   return "BillingHelper Unavailable";
             case BillingResponse.ITEM_UNAVAILABLE:      return "Item Unavailable";
             case BillingResponse.DEVELOPER_ERROR:       return "Developer Error";
             case BillingResponse.ERROR:                 return "Error";

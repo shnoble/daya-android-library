@@ -13,7 +13,7 @@
  * limitations under the License.
  */
 
-package com.daya.android.iap.google.billing.helper;
+package com.daya.android.iap.google.billing;
 
 /**
  * Exception thrown when something went wrong with in-app billing.
