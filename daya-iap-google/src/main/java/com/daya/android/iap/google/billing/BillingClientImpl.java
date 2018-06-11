@@ -54,26 +54,6 @@ class BillingClientImpl extends BillingClient
         });
     }
 
-    @Override
-    public void dispose() {
-        // very important:
-        if (mBroadcastReceiver != null) {
-            mContext.unregisterReceiver(mBroadcastReceiver);
-        }
-
-        // very important:
-        BillingLog.d(TAG, "Destroying helper.");
-        if (mIabHelper != null) {
-            mIabHelper.disposeWhenFinished();
-            mIabHelper = null;
-        }
-
-        if (mExecutorService != null) {
-            mExecutorService.shutdownNow();
-            mExecutorService = null;
-        }
-    }
-
     @UiThread
     private void startSetupInternal(@NonNull final BillingSetupFinishedListener listener) {
         // Create the helper, passing it our context.
@@ -114,6 +94,26 @@ class BillingClientImpl extends BillingClient
                 listener.onSetupFinished(result);
             }
         });
+    }
+
+    @Override
+    public void dispose() {
+        // very important:
+        if (mBroadcastReceiver != null) {
+            mContext.unregisterReceiver(mBroadcastReceiver);
+        }
+
+        // very important:
+        BillingLog.d(TAG, "Destroying helper.");
+        if (mIabHelper != null) {
+            mIabHelper.disposeWhenFinished();
+            mIabHelper = null;
+        }
+
+        if (mExecutorService != null) {
+            mExecutorService.shutdownNow();
+            mExecutorService = null;
+        }
     }
 
     @Override
