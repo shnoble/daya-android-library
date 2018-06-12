@@ -1,4 +1,4 @@
-package com.daya.android.iap.google.billing;
+package com.daya.android.iap.google;
 
 import android.support.annotation.NonNull;
 import android.util.Log;

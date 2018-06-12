@@ -6,12 +6,12 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.daya.android.iap.google.billing.GooglePlayBillingClient;
-import com.daya.android.iap.google.billing.IabResult;
-import com.daya.android.iap.google.billing.Purchase;
-import com.daya.android.iap.google.billing.PurchaseFlowParams;
-import com.daya.android.iap.google.billing.SkuDetails;
-import com.daya.android.iap.google.billing.SkuDetailsParams;
+import com.daya.android.iap.google.GooglePlayBillingClient;
+import com.daya.android.iap.google.IabResult;
+import com.daya.android.iap.google.Purchase;
+import com.daya.android.iap.google.PurchaseFlowParams;
+import com.daya.android.iap.google.SkuDetails;
+import com.daya.android.iap.google.SkuDetailsParams;
 
 import org.json.JSONException;
 

@@ -5,7 +5,7 @@
  * @author shhong@nhnent.com
  */
 
-package com.daya.android.iap.google.billing;
+package com.daya.android.iap.google;
 
 /** Parameters to initiate a purchase flow. (See {@link GooglePlayBillingClient#launchPurchaseFlow}). */
 public class PurchaseFlowParams {

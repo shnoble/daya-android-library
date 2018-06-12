@@ -1,4 +1,4 @@
-package com.daya.android.iap.google.billing;
+package com.daya.android.iap.google;
 
 /**
  * Created by shhong on 2018. 2. 22..

@@ -5,7 +5,7 @@
  * @author shhong@nhnent.com
  */
 
-package com.daya.android.iap.google.billing;
+package com.daya.android.iap.google;
 
 import android.support.annotation.StringDef;
 

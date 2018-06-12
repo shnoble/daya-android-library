@@ -1,4 +1,4 @@
-package com.daya.android.iap.google.billing;
+package com.daya.android.iap.google;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static com.daya.android.iap.google.billing.IabHelper.BILLING_RESPONSE_RESULT_OK;
+import static com.daya.android.iap.google.IabHelper.BILLING_RESPONSE_RESULT_OK;
 
 class GooglePlayBillingClientImpl extends GooglePlayBillingClient
         implements IabBroadcastReceiver.IabBroadcastListener{

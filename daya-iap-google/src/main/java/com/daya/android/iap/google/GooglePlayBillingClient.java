@@ -1,4 +1,4 @@
-package com.daya.android.iap.google.billing;
+package com.daya.android.iap.google;
 
 import android.app.Activity;
 import android.content.Context;
