@@ -161,6 +161,7 @@ class OneStoreBillingClientImpl extends OneStoreBillingClient {
         LoginFlowListener loginFlowListener = new LoginFlowListener() {
             @Override
             public void onSuccess() {
+                dispose();
                 listener.onLoginFinished(RESULT_OK);
             }
 
@@ -249,7 +250,7 @@ class OneStoreBillingClientImpl extends OneStoreBillingClient {
                 params.getSku(),
                 "",
                 params.getProductType(),
-                params.getDeveloperPayload(),
+                params.getDeveloperPayload() != null ? params.getDeveloperPayload() : "",
                 "",
                 false,
                 purchaseFlowListener);
