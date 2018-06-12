@@ -1,5 +1,6 @@
 package com.daya.android.reflect;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -21,6 +22,24 @@ public class Reflection {
             throws ClassNotFoundException,
             IllegalAccessException, InstantiationException {
         return clazz.newInstance();
+    }
+
+    public static Object newInstance(Constructor<?> constructor,
+                                     Object ... initArgs)
+            throws IllegalAccessException, InvocationTargetException, InstantiationException {
+        return constructor.newInstance(initArgs);
+    }
+
+    public static Constructor<?> getDeclaredConstructor(String className,
+                                                        Class<?>... parameterTypes)
+            throws ClassNotFoundException, NoSuchMethodException {
+        return getClass(className).getDeclaredConstructor(parameterTypes);
+    }
+
+    public static Constructor<?> getDeclaredConstructor(Class<?> clazz,
+                                                        Class<?>... parameterTypes)
+            throws ClassNotFoundException, NoSuchMethodException {
+        return clazz.getDeclaredConstructor(parameterTypes);
     }
 
     public static Class<?> getClass(String className)
