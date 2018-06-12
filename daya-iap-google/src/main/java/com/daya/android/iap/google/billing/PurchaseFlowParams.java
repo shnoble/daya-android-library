@@ -7,7 +7,7 @@
 
 package com.daya.android.iap.google.billing;
 
-/** Parameters to initiate a purchase flow. (See {@link BillingClientLegacy#launchPurchaseFlow}). */
+/** Parameters to initiate a purchase flow. (See {@link GooglePlayBillingClient#launchPurchaseFlow}). */
 public class PurchaseFlowParams {
 
     private String mSku;
