@@ -50,6 +50,13 @@ public abstract class OneStoreBillingClient {
     }
 
     /**
+     * Initiate the login flow.
+     *
+     * @param activity An activity reference.
+     */
+    public abstract void launchUpdateOrInstallFlow(@NonNull Activity activity);
+
+    /**
      * Callback for setup process. This listener's {@link #onSetupFinished} method is called
      * when the setup process is complete.
      */
@@ -77,6 +84,30 @@ public abstract class OneStoreBillingClient {
      * disposed of, it can't be used again.
      */
     public abstract void dispose();
+
+    /**
+     * Callback that notifies when a login is finished.
+     */
+    public interface LoginFinishedListener {
+        /**
+         * Called to notify that a login finished.
+         *
+         * @param result The result of the login.
+         */
+        void onLoginFinished(@NonNull IapResult result);
+    }
+
+    /**
+     * Initiate the login flow.
+     *
+     * @param activity An activity reference.
+     * @param requestCode A request code (to differentiate from other responses -- as in
+     *                    {@link Activity#startActivityForResult}).
+     * @param listener The listener to notify when the login process finishes.
+     */
+    public abstract void launchLoginFlow(@NonNull final Activity activity,
+                                         final int requestCode,
+                                         @NonNull final LoginFinishedListener listener);
 
     /**
      * Callback that notifies when a purchase is finished.
@@ -117,7 +148,7 @@ public abstract class OneStoreBillingClient {
         /**
          * Called to notify that an purchases query operation completed.
          *
-         * @param result    The result of the operation.
+         * @param result           The result of the operation.
          * @param purchaseDataList The purchase data list.
          */
         void onQueryPurchasesResponse(
@@ -139,7 +170,7 @@ public abstract class OneStoreBillingClient {
         /**
          * Called to notify that a fetch product details operation has finished.
          *
-         * @param result         Result of the update.
+         * @param result             Result of the update.
          * @param productDetailsList List of product details.
          */
         void onProductDetailsResponse(
@@ -157,12 +188,14 @@ public abstract class OneStoreBillingClient {
             @NonNull ProductDetailsParams params, @NonNull ProductDetailsResponseListener listener);
 
 
-    /** Callback that notifies when a consumption operation finishes. */
+    /**
+     * Callback that notifies when a consumption operation finishes.
+     */
     public interface ConsumeResponseListener {
         /**
          * Called to notify that a consume operation has finished.
          *
-         * @param result The result of consume operation.
+         * @param result       The result of consume operation.
          * @param purchaseData The purchase that was (or was to be) consumed.
          */
         void onConsumeResponse(@NonNull IapResult result, @Nullable PurchaseData purchaseData);
@@ -171,13 +204,13 @@ public abstract class OneStoreBillingClient {
     /**
      * Consumes a given in-app product. Consuming can only be done on an item that's owned, and as a
      * result of consumption, the user will no longer own it.
-     *
+     * <p>
      * <p>Consumption is done asynchronously and the listener receives the callback specified upon
      * completion.
      *
      * @param purchaseData The purchase instance of the item to consume.
      * @param listener     Implement it to get the result of your consume operation returned
-     *     asynchronously through the callback with token and result.
+     *                     asynchronously through the callback with token and result.
      */
     public abstract void consumeAsync(
             @NonNull PurchaseData purchaseData, @NonNull ConsumeResponseListener listener);
@@ -189,11 +222,11 @@ public abstract class OneStoreBillingClient {
      * MUST be called from the UI thread of the Activity.
      *
      * @param requestCode The requestCode as you received it.
-     * @param resultCode The resultCode as you received it.
-     * @param data The data (Intent) as you received it.
+     * @param resultCode  The resultCode as you received it.
+     * @param data        The data (Intent) as you received it.
      * @return Returns true if the result was related to a purchase flow and was handled;
-     *     false if the result was not related to a purchase, in which case you should
-     *     handle it normally.
+     * false if the result was not related to a purchase, in which case you should
+     * handle it normally.
      */
     @UiThread
     public abstract boolean handleActivityResult(int requestCode, int resultCode, Intent data);

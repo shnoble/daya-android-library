@@ -13,6 +13,7 @@ import com.daya.android.iap.onestore.IapResult;
 import com.daya.android.iap.onestore.ProductDetails;
 import com.daya.android.iap.onestore.PurchaseClient;
 import com.daya.android.iap.onestore.PurchaseData;
+import com.daya.android.iap.onestore.installer.AppInstaller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +23,11 @@ import static com.daya.android.iap.onestore.IapResult.RESULT_OK;
 import static com.daya.android.iap.onestore.IapResult.RESULT_SECURITY_ERROR;
 import static com.daya.android.iap.onestore.IapResult.RESULT_SERVICE_UNAVAILABLE;
 import static com.daya.android.iap.onestore.IapResult.RESULT_USER_CANCELED;
-import static com.daya.android.iap.onestore.PurchaseClient.*;
 import static com.daya.android.iap.onestore.PurchaseClient.BillingSupportedListener;
+import static com.daya.android.iap.onestore.PurchaseClient.ConsumeListener;
+import static com.daya.android.iap.onestore.PurchaseClient.LoginFlowListener;
 import static com.daya.android.iap.onestore.PurchaseClient.PurchaseFlowListener;
+import static com.daya.android.iap.onestore.PurchaseClient.QueryProductsListener;
 import static com.daya.android.iap.onestore.PurchaseClient.QueryPurchaseListener;
 import static com.daya.android.iap.onestore.PurchaseClient.ServiceConnectionListener;
 
@@ -39,7 +42,12 @@ class OneStoreBillingClientImpl extends OneStoreBillingClient {
     @Nullable
     private PurchaseFinishedListener mPurchaseFinishedListener;
 
+    @Nullable
+    private LoginFinishedListener mLoginFinishedListener;
+
     private int mPurchaseFlowRequestCode;
+
+    private int mLoginFlowRequestCode;
 
     OneStoreBillingClientImpl(@NonNull Context context) {
         mPurchaseClient = new PurchaseClient(context);
@@ -47,6 +55,16 @@ class OneStoreBillingClientImpl extends OneStoreBillingClient {
 
     private boolean isReady() {
         return mIsReady;
+    }
+
+    @Override
+    public void launchUpdateOrInstallFlow(@NonNull final Activity activity) {
+        postToUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AppInstaller.updateOrInstall(activity);
+            }
+        });
     }
 
     @Override
@@ -116,6 +134,43 @@ class OneStoreBillingClientImpl extends OneStoreBillingClient {
     public void dispose() {
         mPurchaseClient.terminate();
         mIsReady = false;
+    }
+
+    @Override
+    public void launchLoginFlow(@NonNull Activity activity,
+                                int requestCode,
+                                @NonNull final LoginFinishedListener listener) {
+        LoginFlowListener loginFlowListener = new LoginFlowListener() {
+            @Override
+            public void onSuccess() {
+                listener.onLoginFinished(RESULT_OK);
+            }
+
+            @Override
+            public void onError(@NonNull IapResult result) {
+                listener.onLoginFinished(result);
+            }
+
+            @Override
+            public void onErrorRemoteException() {
+                listener.onLoginFinished(RESULT_SERVICE_UNAVAILABLE);
+            }
+
+            @Override
+            public void onErrorSecurityException() {
+                listener.onLoginFinished(RESULT_SECURITY_ERROR);
+            }
+
+            @Override
+            public void onErrorNeedUpdateException() {
+                listener.onLoginFinished(RESULT_NEED_UPDATE);
+            }
+        };
+
+        mLoginFinishedListener = listener;
+        mLoginFlowRequestCode = requestCode;
+
+        mPurchaseClient.launchLoginFlow(API_VERSION, activity, requestCode, loginFlowListener);
     }
 
     @Override
@@ -338,12 +393,23 @@ class OneStoreBillingClientImpl extends OneStoreBillingClient {
             if (resultCode == Activity.RESULT_OK) {
                 return mPurchaseClient.handlePurchaseData(data);
 
-            } else if (resultCode == Activity.RESULT_CANCELED){
+            } else if (resultCode == Activity.RESULT_CANCELED) {
                 if (mPurchaseFinishedListener != null) {
                     mPurchaseFinishedListener.onPurchaseFinished(RESULT_USER_CANCELED, null);
                 }
             }
             mPurchaseFinishedListener = null;
+            return true;
+
+        } else if (requestCode == mLoginFlowRequestCode) {
+            if (resultCode == Activity.RESULT_OK) {
+                return mPurchaseClient.handleLoginData(data);
+
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                if (mLoginFinishedListener != null) {
+                    mLoginFinishedListener.onLoginFinished(RESULT_USER_CANCELED);
+                }
+            }
             return true;
         }
         return false;
