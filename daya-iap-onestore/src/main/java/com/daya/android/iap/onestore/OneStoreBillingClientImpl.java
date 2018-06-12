@@ -23,7 +23,7 @@ import static com.daya.android.iap.onestore.api.IapResult.RESULT_OK;
 import static com.daya.android.iap.onestore.api.IapResult.RESULT_SECURITY_ERROR;
 import static com.daya.android.iap.onestore.api.IapResult.RESULT_SERVICE_UNAVAILABLE;
 import static com.daya.android.iap.onestore.api.IapResult.RESULT_USER_CANCELED;
-import static com.daya.android.iap.onestore.api.PurchaseClient.BillingSupportedListener;
+import static com.daya.android.iap.onestore.api.PurchaseClient.*;
 import static com.daya.android.iap.onestore.api.PurchaseClient.ConsumeListener;
 import static com.daya.android.iap.onestore.api.PurchaseClient.LoginFlowListener;
 import static com.daya.android.iap.onestore.api.PurchaseClient.PurchaseFlowListener;
@@ -79,40 +79,12 @@ class OneStoreBillingClientImpl extends OneStoreBillingClient {
 
     @UiThread
     private void startSetupInternal(@NonNull final BillingSetupFinishedListener listener) {
-        final BillingSupportedListener billingSupportedListener
-                = new BillingSupportedListener() {
-            @Override
-            public void onSuccess() {
-                mIsReady = true;
-                listener.onSetupFinished(RESULT_OK);
-            }
-
-            @Override
-            public void onError(@NonNull IapResult result) {
-                listener.onSetupFinished(result);
-            }
-
-            @Override
-            public void onErrorRemoteException() {
-                listener.onSetupFinished(RESULT_SERVICE_UNAVAILABLE);
-            }
-
-            @Override
-            public void onErrorSecurityException() {
-                listener.onSetupFinished(RESULT_SECURITY_ERROR);
-            }
-
-            @Override
-            public void onErrorNeedUpdateException() {
-                listener.onSetupFinished(RESULT_NEED_UPDATE);
-            }
-        };
-
         ServiceConnectionListener serviceConnectionListener
                 = new ServiceConnectionListener() {
             @Override
             public void onConnected() {
-                mPurchaseClient.isBillingSupportedAsync(API_VERSION, billingSupportedListener);
+                mIsReady = true;
+                listener.onSetupFinished(RESULT_OK);
             }
 
             @Override
@@ -134,6 +106,52 @@ class OneStoreBillingClientImpl extends OneStoreBillingClient {
     public void dispose() {
         mPurchaseClient.terminate();
         mIsReady = false;
+    }
+
+    @Override
+    public void isBillingSupportedAsync(@NonNull final BillingSupportedResponseListener listener) {
+        Executable executable = new Executable() {
+            @Override
+            public void execute(@NonNull IapResult result) {
+                if (result.isFailed()) {
+                    listener.onBillingSupportedResponse(result);
+                    return;
+                }
+                isBillingSupportedAsyncInternal(listener);
+            }
+        };
+        connectServiceAndExecute(executable);
+    }
+
+    private void isBillingSupportedAsyncInternal(@NonNull final BillingSupportedResponseListener listener) {
+        BillingSupportedListener billingSupportedListener = new BillingSupportedListener() {
+            @Override
+            public void onSuccess() {
+                listener.onBillingSupportedResponse(RESULT_OK);
+            }
+
+            @Override
+            public void onError(@NonNull IapResult result) {
+                listener.onBillingSupportedResponse(result);
+            }
+
+            @Override
+            public void onErrorRemoteException() {
+                listener.onBillingSupportedResponse(RESULT_SERVICE_UNAVAILABLE);
+            }
+
+            @Override
+            public void onErrorSecurityException() {
+                listener.onBillingSupportedResponse(RESULT_SECURITY_ERROR);
+            }
+
+            @Override
+            public void onErrorNeedUpdateException() {
+                listener.onBillingSupportedResponse(RESULT_NEED_UPDATE);
+            }
+        };
+
+        mPurchaseClient.isBillingSupportedAsync(API_VERSION, billingSupportedListener);
     }
 
     @Override
@@ -410,6 +428,7 @@ class OneStoreBillingClientImpl extends OneStoreBillingClient {
                     mLoginFinishedListener.onLoginFinished(RESULT_USER_CANCELED);
                 }
             }
+            mLoginFinishedListener = null;
             return true;
         }
         return false;

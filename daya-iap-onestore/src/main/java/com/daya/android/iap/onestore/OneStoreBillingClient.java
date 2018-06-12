@@ -86,6 +86,26 @@ public abstract class OneStoreBillingClient {
     public abstract void dispose();
 
     /**
+     * Callback to check if billing is supported. This listener's {@link #isBillingSupportedAsync} method is called
+     * when the check process is complete.
+     */
+    public interface BillingSupportedResponseListener {
+        /**
+         * Called to notify that checking billing supported is complete.
+         *
+         * @param result The result.
+         */
+        void onBillingSupportedResponse(@NonNull IapResult result);
+    }
+
+    /**
+     * Check billing supported.
+     *
+     * @param listener The listener to notify that checking billing supported is complete.
+     */
+    public abstract void isBillingSupportedAsync(@NonNull BillingSupportedResponseListener listener);
+
+    /**
      * Callback that notifies when a login is finished.
      */
     public interface LoginFinishedListener {
@@ -105,9 +125,9 @@ public abstract class OneStoreBillingClient {
      *                    {@link Activity#startActivityForResult}).
      * @param listener The listener to notify when the login process finishes.
      */
-    public abstract void launchLoginFlow(@NonNull final Activity activity,
-                                         final int requestCode,
-                                         @NonNull final LoginFinishedListener listener);
+    public abstract void launchLoginFlow(@NonNull Activity activity,
+                                         int requestCode,
+                                         @NonNull LoginFinishedListener listener);
 
     /**
      * Callback that notifies when a purchase is finished.
