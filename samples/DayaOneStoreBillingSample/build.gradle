@@ -22,19 +22,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-    flavorDimensions "store"
-
-    productFlavors {
-        google {
-            dimension "store"
-            applicationId "com.toast.android.iab.sample"
-        }
-        onestore {
-            dimension "store"
-            applicationId "com.daya.android.iap.onestore.v17.sample"
-        }
-    }
 }
 
 dependencies {
@@ -46,7 +33,5 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile project(':daya-iap')
-    googleCompile project(':daya-iap-google')
-    onestoreCompile project(':daya-iap-onestore')
+    compile project(':daya-iap-onestore')
 }

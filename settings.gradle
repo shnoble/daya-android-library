@@ -4,14 +4,13 @@ include ':daya-http'
 include ':daya-auth'
 include ':daya-analytics'
 include ':daya-crash'
-include ':daya-iap'
 include ':daya-iap-google'
 include ':daya-iap-onestore'
 
 // Daya Apps
 include ':daya-develop'
 include ':daya-sample'
-include ':samples:DayaInAppPurchaseSample'
+include ':samples:DayaOneStoreBillingSample'
 
 // Samples
 include 'samples:AccountSample'

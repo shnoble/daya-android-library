@@ -33,5 +33,4 @@ dependencies {
     })
 
     compile project(':daya-util')
-    compile project(':daya-iap')
 }
