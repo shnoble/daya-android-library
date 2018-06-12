@@ -140,7 +140,6 @@ public abstract class GooglePlayBillingClient {
      *
      * @param listener The listener to notify when the refresh operation completes.
      */
-    @UiThread
     public abstract void queryPurchasesAsync(@NonNull @SkuType String skuType,
                                              @NonNull QueryPurchasesResponseListener listener);
 

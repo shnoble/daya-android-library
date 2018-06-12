@@ -141,7 +141,6 @@ class GooglePlayBillingClientImpl extends GooglePlayBillingClient
                     listener.onPurchaseFinished(result, null);
                     return;
                 }
-
                 launchBillingFlowInternal(activity, params, requestCode, listener);
             }
         };

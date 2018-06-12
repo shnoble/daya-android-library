@@ -56,7 +56,7 @@ public class SkuDetailsParams {
             return this;
         }
 
-        /** Returns {@link SkuDetailsParams} reference to initiate a purchase flow. */
+        /** Returns {@link SkuDetailsParams} reference to initiate a query sku details. */
         public SkuDetailsParams build() {
             return mParams;
         }
