@@ -6,18 +6,18 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.daya.android.iap.onestore.IapResult;
-import com.daya.android.iap.onestore.ProductDetails;
-import com.daya.android.iap.onestore.PurchaseClient;
-import com.daya.android.iap.onestore.PurchaseData;
-import com.daya.android.iap.onestore.RecurringAction;
+import com.daya.android.iap.onestore.api.IapResult;
+import com.daya.android.iap.onestore.api.ProductDetails;
+import com.daya.android.iap.onestore.api.PurchaseClient;
+import com.daya.android.iap.onestore.api.PurchaseData;
+import com.daya.android.iap.onestore.api.RecurringAction;
 import com.daya.android.util.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.daya.android.iap.onestore.IapResult.RESULT_NEED_UPDATE;
-import static com.daya.android.iap.onestore.IapResult.RESULT_SECURITY_ERROR;
+import static com.daya.android.iap.onestore.api.IapResult.RESULT_NEED_UPDATE;
+import static com.daya.android.iap.onestore.api.IapResult.RESULT_SECURITY_ERROR;
 
 public class OneStoreClientHelper implements OneStoreHelper {
     private static final String TAG = "OneStoreClientHelper";

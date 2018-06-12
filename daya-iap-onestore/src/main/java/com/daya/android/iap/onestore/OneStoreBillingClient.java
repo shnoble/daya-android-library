@@ -1,4 +1,4 @@
-package com.daya.android.iap;
+package com.daya.android.iap.onestore;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,10 +7,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.UiThread;
 
-import com.daya.android.iap.onestore.IapResult;
-import com.daya.android.iap.onestore.ProductDetails;
-import com.daya.android.iap.onestore.ProductType;
-import com.daya.android.iap.onestore.PurchaseData;
+import com.daya.android.iap.onestore.api.IapResult;
+import com.daya.android.iap.onestore.api.ProductDetails;
+import com.daya.android.iap.onestore.api.ProductType;
+import com.daya.android.iap.onestore.api.PurchaseData;
 
 import java.util.List;
 

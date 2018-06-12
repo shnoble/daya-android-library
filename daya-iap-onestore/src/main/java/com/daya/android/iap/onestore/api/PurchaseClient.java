@@ -1,4 +1,4 @@
-package com.daya.android.iap.onestore;
+package com.daya.android.iap.onestore.api;
 
 import android.app.Activity;
 import android.content.ComponentName;

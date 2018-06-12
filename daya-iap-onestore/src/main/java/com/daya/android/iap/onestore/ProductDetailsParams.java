@@ -1,6 +1,6 @@
-package com.daya.android.iap;
+package com.daya.android.iap.onestore;
 
-import com.daya.android.iap.onestore.ProductType;
+import com.daya.android.iap.onestore.api.ProductType;
 
 import java.util.List;
 

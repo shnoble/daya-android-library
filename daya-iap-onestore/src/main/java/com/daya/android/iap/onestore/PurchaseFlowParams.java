@@ -5,11 +5,11 @@
  * @author shhong@nhnent.com
  */
 
-package com.daya.android.iap;
+package com.daya.android.iap.onestore;
 
 import android.support.annotation.Nullable;
 
-import com.daya.android.iap.onestore.ProductType;
+import com.daya.android.iap.onestore.api.ProductType;
 
 /** Parameters to initiate a purchase flow. (See {@link OneStoreBillingClient#launchPurchaseFlow}). */
 public class PurchaseFlowParams {
