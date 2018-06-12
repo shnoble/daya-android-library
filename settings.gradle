@@ -11,6 +11,7 @@ include ':daya-iap-onestore'
 // Daya Apps
 include ':daya-develop'
 include ':daya-sample'
+include ':samples:DayaInAppPurchaseSample'
 
 // Samples
 include 'samples:AccountSample'

@@ -1,4 +1,4 @@
-apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 27
@@ -6,6 +6,7 @@ android {
 
 
     defaultConfig {
+        applicationId "com.daya.android.iap.sample"
         minSdkVersion 15
         targetSdkVersion 27
         versionCode 1
@@ -22,16 +23,30 @@ android {
         }
     }
 
+    flavorDimensions "store"
+
+    productFlavors {
+        google {
+            dimension "store"
+            applicationId "com.toast.android.iab.sample"
+        }
+        onestore {
+            dimension "store"
+            applicationId "com.daya.android.iap.onestore.v17.sample"
+        }
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:27.1.1'
+    compile 'com.android.support.constraint:constraint-layout:1.1.0'
     testCompile 'junit:junit:4.12'
     androidTestCompile('com.android.support.test.espresso:espresso-core:3.0.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile project(':daya-util')
     compile project(':daya-iap')
+    googleCompile project(':daya-iap-google')
+    onestoreCompile project(':daya-iap-onestore')
 }
