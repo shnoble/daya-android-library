@@ -503,15 +503,14 @@ public class PurchaseClient {
 
         try {
             PurchaseResult purchaseResult = new PurchaseResult(intent);
-
             String purchaseData = purchaseResult.getPurchaseData();
             String purchaseSignature = purchaseResult.getPurchaseSignature();
-            if (purchaseData == null || purchaseSignature == null) {
+
+            if (purchaseData != null && purchaseSignature != null) {
+                mPurchaseFlowListener.onSuccess(new PurchaseData(purchaseData, purchaseSignature));
+            } else {
                 mPurchaseFlowListener.onError(IapResult.IAP_ERROR_DATA_PARSING);
-                return false;
             }
-            mPurchaseFlowListener.onSuccess(new PurchaseData(purchaseData, purchaseSignature));
-            return true;
 
         } catch (SecurityException e) {
             mPurchaseFlowListener.onErrorSecurityException();
@@ -522,7 +521,7 @@ public class PurchaseClient {
         } catch (JSONException e) {
             mPurchaseFlowListener.onError(IapResult.IAP_ERROR_DATA_PARSING);
         }
-        return false;
+        return true;
     }
 
     public boolean handleLoginData(@Nullable Intent intent) {
