@@ -23,10 +23,12 @@ import java.util.concurrent.Executors;
 import static com.daya.android.iap.google.IabHelper.BILLING_RESPONSE_RESULT_OK;
 
 class GooglePlayBillingClientImpl extends GooglePlayBillingClient
-        implements IabBroadcastReceiver.IabBroadcastListener{
+        implements IabBroadcastReceiver.IabBroadcastListener {
     private static final String TAG = "GooglePlayBillingClient";
 
-    /** Total number of cores of current device */
+    /**
+     * Total number of cores of current device
+     */
     private static int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
 
     @NonNull
@@ -220,6 +222,13 @@ class GooglePlayBillingClientImpl extends GooglePlayBillingClient
     @UiThread
     private void queryPurchasesAsyncInternal(@NonNull @SkuType final String skuType,
                                              @NonNull final QueryPurchasesResponseListener listener) {
+        if (!isReady()) {
+            listener.onQueryPurchasesResponse(
+                    new IabResult(IabHelper.BILLING_RESPONSE_SERVICE_DISCONNECTED,
+                            "Service Disconnected"), null);
+            return;
+        }
+
         try {
             mIabHelper.queryInventoryAsync(true, null, null, new IabHelper.QueryInventoryFinishedListener() {
                 @Override
