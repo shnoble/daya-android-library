@@ -161,7 +161,6 @@ class OneStoreBillingClientImpl extends OneStoreBillingClient {
         LoginFlowListener loginFlowListener = new LoginFlowListener() {
             @Override
             public void onSuccess() {
-                dispose();
                 listener.onLoginFinished(RESULT_OK);
             }
 
@@ -408,26 +407,22 @@ class OneStoreBillingClientImpl extends OneStoreBillingClient {
 
     @Override
     public boolean handleActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == mPurchaseFlowRequestCode) {
+        if (requestCode == mPurchaseFlowRequestCode && mPurchaseFinishedListener != null) {
             if (resultCode == Activity.RESULT_OK) {
                 return mPurchaseClient.handlePurchaseData(data);
 
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                if (mPurchaseFinishedListener != null) {
-                    mPurchaseFinishedListener.onPurchaseFinished(RESULT_USER_CANCELED, null);
-                }
+                mPurchaseFinishedListener.onPurchaseFinished(RESULT_USER_CANCELED, null);
             }
             mPurchaseFinishedListener = null;
             return true;
-
-        } else if (requestCode == mLoginFlowRequestCode) {
+        }
+        if (requestCode == mLoginFlowRequestCode && mLoginFinishedListener != null) {
             if (resultCode == Activity.RESULT_OK) {
                 return mPurchaseClient.handleLoginData(data);
 
             } else if (resultCode == Activity.RESULT_CANCELED) {
-                if (mLoginFinishedListener != null) {
-                    mLoginFinishedListener.onLoginFinished(RESULT_USER_CANCELED);
-                }
+                mLoginFinishedListener.onLoginFinished(RESULT_USER_CANCELED);
             }
             mLoginFinishedListener = null;
             return true;
