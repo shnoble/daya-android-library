@@ -19,3 +19,12 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keepattributes Exceptions,SourceFile,LineNumberTable
+
+-keep public class com.onestore.extern.iap.** { public *; }
+
+-keep public class com.daya.android.iap.onestore.api.IapResult { public *; }
+-keep public class com.daya.android.iap.onestore.api.PurchaseClient { public *; }
+-keep public class com.daya.android.iap.onestore.api.ProductDetails { public *; }
+-keep public class com.daya.android.iap.onestore.api.PurchaseData { public *; }
+-keep public class com.daya.android.iap.onestore.api.RecurringAction { public *; }
