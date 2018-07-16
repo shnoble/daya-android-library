@@ -21,11 +21,11 @@ public class PurchaseData {
     PurchaseData(@NonNull String purchaseData,
                  @NonNull String purchaseSignature) throws JSONException {
         JSONObject jsonObject = new JSONObject(purchaseData);
-        mOrderId = jsonObject.optString("orderId");
-        mPackageName = jsonObject.optString("packageName");
-        mProductId = jsonObject.optString("productId");
-        mPurchaseTime = jsonObject.optLong("purchaseTime");
-        mPurchaseId = jsonObject.optString("purchaseId");
+        mOrderId = jsonObject.getString("orderId");
+        mPackageName = jsonObject.getString("packageName");
+        mProductId = jsonObject.getString("productId");
+        mPurchaseTime = jsonObject.getLong("purchaseTime");
+        mPurchaseId = jsonObject.getString("purchaseId");
         mPurchaseState = jsonObject.optInt("purchaseState");
         mRecurringState = jsonObject.optInt("recurringState");
         mDeveloperPayload = jsonObject.optString("developerPayload");
@@ -36,17 +36,17 @@ public class PurchaseData {
     private PurchaseData() {
     }
 
-    @Nullable
+    @NonNull
     public String getOrderId() {
         return mOrderId;
     }
 
-    @Nullable
+    @NonNull
     public String getPackageName() {
         return mPackageName;
     }
 
-    @Nullable
+    @NonNull
     public String getProductId() {
         return mProductId;
     }
@@ -55,7 +55,7 @@ public class PurchaseData {
         return mPurchaseTime;
     }
 
-    @Nullable
+    @NonNull
     public String getPurchaseId() {
         return mPurchaseId;
     }
@@ -73,12 +73,12 @@ public class PurchaseData {
         return mDeveloperPayload;
     }
 
-    @Nullable
+    @NonNull
     public String getPurchaseData() {
         return mPurchaseData;
     }
 
-    @Nullable
+    @NonNull
     public String getPurchaseSignature() {
         return mPurchaseSignature;
     }
@@ -165,6 +165,15 @@ public class PurchaseData {
 
         @NonNull
         public PurchaseData build() {
+            Validate.notNullOrEmpty(mPurchaseData.mOrderId, "Order ID cannot be null or empty.");
+            Validate.notNullOrEmpty(mPurchaseData.mPackageName, "Package name cannot be null or empty.");
+            Validate.notNullOrEmpty(mPurchaseData.mProductId, "Product ID cannot be null or empty.");
+            if (mPurchaseData.mPurchaseTime <= 0) {
+                throw new IllegalStateException("Purchase time can not be less than or equal to zero.");
+            }
+            Validate.notNullOrEmpty(mPurchaseData.mPurchaseId, "Purchase ID cannot be null or empty.");
+            Validate.notNullOrEmpty(mPurchaseData.mPurchaseData, "Purchase data cannot be null or empty.");
+            Validate.notNullOrEmpty(mPurchaseData.mPurchaseSignature, "Purchase signature cannot be null or empty.");
             return mPurchaseData;
         }
     }

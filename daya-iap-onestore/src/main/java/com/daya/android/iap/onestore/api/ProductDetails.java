@@ -7,30 +7,31 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class ProductDetails {
+    private JSONObject mOriginJson;
     private final String mPrice;
     private final String mProductId;
     private final String mType;
     private final String mTitle;
 
     ProductDetails(@NonNull String jsonString) throws JSONException {
-        JSONObject jsonObject = new JSONObject(jsonString);
-        mPrice = jsonObject.optString("price");
-        mProductId = jsonObject.optString("productId");
-        mType = jsonObject.optString("type");
-        mTitle = jsonObject.optString("title");
+        mOriginJson = new JSONObject(jsonString);
+        mPrice = mOriginJson.getString("price");
+        mProductId = mOriginJson.getString("productId");
+        mType = mOriginJson.getString("type");
+        mTitle = mOriginJson.optString("title");
     }
 
-    @Nullable
+    @NonNull
     public String getPrice() {
         return mPrice;
     }
 
-    @Nullable
+    @NonNull
     public String getProductId() {
         return mProductId;
     }
 
-    @Nullable
+    @NonNull
     public String getType() {
         return mType;
     }
@@ -38,5 +39,15 @@ public class ProductDetails {
     @Nullable
     public String getTitle() {
         return mTitle;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return mOriginJson.toString(2);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return super.toString();
     }
 }
