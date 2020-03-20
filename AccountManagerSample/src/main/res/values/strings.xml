@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AccountManagerSample</string>
+    <string name="login_button">Login</string>
+    <string name="account_type">com.daya</string>
+</resources>

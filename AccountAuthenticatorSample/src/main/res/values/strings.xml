@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Account Authenticator Sample</string>
+    <string name="daya_account_type">com.daya</string>
+</resources>

@@ -1,2 +1,9 @@
-include ':app'
+// Libraries
+include ':daya-common'
+include ':daya-permission'
+
+// Samples
+include ':AccountAuthenticatorSample'
+include ':AccountManagerSample'
+
 rootProject.name='Daya Library'
