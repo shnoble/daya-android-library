@@ -158,7 +158,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val TAG = "MainActivity"
-        private const val ACCOUNT_TYPE_HANGAME = "com.toast.android.hangameaccount"
         private const val REQUEST_CHOOSE_ACCOUNT = 100
         private const val REQUEST_PERMISSION = 101
     }
