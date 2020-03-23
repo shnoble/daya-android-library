@@ -2,9 +2,13 @@ package com.daya.android.accounts.sample
 
 import android.accounts.Account
 import android.accounts.AccountManager
+import android.accounts.AccountManager.KEY_ACCOUNT_NAME
+import android.accounts.AccountManager.KEY_ACCOUNT_TYPE
 import android.accounts.AuthenticatorException
 import android.accounts.OperationCanceledException
+import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -27,50 +31,15 @@ class MainActivity : AppCompatActivity() {
         accountManager = AccountManager.get(this)
 
         findViewById<Button>(R.id.login_button).setOnClickListener {
-            val accounts = accountManager.getAccountsByType(accountType)
-            DayaLog.d(TAG, "Account size: ${accounts.size}")
-            accounts.forEach {
-                DayaLog.d(
-                    TAG, """
-                        Account type: ${it.type}
-                        Account name: ${it.name}
-                    """.trimIndent()
-                )
-            }
+            addAccount()
+        }
 
-            if (accounts.isNotEmpty()) {
-                //showAccounts(accounts)
-                addAccount()
-            } else {
-                addAccount()
-                /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    DayaLog.d(TAG, "Account type: $accountType")
-                    val intent = AccountManager.newChooseAccountIntent(
-                        null,
-                        null,
-                        arrayOf(accountType),
-                        null,
-                        null,
-                        null,
-                        null
-                    )
-                    startActivityForResult(intent, REQUEST_CHOOSE_ACCOUNT)
-                } else {
-                    if (!hasPermission(this, Manifest.permission.GET_ACCOUNTS)) {
-                        if (shouldShowRequestPermissionRationale(
-                                this,
-                                Manifest.permission.GET_ACCOUNTS
-                            )
-                        ) {
-                            requestPermissions(
-                                this,
-                                arrayOf(Manifest.permission.GET_ACCOUNTS),
-                                REQUEST_PERMISSION
-                            )
-                        }
-                    }
-                }*/
-            }
+        findViewById<Button>(R.id.choose_account_button).setOnClickListener {
+            chooseAccount()
+        }
+
+        findViewById<Button>(R.id.show_accounts_button).setOnClickListener {
+            showAccounts()
         }
     }
 
@@ -117,6 +86,35 @@ class MainActivity : AppCompatActivity() {
         }, Handler())
     }
 
+    private fun chooseAccount() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            DayaLog.d(TAG, "Account type: $accountType")
+            val intent = AccountManager.newChooseAccountIntent(
+                null,
+                null,
+                arrayOf(accountType),
+                null,
+                null,
+                null,
+                null
+            )
+            startActivityForResult(intent, REQUEST_CHOOSE_ACCOUNT)
+        }
+    }
+
+    private fun showAccounts() {
+        val accounts = accountManager.getAccountsByType(accountType)
+        DayaLog.d(TAG, "Account size: ${accounts.size}")
+        accounts.forEach {
+            DayaLog.d(
+                TAG, """
+                Account type: ${it.type}
+                Account name: ${it.name}
+            """.trimIndent()
+            )
+        }
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -134,22 +132,18 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CHOOSE_ACCOUNT) {
-            val accounts = accountManager.getAccountsByType(accountType)
-            DayaLog.d(TAG, "Account size: ${accounts.size}")
-            accounts.forEach {
+            if (resultCode == Activity.RESULT_OK) {
+                DayaLog.d(TAG, "Success to choose account.")
                 DayaLog.d(
                     TAG, """
-                Account type: ${it.type}
-                Account name: ${it.name}
-            """.trimIndent()
+                        Success to choose account: 
+                            Account type: ${data?.getStringExtra(KEY_ACCOUNT_TYPE)}
+                            Account name: ${data?.getStringExtra(KEY_ACCOUNT_NAME)}
+                    """.trimIndent()
                 )
-            }
 
-            if (accounts.isNotEmpty()) {
-                //showAccounts(accounts)
-                addAccount()
             } else {
-                addAccount()
+                DayaLog.d(TAG, "Failed to choose account.")
             }
 
         }
